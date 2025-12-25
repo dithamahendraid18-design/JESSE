@@ -23,7 +23,7 @@ const CLIENT_ID = params.get("client_id");
 /* =========================
    STATE
    ========================= */
-let BOT_AVATAR_URL = "/bot.png";
+let BOT_AVATAR_URL = "/robot.png";
 let isLoading = false;
 let typingRow = null;
 
