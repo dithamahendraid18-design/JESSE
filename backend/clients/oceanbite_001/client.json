@@ -1,6 +1,7 @@
 {
   "id": "oceanbite_001",
   "name": "OceanBite Seafood Grill",
+  "bot_avatar_url": "/avatar.png",
   "locale": "en-US",
   "timezone": "Asia/Singapore",
   "public": true,
