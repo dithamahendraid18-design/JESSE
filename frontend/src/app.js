@@ -3,7 +3,7 @@ import "./styles.css";
 /* =========================
    CONFIG
    ========================= */
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://jesse-x1d4.onrender.com";
 
 const chatEl = document.getElementById("chat");
 const brandNameEl = document.getElementById("brandName");
