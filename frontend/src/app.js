@@ -358,6 +358,7 @@ async function postChat(payload) {
 }
 
 async function loadGreeting() {
+  const apiKey = "KELEVERDO12345jesse"
   if (!CLIENT_ID) {
     addBotBubble({ type: "text", text: "Missing client_id parameter.\nExample: ?client_id=oceanbite_001" }, null, false);
     return;
@@ -365,9 +366,18 @@ async function loadGreeting() {
 
   setLoading(true);
   try {
-    const r = await fetch(`${API_BASE}/api/greeting?client_id=${encodeURIComponent(CLIENT_ID)}`);
-    const data = await r.json().catch(() => ({}));
+    const r = await fetch(`${API_BASE}/api/greeting?client_id=${encodeURIComponent(CLIENT_ID)}`, {
+        method: "GET",
+        headers: { 
+          "content-type": "application/json",
+          "x-api-key": apiKey
+        }
+    });
 
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      throw new Error(data.error || "failed to load greeting");
+    }
     const theme = data.theme || {};
     applyClientBrand(theme);
     BOT_AVATAR_URL = theme.bot_avatar_url || null; 
