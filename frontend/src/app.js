@@ -380,7 +380,7 @@ async function loadGreeting() {
     }
     const theme = data.theme || {};
     applyClientBrand(theme);
-    BOT_AVATAR_URL = theme.bot_avatar_url || "/jesse.png";
+    BOT_AVATAR_URL = theme.bot_avatar_url || "/final.png";
 
     if (theme.brand_name) brandNameEl.textContent = theme.brand_name;
     brandSubEl.textContent = data?.meta?.client || theme.brand_name || "Restaurant Assistant";
