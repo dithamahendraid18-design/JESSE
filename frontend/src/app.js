@@ -339,9 +339,13 @@ function renderBotResponse(data) {
    API CALLS
    ========================= */
 async function postChat(payload) {
+  const apiKey = "KELEVERDO12345jesse"
   const r = await fetch(`${API_BASE}/api/chat`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "x-api-key": apiKey
+    },
     body: JSON.stringify(payload),
   });
 
