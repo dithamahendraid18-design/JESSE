@@ -1,0 +1,171 @@
+{
+  "greeting": {
+    "reply": "Hello and welcome to OceanBite Seafood Grill! 👋🔥\nI’m Jesse, your friendly little helper from the deep blue.\nTell me what you’re craving, and I’ll guide you there fast.\nReady to dive in? 😉",
+    "messages": [
+      {
+        "type": "text",
+        "text": "Hello and welcome to OceanBite Seafood Grill! 👋🔥\nI’m Jesse, your friendly little helper from the deep blue.\nTell me what you’re craving, and I’ll guide you there fast.\nReady to dive in? 😉"
+      },
+      {
+        "type": "text",
+        "text": "Pick one from the list below, I’ve got you! 😄"
+      }
+    ],
+    "buttons": [
+      { "label": "About us", "intent": "about_us" },
+      { "label": "Menu & prices", "intent": "menu" },
+      { "label": "Opening hours", "intent": "hours" },
+      { "label": "Location", "intent": "location" },
+      { "label": "Contact / Reservation", "intent": "contact" }
+    ]
+  },
+
+  "main_menu": {
+    "reply": "Pick one from the list below, I’ve got you! 😄",
+    "messages": [
+      { "type": "text", "text": "Pick one from the list below, I’ve got you! 😄" }
+    ],
+    "buttons": [
+      { "label": "About us", "intent": "about_us" },
+      { "label": "Menu & prices", "intent": "menu" },
+      { "label": "Opening hours", "intent": "hours" },
+      { "label": "Location", "intent": "location" },
+      { "label": "Contact / Reservation", "intent": "contact" }
+    ]
+  },
+
+  "intents": {
+        "allergy": {
+      "massages": [
+        {
+          "type": "text",
+          "text": "Allergy note ❤️\nFor your safety, I can’t confirm allergens from the chat.\n\nPlease tell us what you’re allergic to (e.g., peanuts, shellfish, dairy), and contact our team so we can confirm ingredients and cross-contamination risks before you order."
+        },
+        {
+          "type": "text",
+          "text": "Tip: When you message us, include:\n• Your allergy\n• Any severity (mild / severe)\n• The dish you want\n\nOur team will help you choose a safer option 😊"
+        }
+      ],
+      "buttons": [
+        { "label": "Contact / Reservation", "intent": "contact" },
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Main menu", "intent": "main_menu" }
+      ]
+    },
+    "about_us": {
+      "reply": "You tapped About Us! 🐟✨\nNice choice, Jesse loves talking about OceanBite. Let me brag a little…",
+      "messages": [
+        {
+          "type": "text",
+          "text": "You tapped About Us! 🐟✨\nNice choice, Jesse loves talking about OceanBite. Let me brag a little…"
+        },
+        {
+          "type": "text",
+          "text": "OceanBite is a modern seafood grill specializing in fresh daily catch, premium lobster, and charcoal-grilled seafood.\nEvery dish is crafted to bring out natural ocean flavors with a smoky twist, simple, fresh, and unforgettable.\n\nIf you're a seafood lover… you’re in the right place. 😉"
+        },
+        {
+          "type": "image",
+          "url": "/client-assets/oceanbite_001/about.jpg?v=1",
+          "alt": "OceanBite"
+        },
+        {
+         "type": "text",
+         "text": "Want me to help you with anything else? 😄"
+        }
+      ],
+      "buttons": [
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Opening hours", "intent": "hours" },
+        { "label": "Location", "intent": "location" },
+        { "label": "Contact / Reservation", "intent": "contact" }
+      ]
+    },
+
+    "hours": {
+      "reply": "Here's when OceanBite is ready to serve you fresh seafood goodness:\n\n• Monday–Friday: 10:00 AM – 10:00 PM\n• Saturday–Sunday: 10:00 AM – 11:00 PM\n\nLast order is 30 minutes before closing.",
+      "messages": [
+        {
+          "type": "text",
+          "text": "Here's when OceanBite is ready to serve you fresh seafood goodness:\n\n• Monday–Friday: 10:00 AM – 10:00 PM\n• Saturday–Sunday: 10:00 AM – 11:00 PM\n\nLast order is 30 minutes before closing."
+        },
+        {
+         "type": "text",
+         "text": "Want me to help you with anything else? 😄"
+        }        
+      ],
+      "buttons": [
+        { "label": "About us", "intent": "about_us" },
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Location", "intent": "location" },
+        { "label": "Contact / Reservation", "intent": "contact" },
+        { "label": "No, I’m all good", "intent": "goodbye" }
+      ]
+    },
+
+    "location": {
+      "reply": "Looking to find us? 🐟 Here’s where the seafood magic happens:\n\n📍 Address:\n8A Marina Boulevard, Singapore\n\n🗺️ Google Maps:\nCheck it out here! https://maps.app.goo.gl/92SKSeafoodGrillExample\n\nPop in anytime during our opening hours. I promise the seafood’s worth the trip! 😋",
+      "messages": [
+        {
+          "type": "text",
+          "text": "Looking to find us? 🐟 Here’s where the seafood magic happens:\n\n📍 Address:\n8A Marina Boulevard, Singapore\n\n🗺️ Google Maps:\nCheck it out here! https://maps.app.goo.gl/92SKSeafoodGrillExample\n\nPop in anytime during our opening hours. I promise the seafood’s worth the trip! 😋"
+        },
+        {
+         "type": "text",
+         "text": "Want me to help you with anything else? 😄"
+        }        
+      ],
+      "buttons": [
+        { "label": "About us", "intent": "about_us" },
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Opening hours", "intent": "hours" },
+        { "label": "Contact / Reservation", "intent": "contact" },
+        { "label": "No, I’m all good", "intent": "goodbye" }
+      ]
+    },
+
+    "contact": {
+     "messages": [
+        {
+         "type": "text",
+         "text": "Contact & Reservation\n\n📞 Phone: +65 8544 XXXX\n💬 WhatsApp: wa.me/654321\n📧 Email: oceanbite@food.com\n\nFor reservations, simply message us on WhatsApp. Our team will confirm your table shortly! 🪑✨"
+        },
+        {
+         "type": "text",
+         "text": "Want me to help you with anything else? 😄"
+        }
+      ],
+     "buttons": [
+       { "label": "About us", "intent": "about_us" },
+       { "label": "Menu & prices", "intent": "menu" },
+       { "label": "Opening hours", "intent": "hours" },
+       { "label": "Location", "intent": "location" },
+       { "label": "No, I'm all good", "intent": "goodbye" }
+      ]
+    },
+
+    "goodbye": {
+      "reply": "Alright! 😊 Thanks for stopping by. Hope to see you at OceanBite soon! 🐟✨",
+      "messages": [
+        { "type": "text", "text": "Alright! 😊 Thanks for stopping by. Hope to see you at OceanBite soon! 🐟✨" }
+      ],
+      "buttons": []
+    },
+
+    "fallback": {
+      "reply": "I can help with menu, hours, location, and reservations. 😊\nPick one below:",
+      "messages": [
+        {
+          "type": "text",
+          "text": "I can help with menu, hours, location, and reservations. 😊\nPick one below:"
+        }
+      ],
+      "buttons": [
+        { "label": "About us", "intent": "about_us" },
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Opening hours", "intent": "hours" },
+        { "label": "Location", "intent": "location" },
+        { "label": "Contact / Reservation", "intent": "contact" }
+      ]
+    }
+  }
+}

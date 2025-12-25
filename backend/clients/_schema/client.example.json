@@ -1,0 +1,13 @@
+{
+  "id": "oceanbite_001",
+  "name": "OceanBite Seafood Grill",
+  "locale": "en-US",
+  "timezone": "Asia/Singapore",
+  "public": true,
+  "api_key": "",
+  "features": {
+    "llm_enabled": false,
+    "menu_enabled": true,
+    "analytics_enabled": true
+  }
+}

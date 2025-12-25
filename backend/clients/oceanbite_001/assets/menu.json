@@ -1,0 +1,97 @@
+{
+  "currency": "SGD",
+
+  "promo": {
+    "enabled": true,
+    "title": "🔥 WEEKDAY LUNCH DEAL",
+    "text": "Get 10% off total bill (Monday–Friday, 12:00–15:00).",
+    "code": "OCEAN10",
+    "valid_until": "2026-01-31",
+    "terms": "Dine-in only. Not valid with other discounts.",
+    "image": "promo_01.jpg"
+  },
+  
+  "categories": [
+    {
+      "id": "seafood_specials",
+      "label": "Seafood Specials",
+      "items": [
+        {
+          "name": "Grilled Lobster",
+          "price": 58.0,
+          "desc": "Fresh lobster grilled over charcoal, served with butter sauce.",
+          "allergens": ["shellfish", "milk"],
+          "may_contain": ["fish", "soy", "wheat", "egg", "sesame"]
+        },
+        {
+          "name": "OceanBite Seafood Platter",
+          "price": 75.0,
+          "desc": "Perfect for 2–3 people. Includes prawns, squid, mussels, and fish.",
+          "allergens": ["shellfish", "fish"],
+          "may_contain": ["milk", "soy", "wheat", "egg", "sesame"]
+        },
+        {
+          "name": "Lemon Garlic Salmon",
+          "price": 28.0,
+          "desc": "A zesty twist on a classic favorite!",
+          "allergens": ["fish"],
+          "may_contain": ["milk", "soy", "wheat", "egg", "shellfish", "sesame"]
+        }
+      ]
+    },
+    {
+      "id": "drinks",
+      "label": "Drinks",
+      "items": [
+        {
+          "name": "Iced Lemon Tea",
+          "price": 5.99,
+          "desc": "Chilled black tea with lemon.",
+          "allergens": [],
+          "may_contain": []
+        },
+        {
+          "name": "Mango Sparkle",
+          "price": 7.0,
+          "desc": "Refreshing mango soda with a fizzy finish.",
+          "allergens": [],
+          "may_contain": []
+        },
+        {
+          "name": "Fresh Coconut",
+          "price": 8.0,
+          "desc": "Fresh coconut water served chilled.",
+          "allergens": [],
+          "may_contain": []
+        }
+      ]
+    },
+    {
+      "id": "desserts",
+      "label": "Desserts",
+      "items": [
+        {
+          "name": "Coconut Pudding",
+          "price": 12.8,
+          "desc": "Silky coconut pudding, lightly sweet.",
+          "allergens": ["milk"],
+          "may_contain": ["egg", "soy", "wheat", "nuts", "sesame"]
+        },
+        {
+          "name": "Chocolate Lava Cake",
+          "price": 15.5,
+          "desc": "Warm chocolate cake with a molten center.",
+          "allergens": ["milk", "egg", "wheat"],
+          "may_contain": ["soy", "nuts", "sesame"]
+        },
+        {
+          "name": "Mango Cheesecake",
+          "price": 14.0,
+          "desc": "Creamy cheesecake topped with mango.",
+          "allergens": ["milk", "egg", "wheat"],
+          "may_contain": ["soy", "nuts", "sesame"]
+        }
+      ]
+    }
+  ]
+}

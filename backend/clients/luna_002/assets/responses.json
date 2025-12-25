@@ -1,0 +1,170 @@
+{
+  "greeting": {
+    "messages": [
+      {
+        "type": "text",
+        "text": "Hello and welcome to Luna Ramen & Izakaya! 🍜🌙\nI’m Jesse, your friendly little helper.\nTell me what you’re craving, and I’ll guide you there fast.\nReady to dig in? 😉"
+      },
+      {
+        "type": "text",
+        "text": "Pick one from the list below, I’ve got you! 😄"
+      }
+    ],
+    "buttons": [
+      { "label": "About us", "intent": "about_us" },
+      { "label": "Menu & prices", "intent": "menu" },
+      { "label": "Opening hours", "intent": "hours" },
+      { "label": "Location", "intent": "location" },
+      { "label": "Contact / Reservation", "intent": "contact" }
+    ]
+  },
+
+  "main_menu": {
+    "messages": [
+      {
+        "type": "text",
+        "text": "Pick one from the list below, I’ve got you! 😄"
+      }
+    ],
+    "buttons": [
+      { "intent": "about_us", "label": "About us" },
+      { "intent": "menu", "label": "Menu & prices" },
+      { "intent": "hours", "label": "Opening hours" },
+      { "intent": "location", "label": "Location" },
+      { "intent": "contact", "label": "Contact / Reservation" }
+    ]
+  },
+
+  "intents": {
+    "allergy": {
+      "messages": [
+        {
+          "type": "text",
+          "text": "Allergy note ❤️\nFor your safety, I can’t confirm allergens from the chat.\n\nPlease tell us what you’re allergic to (e.g., peanuts, shellfish, dairy), and contact our team so we can confirm ingredients and cross-contamination risks before you order."
+        },
+        {
+          "type": "text",
+          "text": "Tip: When you message us, include:\n• Your allergy\n• Any severity (mild / severe)\n• The dish you want\n\nOur team will help you choose a safer option 😊"
+        }
+      ],
+      "buttons": [
+        { "label": "Contact / Reservation", "intent": "contact" },
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Main menu", "intent": "main_menu" }
+      ]
+    },
+    "about_us": {
+      "messages": [
+        {
+          "type": "text",
+          "text": "Luna is where ramen comfort meets izakaya vibes — warm, cozy, and a little adventurous."
+        },
+        {
+          "type": "text",
+          "text": "We serve rich ramen broths, grilled skewers, small plates, and chilled drinks — perfect for a quick lunch or a late-night bite.\n\nIf you love Japanese comfort food… you’re in the right place. 😉"
+        },
+        { "type": "image", "url": "/client-assets/luna_002/about_01.png?v=1", "alt": "Luna Ramen & Izakaya" },
+        { "type": "image", "url": "/client-assets/luna_002/about_02.png?v=1", "alt": "Luna Ramen & Izakaya" },
+        { "type": "image", "url": "/client-assets/luna_002/about_03.png?v=1", "alt": "Luna Ramen & Izakaya" },
+        { "type": "image", "url": "/client-assets/luna_002/about_04.png?v=1", "alt": "Luna Ramen & Izakaya" },
+        {
+         "type": "text",
+         "text": "Want me to help you with anything else? 😄"
+        }
+      ],
+      "buttons": [
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Opening hours", "intent": "hours" },
+        { "label": "Location", "intent": "location" },
+        { "label": "Contact / Reservation", "intent": "contact" }
+      ]
+    },
+    
+    "hours": {
+      "messages": [
+        {
+          "type": "text",
+          "text": "Opening Hours 🕒\nMonday–Friday: 11:30 AM – 10:00 PM\nSaturday–Sunday: 12:00 PM – 11:00 PM\n\nLast order is 30 minutes before closing."
+        },
+        {
+          "type": "text",
+          "text": "Want me to help you with anything else? 😄"
+        }
+      ],
+      "buttons": [
+        { "label": "About us", "intent": "about_us" },
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Location", "intent": "location" },
+        { "label": "Contact / Reservation", "intent": "contact" },
+        { "label": "No, I’m all good", "intent": "goodbye" }
+      ]
+    },
+
+    "location": {
+      "reply":"Looking to find us? 🌙🍜 Here’s where the ramen magic happens:\n\n📍 Address:\nLuna Ramen Izakaya 12 George St, Sydney NSW 2000, Australia\n\n🗺️ Google Maps:\nCheck it out here! https://goo.gl/maps/2G2o9Qk9p2mKc6tW8\n\nPop in anytime during our opening hours — we’ll save you a cozy seat. 😊✨",
+      "messages": [
+        {
+          "type": "text",
+          "text": "Looking to find us? 🌙🍜 Here’s where the ramen magic happens:\n\n📍 Address:\nLuna Ramen Izakaya 12 George St, Sydney NSW 2000, Australia\n\n🗺️ Google Maps:\nCheck it out here! https://goo.gl/maps/2G2o9Qk9p2mKc6tW8\n\nPop in anytime during our opening hours — we’ll save you a cozy seat. 😊✨"
+        },
+        {
+         "type": "text",
+         "text": "Want me to help you with anything else? 😄"
+        }        
+      ],
+      "buttons": [
+        { "label": "About us", "intent": "about_us" },
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Opening hours", "intent": "hours" },
+        { "label": "Contact / Reservation", "intent": "contact" },
+        { "label": "No, I’m all good", "intent": "goodbye" }
+      ]
+    },
+
+    "contact": {
+      "messages": [
+        {
+          "type": "text",
+          "text": "Contact & Reservation 📞🍶\n\n📞 Phone: {phone}\n💬 WhatsApp: {whatsapp}\n✉️ Email: {email}\n📸 Instagram:{instagram} \n\nFor reservations, simply message us on WhatsApp. Our team will confirm your table shortly! 🪑✨"
+        },
+        {
+          "type": "text",
+          "text": "Want me to help you with anything else? 😄"
+        }
+      ],
+     "buttons": [
+       { "label": "About us", "intent": "about_us" },
+       { "label": "Menu & prices", "intent": "menu" },
+       { "label": "Opening hours", "intent": "hours" },
+       { "label": "Location", "intent": "location" },
+       { "label": "No, I'm all good", "intent": "goodbye" }
+      ]
+    },
+
+    "goodbye": {
+      "messages": [
+        {
+          "type": "text",
+          "text": "Alright! Thanks for stopping by 🌙🍜\nIf you need anything else, just message me anytime. Have a great day! 😊"
+        }
+      ],
+      "buttons": []
+    },
+
+    "fallback": {
+      "messages": [
+        {
+          "type": "text",
+          "text": "I can help with menu, hours, location, and reservations.\nPlease choose an option below 😊"
+        }
+      ],
+      "buttons": [
+        { "label": "About us", "intent": "about_us" },
+        { "label": "Menu & prices", "intent": "menu" },
+        { "label": "Opening hours", "intent": "hours" },
+        { "label": "Location", "intent": "location" },
+        { "label": "Contact / Reservation", "intent": "contact" }
+      ]
+    }
+  }
+}

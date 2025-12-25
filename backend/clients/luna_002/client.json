@@ -1,0 +1,13 @@
+{
+  "id": "luna_002",
+  "name": "Luna Ramen & Izakaya",
+  "locale": "en-US",
+  "timezone": "Asia/Taipei",
+  "public": true,
+  "plan_type": "pro",
+  "features": {
+    "llm_enabled": true,
+    "menu_enabled": true,
+    "analytics_enabled": true
+  }
+}
