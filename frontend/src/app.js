@@ -20,6 +20,13 @@ const fullImage = document.getElementById("fullImage");
 const closeBtn = document.querySelector(".close-btn");
 const params = new URLSearchParams(window.location.search);
 const CLIENT_ID = params.get("client_id");
+const CLEANUP_KEY = "fix_avatar_v1_done";
+
+if (!localStorage.getItem(CLEANUP_KEY)) {
+  console.log("🧹 Melakukan pembersihan data lama...");
+  localStorage.clear(); 
+  localStorage.setItem(CLEANUP_KEY, "true"); 
+}
 
 /* =========================
    STATE
