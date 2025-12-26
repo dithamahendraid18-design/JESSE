@@ -31,7 +31,7 @@ if (!localStorage.getItem(CLEANUP_KEY)) {
 /* =========================
    STATE
    ========================= */
-let BOT_AVATAR_URL = "/robot.png";
+let BOT_AVATAR_URL = "/final.png";
 let isLoading = false;
 let typingRow = null;
 
@@ -174,11 +174,16 @@ function createBotAvatar(explicitUrl = null) {
   const img = document.createElement("img");
   img.className = "avatar";
   img.alt = "bot";
-  img.src = explicitUrl || BOT_AVATAR_URL || "/favicon.ico";
+  img.src = explicitUrl || "/final.png";
   img.loading = "lazy";
   img.onerror = () => {
-    img.removeAttribute("src");
-    img.classList.add("fallback");
+    if (img.src.includes("final.png")) {
+      img.removeAttribute("src");
+      img.classList.add("fallback");
+    }else {
+      img.src = "/final.png";
+    }
+
   };
   return img;
 }
