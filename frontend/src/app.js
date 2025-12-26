@@ -1,4 +1,5 @@
 import "./styles.css";
+localStorage.clear();
 
 /* =========================
    CONFIG
