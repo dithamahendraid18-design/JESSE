@@ -462,22 +462,39 @@ function scrollToBottom() {
    BOOTSTRAP (LOGIKA STARTUP)
    ========================= */
 async function initApp() {
+  
+  if (CLIENT_ID) {
+    const CLIENT_NAMES = {
+      "luna_002": "Luna Ramen & Izakaya",
+      "oceanbite_001": "OceanBite Seafood Grill",
+      // Tambahkan klien lain di sini nanti...
+    };
+
+    const initialName = CLIENT_NAMES[CLIENT_ID] || "Restaurant Assistant";
+    
+    // Langsung tulis ke layar!
+    if (brandSubEl) brandSubEl.textContent = initialName;
+  }
+  // ----------------------------------------------------
+
   const history = loadHistory();
 
   if (history && history.length > 0) {
     console.log("Memuat riwayat chat...");
     
-    // Fetch theme config diam-diam
+    // Fetch theme config diam-diam (Hanya untuk update warna/avatar jika berubah)
     if (CLIENT_ID) {
         try {
             const r = await fetch(`${API_BASE}/api/greeting?client_id=${encodeURIComponent(CLIENT_ID)}`);
             const data = await r.json();
             const theme = data.theme || {};
             applyClientBrand(theme);
-            BOT_AVATAR_URL = theme.bot_avatar_url || null;
             
+            // Update lagi (just in case server punya nama baru)
             if (theme.brand_name) brandNameEl.textContent = theme.brand_name;
             brandSubEl.textContent = data?.meta?.client || theme.brand_name;
+            
+            BOT_AVATAR_URL = theme.bot_avatar_url || "/final.png"; 
         } catch (e) { console.warn("Gagal load theme config"); }
     }
 
