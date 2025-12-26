@@ -73,7 +73,7 @@ class LLMService:
                 {"role": "user", "content": user_message or ""},
             ],
             # --- SETTINGAN OPTIMAL ---
-            "temperature": 0.4,  # 0.2 = Cerdas tapi Stabil (Tidak Halusinasi, Tidak Kaku)
+            "temperature": 0.2,  # 0.2 = Cerdas tapi Stabil (Tidak Halusinasi, Tidak Kaku)
             "max_tokens": 450,   # Batasi panjang jawaban (agar tidak ngobrol kepanjangan)
             "top_p": 0.9,        # Variasi kosa kata yang natural
         }
