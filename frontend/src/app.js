@@ -491,9 +491,16 @@ async function initApp() {
             applyClientBrand(theme);
             
             // Update lagi (just in case server punya nama baru)
-            if (theme.brand_name) brandNameEl.textContent = theme.brand_name;
-            brandSubEl.textContent = data?.meta?.client || theme.brand_name;
+            if (theme.brand_name) {
+              brandNameEl.textContent = theme.brand_name;
+            }
             
+            const serverSub = data?.meta?.client || theme.brand_name;
+            if (serverSub) {
+              brandSubEl.textContent = serverSub;
+            }
+
+
             BOT_AVATAR_URL = theme.bot_avatar_url || "/final.png"; 
         } catch (e) { console.warn("Gagal load theme config"); }
     }
