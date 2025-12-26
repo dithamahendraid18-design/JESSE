@@ -26,7 +26,7 @@ def _read_json(path: Path) -> dict:
 
 class SafeDict(dict):
     def __missing__(self, key):
-        return "{" + key + "}" 
+        return "{" + key + "}"
 
 
 def _render_text(text: str, data: dict) -> str:
@@ -44,10 +44,6 @@ def _render_messages(messages: list, data: dict) -> list:
 
 
 def hydrate_responses(responses: dict, channels: dict) -> dict:
-    """
-    Render semua text message di responses.json menggunakan data dari channels.json.
-    Placeholder format: {phone}, {whatsapp}, dst.
-    """
     if not isinstance(responses, dict):
         return responses
 
@@ -60,30 +56,45 @@ def hydrate_responses(responses: dict, channels: dict) -> dict:
     return hydrated
 
 
-# --- TAMBAHKAN HELPER KECIL INI DI ATAS load_client ---
+# --- UPDATE: FUNGSI FORMAT MENU KHUSUS STRUKTUR ANDA ---
 def _format_menu_string(menu: dict) -> str:
-    """Mengubah JSON Menu menjadi Text agar bisa dibaca AI"""
-    if not menu or "categories" not in menu:
-        return "No menu items available."
-    
+    """Mengubah JSON Menu (Luna Ramen) menjadi Text agar bisa dibaca AI"""
+    if not menu:
+        return "No menu data available."
+
     lines = []
-    for cat in menu.get("categories", []):
+    
+    # 1. Ambil Mata Uang
+    currency = menu.get("currency", "AUD")
+
+    # 2. Ambil Promo (Jika ada dan aktif)
+    promo = menu.get("promo", {})
+    if promo.get("enabled"):
+        lines.append(f"🔥 ACTIVE PROMO: {promo.get('title')} - {promo.get('text')} (Code: {promo.get('code')})")
+        lines.append("-" * 20)
+
+    # 3. Loop Categories
+    categories = menu.get("categories", [])
+    if not categories:
+        return "No categories found in menu."
+
+    for cat in categories:
         cat_label = cat.get("label", "General")
-        for item in cat.get("items", []):
+        items = cat.get("items", [])
+        
+        for item in items:
             name = item.get("name", "Unknown")
-            price = item.get("price", "-")
+            price = item.get("price", "Ask")
             desc = item.get("desc", "")
-            # Hasil: "- Ramen (Mains): 12.0. Kuah pedas..."
-            lines.append(f"- {name} ({cat_label}) : {price}. {desc}")
+            
+            # Format: - Tonkotsu Ramen (Ramen) : AUD 18.99. Rich pork broth...
+            lines.append(f"- {name} ({cat_label}) : {currency} {price}. {desc}")
             
     return "\n".join(lines)
+# -------------------------------------------------------
 
 
 def load_client(clients_dir: Path, client_id: str) -> ClientContext:
-    """
-    Load semua data per klien dari folder:
-      clients/<client_id>/*
-    """
     base = clients_dir / client_id
     if not base.exists():
         raise JesseError(f"Unknown client_id: {client_id}", 404)
@@ -99,30 +110,30 @@ def load_client(clients_dir: Path, client_id: str) -> ClientContext:
     prompt_path = base / "prompts" / "system.md"
     raw_prompt = prompt_path.read_text(encoding="utf-8") if prompt_path.exists() else ""
 
-    # 2. Siapkan Data Menu dalam bentuk Teks
+    # 2. Siapkan Data Menu dalam bentuk Teks (Pake fungsi baru di atas)
     menu_text = _format_menu_string(menu)
 
     # 3. Suntikkan Data Menu + Aturan Ketat
     STRICT_GUARD = f"""
     
     --- 🟢 REAL-TIME MENU DATA 🟢 ---
-    (You must ONLY recommend items listed below. Do not invent others.)
+    (This is the ONLY valid menu. Use this to answer user questions.)
     
     {menu_text}
     
     ---------------------------------
 
-    --- IMPORTANT RULES ---
-    1. The list above is the ONLY food we serve.
-    2. If user asks for "Salmon" and it's NOT in the list above, say: "Sorry, I don't see that on our menu."
-    3. Treat typos kindly (e.g. "seefood"), but verify against the list above.
+    --- RULES ---
+    1. You must ONLY recommend items listed above.
+    2. If user asks for "Salmon" and it's NOT in the list, say: "Sorry, we don't have that."
+    3. If asked about promos, refer to the "ACTIVE PROMO" section above.
     """
 
     system_prompt = raw_prompt + STRICT_GUARD
     # -------------------------
 
     name = client_json.get("name", client_id)
-    plan_type = client_json.get("plan_type", "basic")  # default to basic
+    plan_type = client_json.get("plan_type", "basic")
 
     return ClientContext(
         menu=menu,
