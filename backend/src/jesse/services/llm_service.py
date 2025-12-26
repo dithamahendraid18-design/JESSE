@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import requests
+import logging 
 
 from ..config import Settings
 
+# Setup logger agar kita bisa lihat error di terminal Render jika ada masalah
+logger = logging.getLogger(__name__)
 
 class LLMService:
     """
@@ -25,7 +28,7 @@ class LLMService:
         if self.settings.llm_provider == "mock":
             return False
 
-        if self.settings.llm_provider in ("openai_compatible", "groq"):
+        if self.settings.llm_provider in ("openai_compatible", "groq", "openai"):
             return bool(
                 (self.settings.llm_base_url or "").strip()
                 and (self.settings.llm_api_key or "").strip()
@@ -43,7 +46,7 @@ class LLMService:
             )
 
         # Groq kita treat sebagai openai_compatible
-        if self.settings.llm_provider in ("openai_compatible", "groq"):
+        if self.settings.llm_provider in ("openai_compatible", "groq", "openai"):
             return self._openai_compatible(system_prompt, user_message)
 
         return "LLM provider not configured."
@@ -62,13 +65,17 @@ class LLMService:
             "Authorization": f"Bearer {key}",
             "Content-Type": "application/json",
         }
+        
         payload = {
             "model": model,
             "messages": [
                 {"role": "system", "content": system_prompt or ""},
                 {"role": "user", "content": user_message or ""},
             ],
-            "temperature": 0.3,
+            # --- SETTINGAN OPTIMAL ---
+            "temperature": 0.4,  # 0.2 = Cerdas tapi Stabil (Tidak Halusinasi, Tidak Kaku)
+            "max_tokens": 450,   # Batasi panjang jawaban (agar tidak ngobrol kepanjangan)
+            "top_p": 0.9,        # Variasi kosa kata yang natural
         }
 
         try:
@@ -78,16 +85,16 @@ class LLMService:
                 headers=headers,
                 timeout=getattr(self.settings, "llm_timeout_seconds", 30),
             )
-        except requests.RequestException:
-            # Jangan bocorin detail error ke user (lebih aman untuk produk)
-            return "Sorry — the AI service is temporarily unavailable. Please use the menu buttons 😊"
-
-        if r.status_code >= 400:
-            # Optional: kamu bisa log r.text di server untuk debugging
-            return "Sorry — the AI service returned an error. Please try again or use the menu buttons 😊"
-
-        try:
+            r.raise_for_status() # Cek jika ada error HTTP (4xx/5xx)
+            
             data = r.json()
             return data["choices"][0]["message"]["content"]
-        except Exception:
-            return "Sorry — I couldn't parse the AI response. Please use the menu buttons 😊"
+
+        except requests.exceptions.HTTPError as e:
+            # Log error asli ke terminal Render (biar Anda tau kenapa error)
+            logger.error(f"LLM API Error: {e.response.text}")
+            return "Sorry, I'm having trouble connecting to my brain right now. Please try again or check the menu buttons! 🧠✨"
+            
+        except Exception as e:
+            logger.error(f"LLM General Error: {e}")
+            return "Oops! Something went wrong. Please use the menu buttons for now. 🙏"

@@ -26,7 +26,7 @@ def _read_json(path: Path) -> dict:
 
 class SafeDict(dict):
     def __missing__(self, key):
-        return "{" + key + "}"  # biar placeholder tetap tampil kalau key tidak ada
+        return "{" + key + "}" 
 
 
 def _render_text(text: str, data: dict) -> str:
@@ -77,10 +77,24 @@ def load_client(clients_dir: Path, client_id: str) -> ClientContext:
     menu = _read_json(base / "assets" / "menu.json")
 
     prompt_path = base / "prompts" / "system.md"
-    system_prompt = prompt_path.read_text(encoding="utf-8") if prompt_path.exists() else ""
+    
+    raw_prompt = prompt_path.read_text(encoding="utf-8") if prompt_path.exists() else ""
+
+    STRICT_GUARD = """
+    
+    --- IMPORTANT DATA INTEGRITY RULES ---
+    1. You have access to the restaurant's specific MENU DATA in the context.
+    2. You must ONLY recommend items explicitly listed in that menu data.
+    3. DO NOT hallucinate items (like "Soft Shell Crab", "Sushi", etc.) if they are not in the data.
+    4. If the user asks for "Seafood" and the search result is empty, say: "Sorry, I don't see that item on our current menu."
+    5. Treat typos (e.g., "seefood") kindly, but if the corrected word isn't in the menu, do not invent it.
+    """
+
+    system_prompt = raw_prompt + STRICT_GUARD
+    # -------------------------
 
     name = client_json.get("name", client_id)
-    plan_type = client_json.get("plan_type", "basic")  # default to basic
+    plan_type = client_json.get("plan_type", "basic")  
 
     return ClientContext(
         menu=menu,
