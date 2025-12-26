@@ -60,6 +60,25 @@ def hydrate_responses(responses: dict, channels: dict) -> dict:
     return hydrated
 
 
+# --- TAMBAHKAN HELPER KECIL INI DI ATAS load_client ---
+def _format_menu_string(menu: dict) -> str:
+    """Mengubah JSON Menu menjadi Text agar bisa dibaca AI"""
+    if not menu or "categories" not in menu:
+        return "No menu items available."
+    
+    lines = []
+    for cat in menu.get("categories", []):
+        cat_label = cat.get("label", "General")
+        for item in cat.get("items", []):
+            name = item.get("name", "Unknown")
+            price = item.get("price", "-")
+            desc = item.get("desc", "")
+            # Hasil: "- Ramen (Mains): 12.0. Kuah pedas..."
+            lines.append(f"- {name} ({cat_label}) : {price}. {desc}")
+            
+    return "\n".join(lines)
+
+
 def load_client(clients_dir: Path, client_id: str) -> ClientContext:
     """
     Load semua data per klien dari folder:
@@ -76,25 +95,34 @@ def load_client(clients_dir: Path, client_id: str) -> ClientContext:
     responses = hydrate_responses(responses, channels)
     menu = _read_json(base / "assets" / "menu.json")
 
+    # 1. Siapkan Prompt Dasar
     prompt_path = base / "prompts" / "system.md"
-    
     raw_prompt = prompt_path.read_text(encoding="utf-8") if prompt_path.exists() else ""
 
-    STRICT_GUARD = """
+    # 2. Siapkan Data Menu dalam bentuk Teks
+    menu_text = _format_menu_string(menu)
+
+    # 3. Suntikkan Data Menu + Aturan Ketat
+    STRICT_GUARD = f"""
     
-    --- IMPORTANT DATA INTEGRITY RULES ---
-    1. You have access to the restaurant's specific MENU DATA in the context.
-    2. You must ONLY recommend items explicitly listed in that menu data.
-    3. DO NOT hallucinate items (like "Soft Shell Crab", "Sushi", etc.) if they are not in the data.
-    4. If the user asks for "Seafood" and the search result is empty, say: "Sorry, I don't see that item on our current menu."
-    5. Treat typos (e.g., "seefood") kindly, but if the corrected word isn't in the menu, do not invent it.
+    --- 🟢 REAL-TIME MENU DATA 🟢 ---
+    (You must ONLY recommend items listed below. Do not invent others.)
+    
+    {menu_text}
+    
+    ---------------------------------
+
+    --- IMPORTANT RULES ---
+    1. The list above is the ONLY food we serve.
+    2. If user asks for "Salmon" and it's NOT in the list above, say: "Sorry, I don't see that on our menu."
+    3. Treat typos kindly (e.g. "seefood"), but verify against the list above.
     """
 
     system_prompt = raw_prompt + STRICT_GUARD
     # -------------------------
 
     name = client_json.get("name", client_id)
-    plan_type = client_json.get("plan_type", "basic")  
+    plan_type = client_json.get("plan_type", "basic")  # default to basic
 
     return ClientContext(
         menu=menu,
