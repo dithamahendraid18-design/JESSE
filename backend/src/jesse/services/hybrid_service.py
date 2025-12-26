@@ -11,12 +11,11 @@ from .search_service import smart_search_menu
 from .menu_service import menu_category, menu_entry, order_food
 
 # =========================
-# 1. HELPER BARU: FORMAT MENU STRING (Anti-Halusinasi)
+# 1. HELPER: FORMAT MENU STRING (Anti-Halusinasi)
 # =========================
 def _get_menu_context_string(ctx: ClientContext) -> str:
     """
     Mengambil data menu real-time untuk ditempel LANGSUNG ke pesan user.
-    Ini memaksa AI membaca menu sebelum menjawab.
     """
     menu = getattr(ctx, "menu", {})
     if not menu or "categories" not in menu:
@@ -149,44 +148,42 @@ class HybridService:
             matched = _best_intent_from_text(message)
             if matched: return self.handle(ctx, None, matched)
 
-        # B) PRO Feature: Smart Search (Cari menu spesifik)
+        # B) PRO Feature: Smart Search
         if message and plan_type == "pro":
             search_result = smart_search_menu(ctx, message)
             if search_result: return search_result
 
-        # C) LLM WITH CONTEXT INJECTION (THE FIX IS HERE) 🛡️
+        # C) LLM WITH CONTEXT INJECTION (SMART UPSELLING) 🛍️
         if message and llm_enabled:
-            # Cek User Plan
             if plan_type != "pro":
                 return [{"type": "text", "text": "AI Chat is a Pro feature 🔒"}], _nav_buttons()
 
-            # Cek Config LLM
             if hasattr(self.llm, "is_configured") and not self.llm.is_configured():
                 return [{"type": "text", "text": "LLM not configured."}], _nav_buttons()
 
-            # --- SUNTIK DATA MENU KE PESAN USER ---
-            # Kita ambil menu text real-time
+            # --- SUNTIK DATA MENU ---
             menu_context = _get_menu_context_string(ctx)
             
-            # Kita bungkus pertanyaan user dengan DATA FAKTA
+            # --- PROMPT BARU: UPSELLING MODE ---
             augmented_message = f"""
-[IMPORTANT: ANSWER BASED ON THIS DATA ONLY]
---- START MENU DATA ---
+[DATA SOURCE - DO NOT INVENT ITEMS]
 {menu_context}
---- END MENU DATA ---
+---------------------
 
 USER QUESTION: "{message}"
 
 INSTRUCTIONS:
-1. Check if the User Question relates to an item in the MENU DATA above.
-2. If the item is NOT in the MENU DATA (like 'crab', 'salmon', 'sushi'), you MUST say: "Sorry, we don't have that on our menu."
-3. Do NOT hallucinate. Do NOT assume.
+1. Answer strictly based on the DATA SOURCE above.
+2. If the user asks for an item NOT in the data (e.g. "Sashimi", "Crab"):
+   - First, politely say we don't have it.
+   - THEN, recommend 1 or 2 similar or popular items that ARE in the DATA SOURCE.
+   - Example: "We don't have Sashimi, but our Gyoza and Tonkotsu Ramen are customer favorites!"
+3. Keep the tone friendly, helpful, and inviting.
 """
-            # Kirim pesan yang sudah "dioplos" ini ke AI
-            # Kita override system_prompt di sini agar fokus ke instruksi data
-            text = self.llm.answer("You are a helpful restaurant assistant. Be strict with menu data.", augmented_message)
+            # Override system prompt untuk memastikan dia patuh
+            text = self.llm.answer("You are a helpful waiter. Be honest but persuasive.", augmented_message)
             
             return [{"type": "text", "text": text}], _nav_buttons()
 
-        # Fallback terakhir
+        # Fallback
         return get_intent_response(ctx, "fallback")
