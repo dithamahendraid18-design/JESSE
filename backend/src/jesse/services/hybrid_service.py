@@ -35,7 +35,6 @@ def _get_menu_context_string(ctx: ClientContext) -> str:
         for item in cat.get("items", []):
             name = item.get("name", "Unknown")
             price = item.get("price", "-")
-            # Format: - Tonkotsu Ramen (Ramen) : AUD 18.99
             lines.append(f"- {name} ({cat_lbl}) : {currency} {price}")
             
     return "\n".join(lines)
@@ -145,23 +144,34 @@ class HybridService:
             if intent.startswith("menu:"): return menu_category(ctx, intent.split(":", 1)[1])
             if intent == "order_food": return order_food(ctx)
             
-            # ✅✅✅ FIX: KEMBALIKAN CONTACT YANG LENGKAP ✅✅✅
+            # ✅ FIX CONTACT LENGKAP
             if intent == "contact":
                 data = (ctx.channels or {})
-                phone = data.get("phone", "-")
-                wa_link = data.get("whatsapp", "#")
-                email = data.get("email", "-")
-                ig_link = data.get("instagram", "#")
-
                 text = (
                     f"Contact & Reservation 📞 \n\n"
-                    f"📞 Phone: {phone}\n"
-                    f"💬 WhatsApp: {wa_link}\n"
-                    f"📧 Email: {email}\n"
-                    f"📸 Instagram: {ig_link}\n\n"
-                    f"For reservations, simply message us on WhatsApp.\n"
-                    f"Our team will confirm your table shortly! 🪑 ✨"
+                    f"📞 Phone: {data.get('phone','-')}\n"
+                    f"💬 WhatsApp: {data.get('whatsapp','#')}\n"
+                    f"📧 Email: {data.get('email','-')}\n"
+                    f"📸 Instagram: {data.get('instagram','#')}\n\n"
+                    f"For reservations, simply message us on WhatsApp. 🪑 ✨"
                 )
+                return [{"type": "text", "text": text}], _nav_buttons()
+
+            # ✅✅✅ FIX BARU: ABOUT US DINAMIS ✅✅✅
+            if intent == "about_us":
+                client_info = ctx.client_json or {}
+                name = client_info.get("name", "Jesse Bot")
+                desc = client_info.get("description", "We serve authentic flavors with a modern twist! 🍜")
+                
+                # Coba cari info WiFi di channels/client json
+                wifi = (ctx.channels or {}).get("wifi") or client_info.get("wifi")
+                
+                text = f"**{name}**\n\n{desc}"
+                if wifi:
+                    text += f"\n\n📶 **WiFi Password:** {wifi}"
+                    
+                text += "\n\nCome visit us and enjoy the vibe! ✨"
+                
                 return [{"type": "text", "text": text}], _nav_buttons()
             # -----------------------------------------------------
 
@@ -183,7 +193,7 @@ class HybridService:
             search_result = smart_search_menu(ctx, message)
             if search_result: return search_result
 
-        # C) LLM WITH CONTEXT INJECTION (SMART UPSELLING) 🛍️
+        # C) LLM WITH CONTEXT INJECTION
         if message and llm_enabled:
             if plan_type != "pro":
                 return [{"type": "text", "text": "AI Chat is a Pro feature 🔒"}], _nav_buttons()
