@@ -62,38 +62,58 @@ def _get_features(ctx: ClientContext) -> dict:
     return (client_json.get("features") or {})
 
 # =========================
-# QUICK INTENT ROUTING
+# QUICK INTENT ROUTING (OPTIMIZED)
 # =========================
 INTENT_PATTERNS: dict[str, list[str]] = {
+    # 1) ORDER FOOD 
+    # (Hanya menangkap metode pemesanan atau niat teknis. 
+    # Kalimat "I want to order Ramen" dibiarkan lolos ke AI agar stok bisa dicek)
     "order_food": [
-        r"\b(i\s*(want|wanna|would\s*like)\s*to\s*(order|buy|eat|have))\b",
-        r"\b(can\s*i\s*(order|get|have))\b",
-        r"\b(place\s*an?\s*order|make\s*an?\s*order|start\s*ordering)\b",
+        r"\b(how\s*to\s*order)\b",
+        r"\b(start\s*ordering)\b",
+        r"\b(place\s*an?\s*order)\b",
         r"\b(delivery|deliver|take\s*away|takeaway|pick[\s-]?up|pickup|to\s*go)\b",
+        r"\b(checkout|bill|check\s*please)\b",
+        r"\b(grabfood|gofood|shopeefood|uber\s*eats)\b",
     ],
+
+    # 2) MENU & PRICES
+    # (Menangkap permintaan melihat daftar menu secara umum)
     "menu": [
         r"\b(show\s*(me)?\s*the\s*menu|see\s*the\s*menu)\b",
-        r"\b(menu|menus|food\s*list|drink\s*list)\b",
-        r"\b(price|prices|pricing|cost|how\s*much\s*is\s*it)\b",
-        r"\b(recommend|recommendation|suggest|suggestion|best\s*seller)\b",
+        r"\b(food\s*list|drink\s*list|wine\s*list)\b",
+        r"\b(full\s*menu|all\s*menu)\b",
+        # HAPUS "how much is it" dari sini agar AI bisa menjawab harga spesifik
+        # HAPUS "recommend" dari sini agar AI bisa melakukan Upselling
     ],
+
+    # 3) OPENING HOURS
     "hours": [
-        r"\b(opening\s*hours?|business\s*hours?)\b",
+        r"\b(opening\s*hours?|business\s*hours?|operating\s*hours?)\b",
         r"\b(what\s*time\s*(do\s*you|does\s*it)\s*(open|close))\b",
+        r"\b(when\s*(do\s*you|are\s*you)\s*(open|close))\b",
         r"\b(are\s*you\s*open|is\s*it\s*open)\b",
     ],
+
+    # 4) LOCATION
     "location": [
         r"\b(where\s*(are\s*you|is\s*the\s*restaurant|is\s*it))\b",
         r"\b(address|location|directions?|google\s*map(s)?)\b",
+        r"\b(parking|car\s*park)\b", # Tambahan penting
     ],
+
+    # 5) CONTACT / RESERVATION
     "contact": [
         r"\b(contact|phone|call|whatsapp|wa|email)\b",
         r"\b(reserve|reservation|book(ing)?|table|seat)\b",
+        r"\b(book\s*a\s*table|get\s*a\s*table)\b",
     ],
+
+    # 6) ABOUT US
     "about_us": [
         r"\b(about\s*us|tell\s*me\s*about\s*(you|this\s*place))\b",
         r"\b(wifi|internet|password)\b",
-        r"\b(halal)\b",
+        r"\b(halal|pork|lard)\b", # Penting untuk info diet/halal
     ],
 }
 
