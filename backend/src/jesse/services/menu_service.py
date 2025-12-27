@@ -37,12 +37,7 @@ def _fmt_price(price: Any) -> str:
 
 
 def _asset_url(ctx: ClientContext, value: str, version: str = "1") -> str:
-    """
-    Normalize url gambar:
-    - "dessert_01.jpg" -> "/client-assets/<client_id>/dessert_01.jpg?v=1"
-    - "/client-assets/..." tetap
-    - "http(s)://..." tetap
-    """
+    """Normalize url gambar"""
     v = (value or "").strip()
     if not v:
         return ""
@@ -67,25 +62,20 @@ def nav_buttons(ctx: ClientContext) -> list[dict[str, str]]:
 
 
 def menu_entry(ctx: ClientContext):
-    """Response saat user klik 'Menu & prices' (intent: menu)."""
+    """Response saat user klik 'Menu & prices'."""
     if not _categories(ctx):
         messages = [
             {
                 "type": "text",
-                "text": "Menu is being updated right now 😊\nFor the latest options, please use Order Food or Contact / Reservation.",
+                "text": "Menu is being updated right now 😊\nPlease check back later.",
             },
             {"type": "text", "text": "Choose an option below:"},
         ]
-        buttons = [
-            {"label": "Order Food", "intent": "order_food"},
-            {"label": "Contact / Reservation", "intent": "contact"},
-            {"label": "Back", "intent": "main_menu"},
-        ]
-        return messages, buttons
+        return messages, nav_buttons(ctx)
 
     messages: list[dict[str, Any]] = []
 
-    # ✅ PROMO BLOCK (support 1 gambar atau banyak gambar)
+    # ✅ PROMO BLOCK
     promo = _promo(ctx)
     if promo:
         title = (promo.get("title") or "🔥 Promo").strip()
@@ -94,52 +84,41 @@ def menu_entry(ctx: ClientContext):
         valid_until = (promo.get("valid_until") or "").strip()
         terms = (promo.get("terms") or "").strip()
 
-        # promo image(s): boleh pakai "image" (string) atau "images" (list)
-        raw_images = promo.get("images")
-        if raw_images is None:
-            raw_images = promo.get("image", "")
-
-        promo_images: list[str] = []
+        # Handle single/multiple images
+        raw_images = promo.get("images") or promo.get("image", "")
+        promo_images = []
         if isinstance(raw_images, str) and raw_images.strip():
             promo_images = [raw_images.strip()]
         elif isinstance(raw_images, list):
             promo_images = [str(x).strip() for x in raw_images if str(x).strip()]
 
-        promo_text = f"{title}"
-        if text:
-            promo_text += f"\n{text}"
-        if code:
-            promo_text += f"\n\nCode: {code}"
-        if valid_until:
-            promo_text += f"\nValid until: {valid_until}"
-        if terms:
-            promo_text += f"\n\n*{terms}*"
+        # Format Text dengan Bold (Markdown Style)
+        promo_text = f"**{title}**"
+        if text: promo_text += f"\n{text}"
+        if code: promo_text += f"\n\nCode: **{code}**"
+        if valid_until: promo_text += f"\nValid until: {valid_until}"
+        if terms: promo_text += f"\n\n_{terms}_"
 
         messages.append({"type": "text", "text": promo_text})
 
-        # tampilkan banyak gambar promo
-        for i, img in enumerate(promo_images[:4], start=1):  # max 4 biar tidak kepanjangan
+        for i, img in enumerate(promo_images[:4], start=1):
             messages.append(
-                {"type": "image", "url": _asset_url(ctx, img, version="1"), "alt": f"Promo {i}"}
+                {"type": "image", "url": _asset_url(ctx, img), "alt": f"Promo {i}"}
             )
 
-    # Menu intro
-    messages.extend(
-        [
-            {
-                "type": "text",
-                "text": "Here’s everything we have for you today — take your time and pick your favorite!",
-            },
-            {"type": "text", "text": "Choose a category below:"},
-        ]
-    )
+    # Intro Message
+    messages.extend([
+        {
+            "type": "text",
+            "text": "Here’s our menu! Tap a category to see items 👇",
+        }
+    ])
 
-    # ✅ message terakhir TEXT -> buttons nempel rapi
     return messages, nav_buttons(ctx)
 
 
 def menu_category(ctx: ClientContext, category_id: str):
-    """Response saat user pilih kategori (intent: menu:<category_id>)."""
+    """Response saat user pilih kategori."""
     cats = _categories(ctx)
     cat = next((c for c in cats if (c.get("id") or "").strip() == category_id.strip()), None)
     if not cat:
@@ -153,20 +132,19 @@ def menu_category(ctx: ClientContext, category_id: str):
     messages: list[dict[str, Any]] = []
 
     if not items:
-        messages.append({"type": "text", "text": "No items available right now."})
-        messages.append({"type": "text", "text": "Choose a category below:"})
+        messages.append({"type": "text", "text": "No items available in this category."})
         return messages, nav_buttons(ctx)
 
     for it in items:
-        if not isinstance(it, dict):
-            continue
+        if not isinstance(it, dict): continue
 
         name = (it.get("name") or "Item").strip()
         price = it.get("price")
         desc = (it.get("desc") or "").strip()
-        image = (it.get("image") or it.get("photo") or it.get("img") or "").strip()
+        image = (it.get("image") or it.get("photo") or "").strip()
 
-        text = name
+        # ✨ OPTIMASI: Pakai Bold untuk Nama Makanan
+        text = f"**{name}**"
         if price is not None and str(price).strip() != "":
             text += f" — {cur} {_fmt_price(price)}"
         if desc:
@@ -175,63 +153,52 @@ def menu_category(ctx: ClientContext, category_id: str):
         messages.append({"type": "text", "text": text})
 
         if image:
-            messages.append({"type": "image", "url": _asset_url(ctx, image, version="1"), "alt": name})
+            messages.append({"type": "image", "url": _asset_url(ctx, image), "alt": name})
 
-    # ✅ terakhir harus TEXT supaya buttons nempel rapi
-    messages.append({"type": "text", "text": "Choose a category below:"})
+    messages.append({"type": "text", "text": "Choose another category:"})
     return messages, nav_buttons(ctx)
 
 
 def order_food(ctx: ClientContext):
-    """Response untuk intent: order_food (ambil dari channels.json)."""
+    """Response untuk intent: order_food (Optimized Loop)."""
     ch = ctx.channels or {}
+    
+    # ⚡ OPTIMASI: Daftar channel mapping (Key JSON -> Label Tampilan)
+    # Cukup tambah di sini kalau ada aplikasi baru
+    channel_map = {
+        "website": "🌐 Website",
+        "order_url": "🌐 Order Online",
+        "gofood": "🟢 GoFood",
+        "grabfood": "🟢 GrabFood",
+        "shopeefood": "🟠 ShopeeFood",
+        "ubereats": "⚫ UberEats",
+        "doordash": "🔴 DoorDash",
+        "deliveroo": "🔵 Deliveroo",
+        "phone": "📞 Phone",
+        "whatsapp": "💬 WhatsApp",
+        "wa": "💬 WhatsApp"
+    }
 
-    phone = (ch.get("phone") or "").strip()
-    whatsapp = (ch.get("whatsapp") or ch.get("wa") or "").strip()
+    links_found = []
+    
+    # Loop pintar: Cek data json, kalau ada isinya, masukkan ke list
+    for key, label in channel_map.items():
+        val = (ch.get(key) or "").strip()
+        if val:
+            # Hindari duplikat label (misal wa & whatsapp)
+            if not any(l.startswith(label) for l in links_found):
+                links_found.append(f"{label}: {val}")
 
-    gofood = (ch.get("gofood") or ch.get("go_food") or "").strip()
-    grabfood = (ch.get("grabfood") or ch.get("grab_food") or "").strip()
-    ubereats = (ch.get("ubereats") or ch.get("uber_eats") or ch.get("uberfood") or "").strip()
-    doordash = (ch.get("doordash") or ch.get("door_dash") or "").strip()
-    deliveroo = (ch.get("deliveroo") or "").strip()
-    website = (ch.get("order_url") or ch.get("website") or "").strip()
+    if links_found:
+        msg = "You can order via these official channels! 👇\n\n" + "\n".join(links_found)
+    else:
+        msg = "Ordering links are currently unavailable. Please contact us directly! 😊"
 
-    msg = "You can order your food from our official ordering channels! 😊✨\n\n"
-
-    any_line = False
-    if phone:
-        msg += f"Phone: {phone}\n"; any_line = True
-    if whatsapp:
-        msg += f"WhatsApp: {whatsapp}\n"; any_line = True
-    if gofood:
-        msg += f"GoFood: {gofood}\n"; any_line = True
-    if grabfood:
-        msg += f"GrabFood: {grabfood}\n"; any_line = True
-    if ubereats:
-        msg += f"UberEats: {ubereats}\n"; any_line = True
-    if doordash:
-        msg += f"DoorDash: {doordash}\n"; any_line = True
-    if deliveroo:
-        msg += f"Deliveroo: {deliveroo}\n"; any_line = True
-    if website:
-        msg += f"Website order: {website}\n"; any_line = True
-
-    if not any_line:
-        msg += "Ordering links are not available right now. Please contact us and we’ll help you order 😊\n"
-
-    msg += "\nJust choose whichever works best for you!"
-
-    messages = [
-        {"type": "text", "text": msg},
-        {"type": "text", "text": "Want me to help you with anything else? 😄"},
-    ]
+    messages = [{"type": "text", "text": msg}]
 
     buttons = [
-        {"label": "About us", "intent": "about_us"},
-        {"label": "Opening hours", "intent": "hours"},
-        {"label": "Location", "intent": "location"},
-        {"label": "Contact / Reservation", "intent": "contact"},
-        {"label": "No, I'm all good", "intent": "goodbye"},
-        {"label": "Back", "intent": "menu"},
+        {"label": "Back to Menu", "intent": "menu"},
+        {"label": "Contact Us", "intent": "contact"},
+        {"label": "Home", "intent": "greeting"},
     ]
     return messages, buttons
