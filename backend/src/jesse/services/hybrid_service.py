@@ -11,7 +11,7 @@ from .search_service import smart_search_menu
 from .menu_service import menu_category, menu_entry, order_food
 
 # =========================
-# 1. HELPER: FORMAT MENU STRING (Anti-Halusinasi)
+# 1. HELPER: FORMAT MENU STRING
 # =========================
 def _get_menu_context_string(ctx: ClientContext) -> str:
     """
@@ -40,7 +40,7 @@ def _get_menu_context_string(ctx: ClientContext) -> str:
     return "\n".join(lines)
 
 # =========================
-# QUICK INTENT ROUTING (OPTIMIZED)
+# QUICK INTENT ROUTING
 # =========================
 INTENT_PATTERNS: dict[str, list[str]] = {
     # 1) ORDER FOOD 
@@ -144,7 +144,15 @@ class HybridService:
             if intent.startswith("menu:"): return menu_category(ctx, intent.split(":", 1)[1])
             if intent == "order_food": return order_food(ctx)
             
-            # ✅ FIX CONTACT LENGKAP
+            # ✅✅✅ LOGIKA BARU: JSON CLIENT DULUAN ✅✅✅
+            # Cek apakah intent ini ada di responses.json?
+            # Jika ada, GUNAKAN itu (jangan di-override hardcode).
+            if ctx.responses and intent in ctx.responses:
+                return get_intent_response(ctx, intent)
+            
+            # --- JIKA JSON KOSONG, BARU PAKAI BACKUP DINAMIS ---
+            
+            # 1. Dynamic Contact Backup
             if intent == "contact":
                 data = (ctx.channels or {})
                 text = (
@@ -153,30 +161,26 @@ class HybridService:
                     f"💬 WhatsApp: {data.get('whatsapp','#')}\n"
                     f"📧 Email: {data.get('email','-')}\n"
                     f"📸 Instagram: {data.get('instagram','#')}\n\n"
-                    f"For reservations, simply message us on WhatsApp. 🪑 ✨"
+                    f"For reservations, please message us on WhatsApp! 🪑"
                 )
                 return [{"type": "text", "text": text}], _nav_buttons()
 
-            # ✅✅✅ FIX BARU: ABOUT US DINAMIS ✅✅✅
+            # 2. Dynamic About Us Backup
             if intent == "about_us":
                 client_info = ctx.client_json or {}
                 name = client_info.get("name", "Jesse Bot")
-                desc = client_info.get("description", "We serve authentic flavors with a modern twist! 🍜")
-                
-                # Coba cari info WiFi di channels/client json
+                desc = client_info.get("description", "We serve authentic flavors! 🍜")
                 wifi = (ctx.channels or {}).get("wifi") or client_info.get("wifi")
                 
                 text = f"**{name}**\n\n{desc}"
-                if wifi:
-                    text += f"\n\n📶 **WiFi Password:** {wifi}"
-                    
-                text += "\n\nCome visit us and enjoy the vibe! ✨"
-                
+                if wifi: text += f"\n\n📶 **WiFi:** {wifi}"
+                text += "\n\nCome visit us! ✨"
                 return [{"type": "text", "text": text}], _nav_buttons()
-            # -----------------------------------------------------
 
+            # Fallback jika tidak ada di JSON dan tidak ada backup dinamis
             messages, buttons = get_intent_response(ctx, intent)
             return messages, buttons
+
 
         # 2) TEXT-BASED LOGIC
         plan_type = _get_plan_type(ctx)
@@ -193,7 +197,7 @@ class HybridService:
             search_result = smart_search_menu(ctx, message)
             if search_result: return search_result
 
-        # C) LLM WITH CONTEXT INJECTION
+        # C) LLM WITH CONTEXT INJECTION (SMART UPSELLING)
         if message and llm_enabled:
             if plan_type != "pro":
                 return [{"type": "text", "text": "AI Chat is a Pro feature 🔒"}], _nav_buttons()
@@ -204,7 +208,6 @@ class HybridService:
             # --- SUNTIK DATA MENU ---
             menu_context = _get_menu_context_string(ctx)
             
-            # --- PROMPT UPSELLING ---
             augmented_message = f"""
 [DATA SOURCE - DO NOT INVENT ITEMS]
 {menu_context}
