@@ -14,21 +14,15 @@ from .menu_service import menu_category, menu_entry, order_food
 # 1. HELPER: FORMAT MENU STRING
 # =========================
 def _get_menu_context_string(ctx: ClientContext) -> str:
-    """
-    Mengambil data menu real-time untuk ditempel LANGSUNG ke pesan user.
-    """
     menu = getattr(ctx, "menu", {})
     if not menu or "categories" not in menu:
         return "No menu data available."
         
     lines = []
-    
-    # Ambil Promo
     promo = menu.get("promo", {})
     if promo.get("enabled"):
         lines.append(f"🔥 ACTIVE PROMO: {promo.get('title')} ({promo.get('code')})")
 
-    # Ambil Menu & Harga
     currency = menu.get("currency", "AUD")
     for cat in menu.get("categories", []):
         cat_lbl = cat.get("label", "General")
@@ -43,7 +37,6 @@ def _get_menu_context_string(ctx: ClientContext) -> str:
 # QUICK INTENT ROUTING
 # =========================
 INTENT_PATTERNS: dict[str, list[str]] = {
-    # 1) ORDER FOOD 
     "order_food": [
         r"\b(how\s*to\s*order)\b",
         r"\b(start\s*ordering)\b",
@@ -52,37 +45,27 @@ INTENT_PATTERNS: dict[str, list[str]] = {
         r"\b(checkout|bill|check\s*please)\b",
         r"\b(grabfood|gofood|shopeefood|uber\s*eats)\b",
     ],
-
-    # 2) MENU & PRICES
     "menu": [
         r"\b(show\s*(me)?\s*the\s*menu|see\s*the\s*menu)\b",
         r"\b(food\s*list|drink\s*list|wine\s*list)\b",
         r"\b(full\s*menu|all\s*menu)\b",
     ],
-
-    # 3) OPENING HOURS
     "hours": [
-        r"\b(opening\s*hours?|business\s*hours?|operating\s*hours?)\b",
+        r"\b(opening\s*hours?|business\s*hours?)\b",
         r"\b(what\s*time\s*(do\s*you|does\s*it)\s*(open|close))\b",
         r"\b(when\s*(do\s*you|are\s*you)\s*(open|close))\b",
         r"\b(are\s*you\s*open|is\s*it\s*open)\b",
     ],
-
-    # 4) LOCATION
     "location": [
         r"\b(where\s*(are\s*you|is\s*the\s*restaurant|is\s*it))\b",
         r"\b(address|location|directions?|google\s*map(s)?)\b",
         r"\b(parking|car\s*park)\b", 
     ],
-
-    # 5) CONTACT / RESERVATION
     "contact": [
         r"\b(contact|phone|call|whatsapp|wa|email)\b",
         r"\b(reserve|reservation|book(ing)?|table|seat)\b",
         r"\b(book\s*a\s*table|get\s*a\s*table)\b",
     ],
-
-    # 6) ABOUT US
     "about_us": [
         r"\b(about\s*us|tell\s*me\s*about\s*(you|this\s*place))\b",
         r"\b(wifi|internet|password)\b",
@@ -139,34 +122,56 @@ class HybridService:
     def handle(self, ctx: ClientContext, message: Optional[str], intent: Optional[str]):
         # 1) INTENT-BASED
         if intent:
-            # Fitur Fungsional (Tetap Hardcode karena ini Fungsi/Code)
             if intent == "greeting": return get_greeting(ctx)
             if intent == "menu": return menu_entry(ctx)
             if intent.startswith("menu:"): return menu_category(ctx, intent.split(":", 1)[1])
             if intent == "order_food": return order_food(ctx)
             
-            # ✅ SEMUA INTENT LAINNYA (Contact, About Us, Hours, Location)
-            # Langsung ambil dari responses.json tanpa basa-basi (Tanpa Dynamic Python).
-            # Jika di JSON kosong, maka akan muncul pesan default/fallback.
+            # --- CEK JSON DULU (Prioritas Utama untuk SEMUA intent) ---
+            client_intents = ctx.responses.get("intents", {})
+            if intent in client_intents:
+                return get_intent_response(ctx, intent)
+            
+            # --- JIKA JSON KOSONG, PAKAI BACKUP DINAMIS (HANYA CONTACT) ---
+            
+            # ✅ AUTOMATIC CONTACT GENERATOR (Backup Only)
+            if intent == "contact":
+                data = (ctx.channels or {})
+                phone = data.get("phone", "-")
+                wa_link = data.get("whatsapp", "#")
+                email = data.get("email", "-")
+                ig_link = data.get("instagram", "#")
+
+                text = (
+                    f"Contact & Reservation 📞 \n\n"
+                    f"📞 Phone: {phone}\n"
+                    f"💬 WhatsApp: {wa_link}\n"
+                    f"📧 Email: {email}\n"
+                    f"📸 Instagram: {ig_link}\n\n"
+                    f"For reservations, simply message us on WhatsApp! 🪑 ✨"
+                )
+                return [{"type": "text", "text": text}], _nav_buttons()
+
+            # ❌ ABOUT US: Tidak ada backup dinamis. Murni dari JSON.
+            
+            # Fallback
             messages, buttons = get_intent_response(ctx, intent)
             return messages, buttons
+
 
         # 2) TEXT-BASED LOGIC
         plan_type = _get_plan_type(ctx)
         features = _get_features(ctx)
         llm_enabled = bool(features.get("llm_enabled", False))
 
-        # A) Cek apakah cocok dengan Intent (Regex)
         if message:
             matched = _best_intent_from_text(message)
             if matched: return self.handle(ctx, None, matched)
 
-        # B) PRO Feature: Smart Search
         if message and plan_type == "pro":
             search_result = smart_search_menu(ctx, message)
             if search_result: return search_result
 
-        # C) LLM WITH CONTEXT INJECTION
         if message and llm_enabled:
             if plan_type != "pro":
                 return [{"type": "text", "text": "AI Chat is a Pro feature 🔒"}], _nav_buttons()
@@ -174,16 +179,13 @@ class HybridService:
             if hasattr(self.llm, "is_configured") and not self.llm.is_configured():
                 return [{"type": "text", "text": "LLM not configured."}], _nav_buttons()
 
-            # --- SUNTIK DATA MENU ---
             menu_context = _get_menu_context_string(ctx)
             
             augmented_message = f"""
 [DATA SOURCE - DO NOT INVENT ITEMS]
 {menu_context}
 ---------------------
-
 USER QUESTION: "{message}"
-
 INSTRUCTIONS:
 1. Answer strictly based on the DATA SOURCE above.
 2. If the user asks for an item NOT in the data (e.g. "Sashimi", "Crab"):
@@ -192,8 +194,7 @@ INSTRUCTIONS:
    - Example: "We don't have Sashimi, but our Gyoza and Tonkotsu Ramen are customer favorites!"
 3. Keep the tone friendly, helpful, and inviting.
 """
-            text = self.llm.answer("You are a helpful waiter. Be honest but persuasive.", augmented_message)
+            text = self.llm.answer("You are a helpful waiter.", augmented_message)
             return [{"type": "text", "text": text}], _nav_buttons()
 
-        # Fallback
         return get_intent_response(ctx, "fallback")
