@@ -139,48 +139,17 @@ class HybridService:
     def handle(self, ctx: ClientContext, message: Optional[str], intent: Optional[str]):
         # 1) INTENT-BASED
         if intent:
+            # Fitur Fungsional (Tetap Hardcode karena ini Fungsi/Code)
             if intent == "greeting": return get_greeting(ctx)
             if intent == "menu": return menu_entry(ctx)
             if intent.startswith("menu:"): return menu_category(ctx, intent.split(":", 1)[1])
             if intent == "order_food": return order_food(ctx)
             
-            # ✅✅✅ LOGIKA BARU: JSON CLIENT DULUAN ✅✅✅
-            # Cek apakah intent ini ada di responses.json?
-            # Jika ada, GUNAKAN itu (jangan di-override hardcode).
-            if ctx.responses and intent in ctx.responses:
-                return get_intent_response(ctx, intent)
-            
-            # --- JIKA JSON KOSONG, BARU PAKAI BACKUP DINAMIS ---
-            
-            # 1. Dynamic Contact Backup
-            if intent == "contact":
-                data = (ctx.channels or {})
-                text = (
-                    f"Contact & Reservation 📞 \n\n"
-                    f"📞 Phone: {data.get('phone','-')}\n"
-                    f"💬 WhatsApp: {data.get('whatsapp','#')}\n"
-                    f"📧 Email: {data.get('email','-')}\n"
-                    f"📸 Instagram: {data.get('instagram','#')}\n\n"
-                    f"For reservations, please message us on WhatsApp! 🪑"
-                )
-                return [{"type": "text", "text": text}], _nav_buttons()
-
-            # 2. Dynamic About Us Backup
-            if intent == "about_us":
-                client_info = ctx.client_json or {}
-                name = client_info.get("name", "Jesse Bot")
-                desc = client_info.get("description", "We serve authentic flavors! 🍜")
-                wifi = (ctx.channels or {}).get("wifi") or client_info.get("wifi")
-                
-                text = f"**{name}**\n\n{desc}"
-                if wifi: text += f"\n\n📶 **WiFi:** {wifi}"
-                text += "\n\nCome visit us! ✨"
-                return [{"type": "text", "text": text}], _nav_buttons()
-
-            # Fallback jika tidak ada di JSON dan tidak ada backup dinamis
+            # ✅ SEMUA INTENT LAINNYA (Contact, About Us, Hours, Location)
+            # Langsung ambil dari responses.json tanpa basa-basi (Tanpa Dynamic Python).
+            # Jika di JSON kosong, maka akan muncul pesan default/fallback.
             messages, buttons = get_intent_response(ctx, intent)
             return messages, buttons
-
 
         # 2) TEXT-BASED LOGIC
         plan_type = _get_plan_type(ctx)
@@ -197,7 +166,7 @@ class HybridService:
             search_result = smart_search_menu(ctx, message)
             if search_result: return search_result
 
-        # C) LLM WITH CONTEXT INJECTION (SMART UPSELLING)
+        # C) LLM WITH CONTEXT INJECTION
         if message and llm_enabled:
             if plan_type != "pro":
                 return [{"type": "text", "text": "AI Chat is a Pro feature 🔒"}], _nav_buttons()
