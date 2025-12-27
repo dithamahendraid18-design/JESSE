@@ -84,7 +84,7 @@
       "messages": [
         {
           "type": "text",
-          "text": "Opening Hours 🕒\nMonday–Friday: 11:30 AM – 10:00 PM\nSaturday–Sunday: 12:00 PM – 11:00 PM\n\nLast order is 30 minutes before closing."
+          "text": "Opening Hours 🕒\n\nMonday–Friday: 11:30 AM – 10:00 PM\nSaturday–Sunday: 12:00 PM – 11:00 PM\n\nLast order is 30 minutes before closing."
         },
         {
           "type": "text",
