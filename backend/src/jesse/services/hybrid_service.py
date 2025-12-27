@@ -42,7 +42,6 @@ def _hydrate_response(ctx: ClientContext, messages: List[Dict[str, Any]]) -> Lis
     """
     channels = ctx.channels or {}
     
-    # Siapkan data penukar (default "-" jika kosong)
     replacements = {
         "{phone}": channels.get("phone", "-"),
         "{whatsapp}": channels.get("whatsapp") or channels.get("wa", "-"),
@@ -55,7 +54,6 @@ def _hydrate_response(ctx: ClientContext, messages: List[Dict[str, Any]]) -> Lis
     for msg in messages:
         if msg.get("type") == "text":
             text = msg["text"]
-            # Lakukan penukaran
             for placeholder, value in replacements.items():
                 if value:
                     text = text.replace(placeholder, str(value))
@@ -103,9 +101,16 @@ INTENT_PATTERNS: dict[str, list[str]] = {
         r"\b(wifi|internet|password)\b",
         r"\b(halal|pork|lard)\b", 
     ],
+    # ✅ TAMBAHAN BARU: ALLERGY
+    "allergy": [
+        r"\b(allergy|allergies|allergic)\b",
+        r"\b(dairy|gluten|nut|peanut|shellfish|lactose)\b",
+        r"\b(dietary|diet)\b",
+    ]
 }
 
-INTENT_PRIORITY = ["order_food", "contact", "menu", "hours", "location", "about_us"]
+# Pastikan "allergy" masuk ke daftar prioritas
+INTENT_PRIORITY = ["order_food", "contact", "menu", "hours", "location", "about_us", "allergy"]
 
 def _best_intent_from_text(message: str) -> Optional[str]:
     m = (message or "").strip().lower()
@@ -149,17 +154,15 @@ class HybridService:
     def handle(self, ctx: ClientContext, message: Optional[str], intent: Optional[str]):
         # 1) INTENT-BASED
         if intent:
-            # Fitur Fungsional
             if intent == "greeting": return get_greeting(ctx)
             if intent == "menu": return menu_entry(ctx)
             if intent.startswith("menu:"): return menu_category(ctx, intent.split(":", 1)[1])
             if intent == "order_food": return order_food(ctx)
             
-            # ✅ AMBIL TEKS DARI JSON
+            # ✅ AMBIL RESPON DARI JSON (Termasuk Allergy)
             messages, buttons = get_intent_response(ctx, intent)
             
-            # ✅ JALANKAN MESIN PENUKAR (HYDRATOR)
-            # Ini akan mengubah "{phone}" menjadi "+62..." secara otomatis
+            # ✅ HYDRATE (Tukar {variable} dengan data asli)
             messages = _hydrate_response(ctx, messages)
             
             return messages, buttons
@@ -170,6 +173,7 @@ class HybridService:
         llm_enabled = bool(features.get("llm_enabled", False))
 
         if message:
+            # Cek apakah teks user mengandung kata kunci intent (sekarang termasuk "allergy")
             matched = _best_intent_from_text(message)
             if matched: return self.handle(ctx, None, matched)
 
