@@ -110,8 +110,9 @@ def menu_entry(ctx: ClientContext):
     messages.extend([
         {
             "type": "text",
-            "text": "Here’s our menu! Tap a category to see items 👇",
-        }
+            "text": "Here’s everything we have for you today — take your time and pick your favorite!",
+        },
+        {"type": "text", "text": "Choose a category below:"},
     ])
 
     return messages, nav_buttons(ctx)
@@ -143,7 +144,7 @@ def menu_category(ctx: ClientContext, category_id: str):
         desc = (it.get("desc") or "").strip()
         image = (it.get("image") or it.get("photo") or "").strip()
 
-        # ✨ OPTIMASI: Pakai Bold untuk Nama Makanan
+        # ✨ Tetap pakai Bold untuk Nama Makanan (User suka ini)
         text = f"**{name}**"
         if price is not None and str(price).strip() != "":
             text += f" — {cur} {_fmt_price(price)}"
@@ -160,45 +161,57 @@ def menu_category(ctx: ClientContext, category_id: str):
 
 
 def order_food(ctx: ClientContext):
-    """Response untuk intent: order_food (Optimized Loop)."""
+    """Response untuk intent: order_food (KEMBALI KE GAYA LAMA)."""
     ch = ctx.channels or {}
+
+    phone = (ch.get("phone") or "").strip()
+    whatsapp = (ch.get("whatsapp") or ch.get("wa") or "").strip()
     
-    # ⚡ OPTIMASI: Daftar channel mapping (Key JSON -> Label Tampilan)
-    # Cukup tambah di sini kalau ada aplikasi baru
-    channel_map = {
-        "website": "🌐 Website",
-        "order_url": "🌐 Order Online",
-        "gofood": "🟢 GoFood",
-        "grabfood": "🟢 GrabFood",
-        "shopeefood": "🟠 ShopeeFood",
-        "ubereats": "⚫ UberEats",
-        "doordash": "🔴 DoorDash",
-        "deliveroo": "🔵 Deliveroo",
-        "phone": "📞 Phone",
-        "whatsapp": "💬 WhatsApp",
-        "wa": "💬 WhatsApp"
-    }
+    gofood = (ch.get("gofood") or ch.get("go_food") or "").strip()
+    grabfood = (ch.get("grabfood") or ch.get("grab_food") or "").strip()
+    ubereats = (ch.get("ubereats") or ch.get("uber_eats") or ch.get("uberfood") or "").strip()
+    doordash = (ch.get("doordash") or ch.get("door_dash") or "").strip()
+    deliveroo = (ch.get("deliveroo") or "").strip()
+    website = (ch.get("order_url") or ch.get("website") or "").strip()
 
-    links_found = []
-    
-    # Loop pintar: Cek data json, kalau ada isinya, masukkan ke list
-    for key, label in channel_map.items():
-        val = (ch.get(key) or "").strip()
-        if val:
-            # Hindari duplikat label (misal wa & whatsapp)
-            if not any(l.startswith(label) for l in links_found):
-                links_found.append(f"{label}: {val}")
+    # ✨ HEADLINE LAMA (Lebih Ramah)
+    msg = "You can order your food from our official ordering channels! 😊✨\n\n"
 
-    if links_found:
-        msg = "You can order via these official channels! 👇\n\n" + "\n".join(links_found)
-    else:
-        msg = "Ordering links are currently unavailable. Please contact us directly! 😊"
+    any_line = False
+    if phone:
+        msg += f"Phone: {phone}\n"; any_line = True
+    if whatsapp:
+        msg += f"WhatsApp: {whatsapp}\n"; any_line = True
+    if gofood:
+        msg += f"GoFood: {gofood}\n"; any_line = True
+    if grabfood:
+        msg += f"GrabFood: {grabfood}\n"; any_line = True
+    if ubereats:
+        msg += f"UberEats: {ubereats}\n"; any_line = True
+    if doordash:
+        msg += f"DoorDash: {doordash}\n"; any_line = True
+    if deliveroo:
+        msg += f"Deliveroo: {deliveroo}\n"; any_line = True
+    if website:
+        msg += f"Website order: {website}\n"; any_line = True
 
-    messages = [{"type": "text", "text": msg}]
+    if not any_line:
+        msg += "Ordering links are not available right now. Please contact us and we’ll help you order 😊\n"
+
+    msg += "\nJust choose whichever works best for you!"
+
+    # ✨ DUA BUBBLE TERPISAH (Seperti sebelumnya)
+    messages = [
+        {"type": "text", "text": msg},
+        {"type": "text", "text": "Want me to help you with anything else? 😄"},
+    ]
 
     buttons = [
-        {"label": "Back to Menu", "intent": "menu"},
-        {"label": "Contact Us", "intent": "contact"},
-        {"label": "Home", "intent": "greeting"},
+        {"label": "About us", "intent": "about_us"},
+        {"label": "Opening hours", "intent": "hours"},
+        {"label": "Location", "intent": "location"},
+        {"label": "Contact / Reservation", "intent": "contact"},
+        {"label": "No, I'm all good", "intent": "goodbye"},
+        {"label": "Back", "intent": "menu"},
     ]
-    return messages, buttons
+    return messages, buttonss
