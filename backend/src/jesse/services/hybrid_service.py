@@ -41,33 +41,10 @@ def _get_menu_context_string(ctx: ClientContext) -> str:
     return "\n".join(lines)
 
 # =========================
-# UI / NAV HELPERS
-# =========================
-def _nav_buttons() -> List[Dict[str, str]]:
-    return [
-        {"label": "About us", "intent": "about_us"},
-        {"label": "Menu & price", "intent": "menu"},
-        {"label": "Opening hours", "intent": "hours"},
-        {"label": "Location", "intent": "location"},
-        {"label": "Contact / Reservation", "intent": "contact"},
-    ]
-
-def _get_plan_type(ctx: ClientContext) -> str:
-    client_json = (ctx.client_json or {})
-    plan = (client_json.get("plan_type") or getattr(ctx, "plan_type", "basic") or "basic")
-    return str(plan).lower().strip()
-
-def _get_features(ctx: ClientContext) -> dict:
-    client_json = (ctx.client_json or {})
-    return (client_json.get("features") or {})
-
-# =========================
 # QUICK INTENT ROUTING (OPTIMIZED)
 # =========================
 INTENT_PATTERNS: dict[str, list[str]] = {
     # 1) ORDER FOOD 
-    # (Hanya menangkap metode pemesanan atau niat teknis. 
-    # Kalimat "I want to order Ramen" dibiarkan lolos ke AI agar stok bisa dicek)
     "order_food": [
         r"\b(how\s*to\s*order)\b",
         r"\b(start\s*ordering)\b",
@@ -78,13 +55,10 @@ INTENT_PATTERNS: dict[str, list[str]] = {
     ],
 
     # 2) MENU & PRICES
-    # (Menangkap permintaan melihat daftar menu secara umum)
     "menu": [
         r"\b(show\s*(me)?\s*the\s*menu|see\s*the\s*menu)\b",
         r"\b(food\s*list|drink\s*list|wine\s*list)\b",
         r"\b(full\s*menu|all\s*menu)\b",
-        # HAPUS "how much is it" dari sini agar AI bisa menjawab harga spesifik
-        # HAPUS "recommend" dari sini agar AI bisa melakukan Upselling
     ],
 
     # 3) OPENING HOURS
@@ -99,7 +73,7 @@ INTENT_PATTERNS: dict[str, list[str]] = {
     "location": [
         r"\b(where\s*(are\s*you|is\s*the\s*restaurant|is\s*it))\b",
         r"\b(address|location|directions?|google\s*map(s)?)\b",
-        r"\b(parking|car\s*park)\b", # Tambahan penting
+        r"\b(parking|car\s*park)\b", 
     ],
 
     # 5) CONTACT / RESERVATION
@@ -113,7 +87,7 @@ INTENT_PATTERNS: dict[str, list[str]] = {
     "about_us": [
         r"\b(about\s*us|tell\s*me\s*about\s*(you|this\s*place))\b",
         r"\b(wifi|internet|password)\b",
-        r"\b(halal|pork|lard)\b", # Penting untuk info diet/halal
+        r"\b(halal|pork|lard)\b", 
     ],
 }
 
@@ -134,6 +108,27 @@ def _best_intent_from_text(message: str) -> Optional[str]:
         if intent in tied: return intent
     return tied[0]
 
+# =========================
+# UI / NAV HELPERS
+# =========================
+def _nav_buttons() -> List[Dict[str, str]]:
+    return [
+        {"label": "About us", "intent": "about_us"},
+        {"label": "Menu & price", "intent": "menu"},
+        {"label": "Opening hours", "intent": "hours"},
+        {"label": "Location", "intent": "location"},
+        {"label": "Contact / Reservation", "intent": "contact"},
+    ]
+
+def _get_plan_type(ctx: ClientContext) -> str:
+    client_json = (ctx.client_json or {})
+    plan = (client_json.get("plan_type") or getattr(ctx, "plan_type", "basic") or "basic")
+    return str(plan).lower().strip()
+
+def _get_features(ctx: ClientContext) -> dict:
+    client_json = (ctx.client_json or {})
+    return (client_json.get("features") or {})
+
 
 # =========================
 # SERVICE CLASS
@@ -149,12 +144,27 @@ class HybridService:
             if intent == "menu": return menu_entry(ctx)
             if intent.startswith("menu:"): return menu_category(ctx, intent.split(":", 1)[1])
             if intent == "order_food": return order_food(ctx)
+            
+            # ✅✅✅ FIX: KEMBALIKAN CONTACT YANG LENGKAP ✅✅✅
             if intent == "contact":
                 data = (ctx.channels or {})
-                text = (f"Contact & Reservation 📞\nPhone: {data.get('phone','-')}\n"
-                        f"WA: {data.get('whatsapp','#')}\nFor reservations, please WhatsApp us!")
+                phone = data.get("phone", "-")
+                wa_link = data.get("whatsapp", "#")
+                email = data.get("email", "-")
+                ig_link = data.get("instagram", "#")
+
+                text = (
+                    f"Contact & Reservation 📞 \n\n"
+                    f"📞 Phone: {phone}\n"
+                    f"💬 WhatsApp: {wa_link}\n"
+                    f"📧 Email: {email}\n"
+                    f"📸 Instagram: {ig_link}\n\n"
+                    f"For reservations, simply message us on WhatsApp.\n"
+                    f"Our team will confirm your table shortly! 🪑 ✨"
+                )
                 return [{"type": "text", "text": text}], _nav_buttons()
-            
+            # -----------------------------------------------------
+
             messages, buttons = get_intent_response(ctx, intent)
             return messages, buttons
 
@@ -184,7 +194,7 @@ class HybridService:
             # --- SUNTIK DATA MENU ---
             menu_context = _get_menu_context_string(ctx)
             
-            # --- PROMPT BARU: UPSELLING MODE ---
+            # --- PROMPT UPSELLING ---
             augmented_message = f"""
 [DATA SOURCE - DO NOT INVENT ITEMS]
 {menu_context}
@@ -200,9 +210,7 @@ INSTRUCTIONS:
    - Example: "We don't have Sashimi, but our Gyoza and Tonkotsu Ramen are customer favorites!"
 3. Keep the tone friendly, helpful, and inviting.
 """
-            # Override system prompt untuk memastikan dia patuh
             text = self.llm.answer("You are a helpful waiter. Be honest but persuasive.", augmented_message)
-            
             return [{"type": "text", "text": text}], _nav_buttons()
 
         # Fallback
