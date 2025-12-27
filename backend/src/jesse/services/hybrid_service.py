@@ -33,6 +33,39 @@ def _get_menu_context_string(ctx: ClientContext) -> str:
     return "\n".join(lines)
 
 # =========================
+# 2. HELPER: HYDRATOR (MESIN PENUKAR VARIABEL)
+# =========================
+def _hydrate_response(ctx: ClientContext, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Fungsi ini otomatis menukar {phone}, {whatsapp}, {email}, dll
+    dengan data asli dari channels.json.
+    """
+    channels = ctx.channels or {}
+    
+    # Siapkan data penukar (default "-" jika kosong)
+    replacements = {
+        "{phone}": channels.get("phone", "-"),
+        "{whatsapp}": channels.get("whatsapp") or channels.get("wa", "-"),
+        "{email}": channels.get("email", "-"),
+        "{instagram}": channels.get("instagram", "-"),
+        "{wifi}": channels.get("wifi", "-"),
+        "{website}": channels.get("website") or channels.get("order_url", "-")
+    }
+
+    for msg in messages:
+        if msg.get("type") == "text":
+            text = msg["text"]
+            # Lakukan penukaran
+            for placeholder, value in replacements.items():
+                if value:
+                    text = text.replace(placeholder, str(value))
+                else:
+                    text = text.replace(placeholder, "-")
+            msg["text"] = text
+            
+    return messages
+
+# =========================
 # QUICK INTENT ROUTING
 # =========================
 INTENT_PATTERNS: dict[str, list[str]] = {
@@ -116,16 +149,19 @@ class HybridService:
     def handle(self, ctx: ClientContext, message: Optional[str], intent: Optional[str]):
         # 1) INTENT-BASED
         if intent:
-            # Fitur Fungsional (Tetap Hardcode karena butuh logika)
+            # Fitur Fungsional
             if intent == "greeting": return get_greeting(ctx)
             if intent == "menu": return menu_entry(ctx)
             if intent.startswith("menu:"): return menu_category(ctx, intent.split(":", 1)[1])
             if intent == "order_food": return order_food(ctx)
             
-            # ✅ SEMUA INTENT LAINNYA (Contact, About Us, dll)
-            # Langsung ambil dari responses.json. 
-            # System loader otomatis mengganti {phone} dengan data asli saat startup.
+            # ✅ AMBIL TEKS DARI JSON
             messages, buttons = get_intent_response(ctx, intent)
+            
+            # ✅ JALANKAN MESIN PENUKAR (HYDRATOR)
+            # Ini akan mengubah "{phone}" menjadi "+62..." secara otomatis
+            messages = _hydrate_response(ctx, messages)
+            
             return messages, buttons
 
         # 2) TEXT-BASED LOGIC
