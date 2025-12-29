@@ -5,6 +5,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 from .config import load_settings
+from .database import db
 from .core.errors import register_error_handlers
 from .core.logging import setup_logging
 from .core.security import SimpleRateLimiter
@@ -28,6 +29,13 @@ def create_app() -> Flask:
     settings = load_settings()
     app.config["SETTINGS"] = settings
     app.config["RATE_LIMITER"] = SimpleRateLimiter(settings.rate_limit_per_minute)
+
+    # Database
+    import os
+    db_path = settings.clients_dir.parent / "instance" / "jesse.db"
+    db_path.parent.mkdir(exist_ok=True)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+    db.init_app(app)
     
     @app.get("/client-assets/<client_id>/<path:filename>")
     def client_assets(client_id: str, filename: str):

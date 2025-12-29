@@ -3,7 +3,8 @@ import { API_BASE } from "./config.js";
 const REQUEST_TIMEOUT = 15000; // 15s timeout
 
 export async function postChat(payload) {
-    const apiKey = "KELEVERDO12345jesse"; // Hardcoded for MVP
+    const apiKey = import.meta.env.VITE_API_KEY || "KELEVERDO12345jesse"; // Fallback for dev ease, but env preferred
+
 
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
@@ -33,7 +34,7 @@ export async function postChat(payload) {
 }
 
 export async function fetchGreeting(itemClientId) {
-    const apiKey = "KELEVERDO12345jesse";
+    const apiKey = import.meta.env.VITE_API_KEY || "KELEVERDO12345jesse";
     if (!itemClientId) throw new Error("Missing client_id");
 
     const r = await fetch(`${API_BASE}/api/greeting?client_id=${encodeURIComponent(itemClientId)}`, {
