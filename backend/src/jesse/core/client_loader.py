@@ -3,77 +3,102 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from .errors import JesseError
 
 @dataclass(frozen=True)
 class ClientContext:
+    """
+    Immutable context object holding all configuration for a specific client.
+    """
     id: str
     name: str
     base_dir: Path
-    client_json: dict
-    theme: dict
-    responses: dict
-    channels: dict
-    menu: dict
+    client_json: Dict[str, Any]
+    theme: Dict[str, Any]
+    responses: Dict[str, Any]
+    channels: Dict[str, Any]
+    menu: Dict[str, Any]
     system_prompt: str
     plan_type: str
 
-def _read_json(path: Path) -> dict:
+def _read_json(path: Path) -> Dict[str, Any]:
+    """Helper to safely read a JSON file."""
     if not path.exists():
         return {}
-    return json.loads(path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
 
 class SafeDict(dict):
-    def __missing__(self, key):
+    """
+    Dictionary subclass that returns the key itself (wrapped in braces) 
+    if the key is missing. Used for safe string interpolation.
+    """
+    def __missing__(self, key: str) -> str:
         return "{" + key + "}"
 
 
-def _render_text(text: str, data: dict) -> str:
+def _render_text(text: str, data: Dict[str, Any]) -> str:
+    """Substitute placeholders like {phone} with values from data."""
     return text.format_map(SafeDict(data))
 
 
-def _render_messages(messages: list, data: dict) -> list:
+def _render_messages(messages: List[Dict[str, Any]], data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Recursively render placeholders in a list of message objects."""
     out = []
     for m in messages:
         if isinstance(m, dict) and m.get("type") == "text":
-            out.append({**m, "text": _render_text(m.get("text", ""), data)})
+            # Only render text content
+            rendered_text = _render_text(m.get("text", ""), data)
+            out.append({**m, "text": rendered_text})
         else:
             out.append(m)
     return out
 
 
-def hydrate_responses(responses: dict, channels: dict) -> dict:
+def hydrate_responses(responses: Dict[str, Any], channels: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Pre-process responses.json to inject channel data (phone, etc.) 
+    into all text fields globally at load time.
+    """
     if not isinstance(responses, dict):
-        return responses
+        return {}
 
     hydrated = {}
     for key, block in responses.items():
         if isinstance(block, dict) and isinstance(block.get("messages"), list):
-            hydrated[key] = {**block, "messages": _render_messages(block["messages"], channels)}
+            hydrated[key] = {
+                **block, 
+                "messages": _render_messages(block["messages"], channels)
+            }
         else:
             hydrated[key] = block
     return hydrated
 
 
 # --- UPDATE: FUNGSI FORMAT MENU KHUSUS STRUKTUR ANDA ---
-def _format_menu_string(menu: dict) -> str:
-    """Mengubah JSON Menu (Luna Ramen) menjadi Text agar bisa dibaca AI"""
+def _format_menu_string(menu: Dict[str, Any]) -> str:
+    """
+    Converts the Menu JSON into a human-readable text block for the LLM System Prompt.
+    """
     if not menu:
         return "No menu data available."
 
     lines = []
     
-    # 1. Ambil Mata Uang
+    # 1. Currency
     currency = menu.get("currency", "AUD")
 
-    # 2. Ambil Promo (Jika ada dan aktif)
+    # 2. Promos
     promo = menu.get("promo", {})
     if promo.get("enabled"):
         lines.append(f"🔥 ACTIVE PROMO: {promo.get('title')} - {promo.get('text')} (Code: {promo.get('code')})")
         lines.append("-" * 20)
 
-    # 3. Loop Categories
+    # 3. Categories
     categories = menu.get("categories", [])
     if not categories:
         return "No categories found in menu."
@@ -95,25 +120,31 @@ def _format_menu_string(menu: dict) -> str:
 
 
 def load_client(clients_dir: Path, client_id: str) -> ClientContext:
+    """
+    Main factory function to load all client configuration files into a Context.
+    """
     base = clients_dir / client_id
     if not base.exists():
-        raise JesseError(f"Unknown client_id: {client_id}", 404)
+        raise JesseError(f"Client ID not found: {client_id}", 404)
 
     client_json = _read_json(base / "client.json")
     theme = _read_json(base / "theme" / "theme.json")
     responses = _read_json(base / "assets" / "responses.json")
     channels = _read_json(base / "integrations" / "channels.json")
+    
+    # Pre-render responses with static channel info
     responses = hydrate_responses(responses, channels)
+    
     menu = _read_json(base / "assets" / "menu.json")
 
-    # 1. Siapkan Prompt Dasar
+    # 1. Load Base System Prompt
     prompt_path = base / "prompts" / "system.md"
     raw_prompt = prompt_path.read_text(encoding="utf-8") if prompt_path.exists() else ""
 
-    # 2. Siapkan Data Menu dalam bentuk Teks (Pake fungsi baru di atas)
+    # 2. Format Menu for LLM
     menu_text = _format_menu_string(menu)
 
-    # 3. Suntikkan Data Menu + Aturan Ketat
+    # 3. Inject Menu & Guardrails into Prompt
     STRICT_GUARD = f"""
     
     --- 🟢 REAL-TIME MENU DATA 🟢 ---
@@ -136,7 +167,6 @@ def load_client(clients_dir: Path, client_id: str) -> ClientContext:
     plan_type = client_json.get("plan_type", "basic")
 
     return ClientContext(
-        menu=menu,
         id=client_id,
         name=name,
         base_dir=base,
@@ -144,6 +174,7 @@ def load_client(clients_dir: Path, client_id: str) -> ClientContext:
         theme=theme,
         responses=responses,
         channels=channels,
+        menu=menu,
         system_prompt=system_prompt,
         plan_type=plan_type,
     )

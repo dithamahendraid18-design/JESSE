@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 
 from ..core.client_loader import ClientContext
 from .llm_service import LLMService
@@ -10,63 +10,9 @@ from .search_service import smart_search_menu
 from .menu_service import menu_category, menu_entry, order_food
 
 # =========================
-# 1. HELPER: FORMAT MENU STRING
+# CONSTANTS & PATTERNS
 # =========================
-def _get_menu_context_string(ctx: ClientContext) -> str:
-    menu = getattr(ctx, "menu", {})
-    if not menu or "categories" not in menu:
-        return "No menu data available."
-        
-    lines = []
-    promo = menu.get("promo", {})
-    if promo.get("enabled"):
-        lines.append(f"🔥 ACTIVE PROMO: {promo.get('title')} ({promo.get('code')})")
-
-    currency = menu.get("currency", "AUD")
-    for cat in menu.get("categories", []):
-        cat_lbl = cat.get("label", "General")
-        for item in cat.get("items", []):
-            name = item.get("name", "Unknown")
-            price = item.get("price", "-")
-            lines.append(f"- {name} ({cat_lbl}) : {currency} {price}")
-            
-    return "\n".join(lines)
-
-# =========================
-# 2. HELPER: HYDRATOR (MESIN PENUKAR VARIABEL)
-# =========================
-def _hydrate_response(ctx: ClientContext, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    Fungsi ini otomatis menukar {phone}, {whatsapp}, {email}, dll
-    dengan data asli dari channels.json.
-    """
-    channels = ctx.channels or {}
-    
-    replacements = {
-        "{phone}": channels.get("phone", "-"),
-        "{whatsapp}": channels.get("whatsapp") or channels.get("wa", "-"),
-        "{email}": channels.get("email", "-"),
-        "{instagram}": channels.get("instagram", "-"),
-        "{wifi}": channels.get("wifi", "-"),
-        "{website}": channels.get("website") or channels.get("order_url", "-")
-    }
-
-    for msg in messages:
-        if msg.get("type") == "text":
-            text = msg["text"]
-            for placeholder, value in replacements.items():
-                if value:
-                    text = text.replace(placeholder, str(value))
-                else:
-                    text = text.replace(placeholder, "-")
-            msg["text"] = text
-            
-    return messages
-
-# =========================
-# QUICK INTENT ROUTING
-# =========================
-INTENT_PATTERNS: dict[str, list[str]] = {
+INTENT_PATTERNS: Dict[str, List[str]] = {
     "order_food": [
         r"\b(how\s*to\s*order)\b",
         r"\b(start\s*ordering)\b",
@@ -101,7 +47,6 @@ INTENT_PATTERNS: dict[str, list[str]] = {
         r"\b(wifi|internet|password)\b",
         r"\b(halal|pork|lard)\b", 
     ],
-    # ✅ TAMBAHAN BARU: ALLERGY
     "allergy": [
         r"\b(allergy|allergies|allergic)\b",
         r"\b(dairy|gluten|nut|peanut|shellfish|lactose)\b",
@@ -109,23 +54,89 @@ INTENT_PATTERNS: dict[str, list[str]] = {
     ]
 }
 
-# Pastikan "allergy" masuk ke daftar prioritas
+# Compile regex for performance
+COMPILED_PATTERNS = {
+    intent: [re.compile(p, re.IGNORECASE) for p in patterns]
+    for intent, patterns in INTENT_PATTERNS.items()
+}
+
 INTENT_PRIORITY = ["order_food", "contact", "menu", "hours", "location", "about_us", "allergy"]
 
+
+# =========================
+# HELPER FUNCTIONS
+# =========================
+def _get_menu_context_string(ctx: ClientContext) -> str:
+    """Extracts menu summary for LLM context."""
+    menu = getattr(ctx, "menu", {})
+    if not menu or "categories" not in menu:
+        return "No menu data available."
+        
+    lines = []
+    promo = menu.get("promo", {})
+    if promo.get("enabled"):
+        lines.append(f"🔥 ACTIVE PROMO: {promo.get('title')} ({promo.get('code')})")
+
+    currency = menu.get("currency", "AUD")
+    for cat in menu.get("categories", []):
+        cat_lbl = cat.get("label", "General")
+        for item in cat.get("items", []):
+            name = item.get("name", "Unknown")
+            price = item.get("price", "-")
+            lines.append(f"- {name} ({cat_lbl}) : {currency} {price}")
+            
+    return "\n".join(lines)
+
+
+def _hydrate_response(ctx: ClientContext, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Substitutes placeholders ({phone}, {whatsapp}) with real data.
+    """
+    channels = ctx.channels or {}
+    
+    replacements = {
+        "{phone}": channels.get("phone", "-"),
+        "{whatsapp}": channels.get("whatsapp") or channels.get("wa", "-"),
+        "{email}": channels.get("email", "-"),
+        "{instagram}": channels.get("instagram", "-"),
+        "{wifi}": channels.get("wifi", "-"),
+        "{website}": channels.get("website") or channels.get("order_url", "-")
+    }
+
+    for msg in messages:
+        if msg.get("type") == "text":
+            text = msg["text"]
+            for placeholder, value in replacements.items():
+                val_str = str(value) if value else "-"
+                text = text.replace(placeholder, val_str)
+            msg["text"] = text
+            
+    return messages
+
+
 def _best_intent_from_text(message: str) -> Optional[str]:
-    m = (message or "").strip().lower()
+    """Detects intent using regex patterns."""
+    m = (message or "").strip()
     if not m: return None
+    
     scores = {}
-    for intent, patterns in INTENT_PATTERNS.items():
-        score = sum(1 for p in patterns if re.search(p, m))
-        if score > 0: scores[intent] = score
+    for intent, patterns in COMPILED_PATTERNS.items():
+        score = sum(1 for p in patterns if p.search(m))
+        if score > 0:
+            scores[intent] = score
     
     if not scores: return None
+    
     best_score = max(scores.values())
     tied = [k for k, v in scores.items() if v == best_score]
+    
+    # Resolve ties using priority list
     for intent in INTENT_PRIORITY:
-        if intent in tied: return intent
+        if intent in tied: 
+            return intent
+            
     return tied[0]
+
 
 def _nav_buttons() -> List[Dict[str, str]]:
     return [
@@ -136,74 +147,104 @@ def _nav_buttons() -> List[Dict[str, str]]:
         {"label": "Contact / Reservation", "intent": "contact"},
     ]
 
-def _get_plan_type(ctx: ClientContext) -> str:
-    client_json = (ctx.client_json or {})
-    return str(client_json.get("plan_type", "basic")).lower().strip()
-
-def _get_features(ctx: ClientContext) -> dict:
-    return (ctx.client_json or {}).get("features", {})
-
 
 # =========================
-# SERVICE CLASS
+# MAIN SERVICE
 # =========================
 class HybridService:
     def __init__(self, llm: LLMService) -> None:
         self.llm = llm
 
-    def handle(self, ctx: ClientContext, message: Optional[str], intent: Optional[str]):
-        # 1) INTENT-BASED
-        if intent:
-            if intent == "greeting": return get_greeting(ctx)
-            if intent == "menu": return menu_entry(ctx)
-            if intent.startswith("menu:"): return menu_category(ctx, intent.split(":", 1)[1])
-            if intent == "order_food": return order_food(ctx)
-            
-            # ✅ AMBIL RESPON DARI JSON (Termasuk Allergy)
-            messages, buttons = get_intent_response(ctx, intent)
-            
-            # ✅ HYDRATE (Tukar {variable} dengan data asli)
-            messages = _hydrate_response(ctx, messages)
-            
-            return messages, buttons
+    def handle(self, ctx: ClientContext, message: Optional[str], intent: Optional[str]) -> Tuple[List[Dict], List[Dict]]:
+        """
+        Main entry point for handling chat logic.
+        Routes to specific handlers based on input type.
+        """
+        # 1. SPECIAL: LLM Greeting (Pass-through from routes_chat)
+        if intent == "llm_greeting" and message:
+            return self._handle_llm_greeting(ctx, message)
 
-        # 2) TEXT-BASED LOGIC
-        plan_type = _get_plan_type(ctx)
-        features = _get_features(ctx)
+        # 2. Handle Explicit Intent (Button clicks, etc.)
+        if intent:
+            return self._handle_explicit_intent(ctx, intent)
+
+        # 3. Text-Based Logic
+        if message:
+            return self._handle_text_input(ctx, message)
+
+        # Fallback
+        return get_intent_response(ctx, "fallback")
+
+    def _handle_explicit_intent(self, ctx: ClientContext, intent: str) -> Tuple[List[Dict], List[Dict]]:
+        if intent == "greeting": return get_greeting(ctx)
+        if intent == "menu": return menu_entry(ctx)
+        if intent.startswith("menu:"): return menu_category(ctx, intent.split(":", 1)[1])
+        if intent == "order_food": return order_food(ctx)
+        
+        # Generic JSON-based response
+        messages, buttons = get_intent_response(ctx, intent)
+        messages = _hydrate_response(ctx, messages)
+        return messages, buttons
+
+    def _handle_llm_greeting(self, ctx: ClientContext, message: str) -> Tuple[List[Dict], List[Dict]]:
+        """
+        Generates a dynamic friendly greeting using the LLM.
+        Bypasses strict menu checks.
+        """
+        # Check LLM Config
+        if hasattr(self.llm, "is_configured") and not self.llm.is_configured():
+             # Fallback to static greeting if LLM is dead
+             return get_greeting(ctx)
+
+        system_prompt = (
+            f"You are Jesse, a friendly SaaS chatbot assistant for {ctx.name}. "
+            "Reply to the user's greeting in a warm, welcoming, and concise manner (English only). "
+            "Do not list the menu yet, just say hello."
+        )
+        
+        text_reply = self.llm.answer(system_prompt, message)
+        return [{"type": "text", "text": text_reply}], _nav_buttons()
+
+    def _handle_text_input(self, ctx: ClientContext, message: str) -> Tuple[List[Dict], List[Dict]]:
+        # A. Check for regex intent match
+        matched_intent = _best_intent_from_text(message)
+        if matched_intent:
+            return self._handle_explicit_intent(ctx, matched_intent)
+
+        plan_type = getattr(ctx, "plan_type", "basic")
+        features = (ctx.client_json or {}).get("features", {})
         llm_enabled = bool(features.get("llm_enabled", False))
 
-        if message:
-            # Cek apakah teks user mengandung kata kunci intent (sekarang termasuk "allergy")
-            matched = _best_intent_from_text(message)
-            if matched: return self.handle(ctx, None, matched)
-
-        if message and plan_type == "pro":
+        # B. Smart Search (Fuzzy Logic) - PRO only
+        if plan_type == "pro":
             search_result = smart_search_menu(ctx, message)
-            if search_result: return search_result
+            if search_result: 
+                 return search_result
 
-        if message and llm_enabled:
-            if plan_type != "pro":
-                return [{"type": "text", "text": "AI Chat is a Pro feature 🔒"}], _nav_buttons()
+        # C. LLM Fallback
+        if llm_enabled:
+            return self._handle_llm_query(ctx, message, plan_type)
 
-            if hasattr(self.llm, "is_configured") and not self.llm.is_configured():
-                return [{"type": "text", "text": "LLM not configured."}], _nav_buttons()
-
-            menu_context = _get_menu_context_string(ctx)
-            
-            augmented_message = f"""
-[DATA SOURCE - DO NOT INVENT ITEMS]
-{menu_context}
----------------------
-USER QUESTION: "{message}"
-INSTRUCTIONS:
-1. Answer strictly based on the DATA SOURCE above.
-2. If the user asks for an item NOT in the data (e.g. "Sashimi", "Crab"):
-   - First, politely say we don't have it.
-   - THEN, recommend 1 or 2 similar or popular items that ARE in the DATA SOURCE.
-   - Example: "We don't have Sashimi, but our Gyoza and Tonkotsu Ramen are customer favorites!"
-3. Keep the tone friendly, helpful, and inviting.
-"""
-            text = self.llm.answer("You are a helpful waiter.", augmented_message)
-            return [{"type": "text", "text": text}], _nav_buttons()
-
+        # D. Generic Fallback
         return get_intent_response(ctx, "fallback")
+
+    def _handle_llm_query(self, ctx: ClientContext, message: str, plan_type: str) -> Tuple[List[Dict], List[Dict]]:
+        if plan_type != "pro":
+            return [{"type": "text", "text": "AI Chat is a Pro feature 🔒"}], _nav_buttons()
+
+        if hasattr(self.llm, "is_configured") and not self.llm.is_configured():
+            return [{"type": "text", "text": "LLM not configured."}], _nav_buttons()
+
+        menu_context = _get_menu_context_string(ctx)
+        augmented_message = (
+            f"[DATA SOURCE - DO NOT INVENT ITEMS]\n{menu_context}\n"
+            "---------------------\n"
+            f"USER QUESTION: \"{message}\"\n"
+            "INSTRUCTIONS:\n"
+            "1. Answer strictly based on the DATA SOURCE above.\n"
+            "2. If item is missing, polite refusal + recommend similar item from list.\n"
+            "3. Keep tone friendly and helpful.\n"
+        )
+        
+        text_reply = self.llm.answer("You are a helpful waiter.", augmented_message)
+        return [{"type": "text", "text": text_reply}], _nav_buttons()
