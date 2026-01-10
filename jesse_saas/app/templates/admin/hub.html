@@ -1,0 +1,491 @@
+{% extends "admin/client_studio_layout.html" %}
+
+{% block studio_content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Client Hub</h1>
+        <button type="submit" form="hub-form"
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">
+            Save Changes
+        </button>
+    </div>
+
+    <form id="hub-form" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Configuration -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Identity Card -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Identity</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant Name</label>
+                        <input type="text" name="restaurant_name" value="{{ client.restaurant_name }}" required
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Slug (URL ID)</label>
+                        <div class="flex rounded-md shadow-sm">
+                            <span
+                                class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                jesse.chat/
+                            </span>
+                            <input type="text" name="slug" value="{{ client.slug or '' }}" placeholder="ocean-bite"
+                                class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border focus:ring-blue-500 focus:border-blue-500 sm:text-sm border-gray-300">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select name="status"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="active" {% if client.status=='active' %}selected{% endif %}>Active</option>
+                            <option value="inactive" {% if client.status=='inactive' %}selected{% endif %}>Inactive
+                            </option>
+                        </select>
+                    </div>
+                    <!-- New Identity Fields -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Primary Language</label>
+                        <select name="language"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="English (US)" {% if client.language=='English (US)' %}selected{% endif %}>
+                                English (US)</option>
+                            <option value="English (UK)" {% if client.language=='English (UK)' %}selected{% endif %}>
+                                English (UK)</option>
+                            <option value="Spanish" {% if client.language=='Spanish' %}selected{% endif %}>Spanish
+                            </option>
+                            <option value="French" {% if client.language=='French' %}selected{% endif %}>French</option>
+                            <option value="German" {% if client.language=='German' %}selected{% endif %}>German</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                        <select name="currency_code"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="USD" {% if client.currency_code=='USD' %}selected{% endif %}>USD ($)</option>
+                            <option value="EUR" {% if client.currency_code=='EUR' %}selected{% endif %}>EUR (€)</option>
+                            <option value="GBP" {% if client.currency_code=='GBP' %}selected{% endif %}>GBP (£)</option>
+                            <option value="AUD" {% if client.currency_code=='AUD' %}selected{% endif %}>AUD ($)</option>
+                            <option value="IDR" {% if client.currency_code=='IDR' %}selected{% endif %}>IDR (Rp)
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Owner Contact (Internal)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" name="owner_phone" value="{{ client.owner_phone or '' }}"
+                                placeholder="Phone..."
+                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-gray-50 border-gray-200 text-gray-500">
+                            <input type="email" name="owner_email" value="{{ client.owner_email or '' }}"
+                                placeholder="owner@gmail.com"
+                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-gray-50 border-gray-200 text-gray-500">
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Used for sending invoices/admin notices. Not visible to
+                            public.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regional & Socials Card (NEW) -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Regional & Contact Details</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Row 1: Timezone -->
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+                        <select name="timezone"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="UTC" {% if client.timezone=='UTC' %}selected{% endif %}>UTC (Universal)
+                            </option>
+                            <option value="America/New_York" {% if client.timezone=='America/New_York' %}selected{%
+                                endif %}>America/New_York (EST)</option>
+                            <option value="America/Los_Angeles" {% if client.timezone=='America/Los_Angeles'
+                                %}selected{% endif %}>America/Los_Angeles (PST)</option>
+                            <option value="Europe/London" {% if client.timezone=='Europe/London' %}selected{% endif %}>
+                                Europe/London (GMT)</option>
+                            <option value="Asia/Singapore" {% if client.timezone=='Asia/Singapore' %}selected{% endif
+                                %}>Asia/Singapore</option>
+                            <option value="Asia/Jakarta" {% if client.timezone=='Asia/Jakarta' %}selected{% endif %}>
+                                Asia/Jakarta</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Set this correctly so the 'Open/Closed' logic matches the
+                            client's local time.</p>
+                    </div>
+
+                    <!-- Row 2: Address -->
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Address</label>
+                        <textarea name="address" rows="2"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.address or '' }}</textarea>
+                    </div>
+
+                    <!-- Row 3: Maps & Official Site -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps URL</label>
+                        <input type="url" name="maps_url" value="{{ client.maps_url or '' }}"
+                            placeholder="https://maps.app.goo.gl/..."
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Official Website</label>
+                        <input type="url" name="website_url" value="{{ client.website_url or '' }}"
+                            placeholder="https://lunaresto.com"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Row 4: Instagram & Delivery Section -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
+                        <input type="url" name="instagram_url" value="{{ client.instagram_url or '' }}"
+                            placeholder="https://instagram.com/..."
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Dynamic Delivery Partners List -->
+                    <div class="col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <label class="block text-sm font-medium text-gray-800 mb-2">Food Delivery Links</label>
+                        <input type="hidden" name="delivery_partners" id="delivery-partners-input"
+                            value='{{ client.delivery_partners or "[]" }}'>
+
+                        <div id="delivery-list" class="space-y-3 mb-3">
+                            <!-- JS will populate this -->
+                        </div>
+
+                        <button type="button" onclick="addDeliveryPartner()"
+                            class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Add Partner
+                        </button>
+                    </div>
+
+                    <!-- Row 5: Contact -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Public Phone</label>
+                        <input type="text" name="public_phone" value="{{ client.public_phone or '' }}"
+                            placeholder="+1 555-0199"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Public Enquiry Email</label>
+                        <input type="email" name="public_email" value="{{ client.public_email or '' }}"
+                            placeholder="hello@restaurant.com"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scripts for Dynamic List & Subscription Handling -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    renderDeliveryList();
+
+                    // Hook into form submit
+                    document.getElementById('hub-form').addEventListener('submit', function () {
+                        const list = getDeliveryListFromDOM();
+                        document.getElementById('delivery-partners-input').value = JSON.stringify(list);
+                    });
+
+                    // Subscription Auto-Date Logic
+                    const startInput = document.querySelector('input[name="subscription_start"]');
+                    const endInput = document.querySelector('input[name="subscription_end"]');
+
+                    if (startInput && endInput) {
+                        startInput.addEventListener('change', function () {
+                            if (this.value && !endInput.value) {
+                                const startDate = new Date(this.value);
+                                const endDate = new Date(startDate);
+                                endDate.setDate(startDate.getDate() + 30); // Add 30 days
+                                endInput.value = endDate.toISOString().split('T')[0];
+                            }
+                        });
+                    }
+                });
+
+                function renderDeliveryList() {
+                    const raw = document.getElementById('delivery-partners-input').value;
+                    let partners = [];
+                    try { partners = JSON.parse(raw); } catch (e) { partners = []; }
+
+                    const container = document.getElementById('delivery-list');
+                    container.innerHTML = '';
+
+                    partners.forEach((p, index) => {
+                        container.appendChild(createRow(p.platform, p.url, index));
+                    });
+                }
+
+                function createRow(platform, url, index) {
+                    const div = document.createElement('div');
+                    div.className = "flex gap-2 items-center";
+                    div.innerHTML = `
+                        <input type="text" placeholder="Platform (e.g. UberEats)" class="w-1/3 border rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500" value="${platform || ''}">
+                        <input type="url" placeholder="https://..." class="flex-1 border rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500" value="${url || ''}">
+                        <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    `;
+                    return div;
+                }
+
+                function addDeliveryPartner() {
+                    const container = document.getElementById('delivery-list');
+                    container.appendChild(createRow('', '', -1));
+                }
+
+                function getDeliveryListFromDOM() {
+                    const container = document.getElementById('delivery-list');
+                    const rows = container.children;
+                    const list = [];
+                    for (let row of rows) {
+                        const inputs = row.querySelectorAll('input');
+                        const platform = inputs[0].value.trim();
+                        const url = inputs[1].value.trim();
+                        if (platform && url) {
+                            list.push({ platform, url });
+                        }
+                    }
+                    return list;
+                }
+            </script>
+
+            <!-- Branding Card -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Branding</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Theme Color</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" name="theme_color" value="{{ client.theme_color }}"
+                                class="h-10 w-20 p-0 border rounded overflow-hidden cursor-pointer">
+                            <input type="text" value="{{ client.theme_color }}"
+                                class="w-24 border rounded-lg px-3 py-2 text-sm uppercase" readonly>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Widget Position</label>
+                        <select name="widget_position"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="right" {% if client.widget_position=='right' %}selected{% endif %}>Bottom
+                                Right (Default)</option>
+                            <option value="left" {% if client.widget_position=='left' %}selected{% endif %}>Bottom Left
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
+                        <div class="flex items-center gap-4">
+                            {% if client.knowledge_base and client.knowledge_base.avatar_image %}
+                            <img src="{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) }}"
+                                class="h-12 w-12 rounded-full object-cover border">
+                            {% else %}
+                            <div
+                                class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
+                                <span class="text-xs">No Img</span>
+                            </div>
+                            {% endif %}
+                            <input type="file" name="avatar"
+                                class="text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-6">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" name="is_white_labeled"
+                                class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" {% if client.is_white_labeled
+                                %}checked{% endif %}>
+                            <div class="ml-2">
+                                <span class="block text-sm font-medium text-gray-700">Hide 'Powered by Jesse'</span>
+                                <span class="block text-xs text-gray-400">Pro Feature</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guest Experience (New Card) -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Guest Experience (In-Store)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- WiFi -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Network (SSID)</label>
+                        <input type="text" name="wifi_ssid" value="{{ client.wifi_ssid or '' }}"
+                            placeholder="Restaurant_Guest"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Password</label>
+                        <input type="text" name="wifi_password" value="{{ client.wifi_password or '' }}"
+                            placeholder="SecretPass123"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- URLs -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Review URL
+                            (TripAdvisor/Google)</label>
+                        <input type="url" name="review_url" value="{{ client.review_url or '' }}"
+                            placeholder="https://..."
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <p class="text-xs text-gray-500 mt-1">Bot sends this link when guests ask to leave a review.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Table Booking URL</label>
+                        <input type="url" name="booking_url" value="{{ client.booking_url or '' }}"
+                            placeholder="https://opentable.com/..."
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <p class="text-xs text-gray-500 mt-1">If empty, Bot handles reservations manually.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Card -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Billing & Notes</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Plan Type</label>
+                        <select name="plan_type"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="basic" {% if client.plan_type=='basic' %}selected{% endif %}>Basic</option>
+                            <option value="pro" {% if client.plan_type=='pro' %}selected{% endif %}>Pro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Started</label>
+                        <input type="date" name="subscription_start" value="{{ client.subscription_start }}"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Ends / Renewal
+                            Due</label>
+                        <input type="date" name="subscription_end" value="{{ client.subscription_end }}"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- New Billing Fields -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Payment Method</label>
+                        <select name="payment_method"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">Select...</option>
+                            <option value="Stripe" {% if client.payment_method=='Stripe' %}selected{% endif %}>Stripe
+                            </option>
+                            <option value="PayPal" {% if client.payment_method=='PayPal' %}selected{% endif %}>PayPal
+                            </option>
+                            <option value="Wise" {% if client.payment_method=='Wise' %}selected{% endif %}>Wise</option>
+                            <option value="Bank Transfer" {% if client.payment_method=='Bank Transfer' %}selected{%
+                                endif %}>Bank Transfer</option>
+                            <option value="Cash" {% if client.payment_method=='Cash' %}selected{% endif %}>Cash</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center mt-6">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" name="price_includes_tax"
+                                class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" {% if
+                                client.price_includes_tax %}checked{% endif %}>
+                            <div class="ml-2">
+                                <span class="block text-sm font-medium text-gray-700">Prices include Tax?</span>
+                                <span class="block text-xs text-gray-400">Default: True for EU/Asia</span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Internal Admin Notes</label>
+                        <textarea name="billing_note" rows="3"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">{{ client.billing_note or '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Deployment Station -->
+        <div class="lg:col-span-1 space-y-6">
+            {% if client.status == 'active' and client.slug %}
+            <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg shadow-lg p-6 text-white text-center">
+                <h3 class="text-xl font-bold mb-1">Deployment Ready</h3>
+                <p class="text-gray-400 text-sm mb-6">Asset generation station</p>
+
+                <!-- QR Code Fallback/Generator -->
+                <div class="bg-white p-4 rounded-xl inline-block mb-4 shadow-inner">
+                    <div id="qrcode"
+                        class="w-32 h-32 flex items-center justify-center bg-gray-50 text-gray-300 text-xs">
+                        Generating...</div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="bg-gray-800 rounded p-3 text-left">
+                        <label class="text-xs text-gray-500 uppercase tracking-wider block mb-1">Direct Link</label>
+                        <div class="flex items-center justify-between gap-2 overflow-hidden">
+                            <code
+                                class="text-blue-400 text-sm truncate select-all">{{ request.host_url }}chat/{{ client.slug }}</code>
+                            <button type="button"
+                                onclick="navigator.clipboard.writeText('{{ request.host_url }}chat/{{ client.slug }}')"
+                                class="p-1 hover:text-white text-gray-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('standalone_chat', public_id=client.slug) }}" target="_blank"
+                        class="block w-full text-center bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition-colors">
+                        Launch Live Preview
+                    </a>
+                </div>
+            </div>
+
+            <!-- Embed Info -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-800 mb-2">Embed Script</h3>
+                <p class="text-xs text-gray-500 mb-3">Place this on the client's website.</p>
+                <div class="bg-gray-900 rounded p-3 relative group">
+                    <code class="text-green-400 text-xs break-all font-mono block">
+                        &lt;script src="{{ request.host_url }}static/widget.js" data-id="{{ client.public_id }}"&gt;&lt;/script&gt;
+                    </code>
+                </div>
+            </div>
+            {% else %}
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center text-yellow-800">
+                <svg class="w-12 h-12 mx-auto mb-2 text-yellow-400" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                    </path>
+                </svg>
+                <h3 class="font-bold">Not Deployed</h3>
+                <p class="text-sm mt-1">Set status to Active and ensure a Slug is defined to see deployment assets.</p>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Simple QR Code Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const slug = "{{ client.slug or '' }}";
+        const hostUrl = "{{ request.host_url }}";
+
+        if (slug) {
+            const url = hostUrl + "chat/" + slug;
+            const container = document.getElementById("qrcode");
+            if (container) {
+                container.innerHTML = "";
+                new QRCode(container, {
+                    text: url,
+                    width: 128,
+                    height: 128,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}

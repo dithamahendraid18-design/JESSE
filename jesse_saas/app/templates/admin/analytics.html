@@ -1,0 +1,162 @@
+{% extends "admin/client_studio_layout.html" %}
+
+{% block studio_content %}
+<div class="max-w-6xl mx-auto">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Analytics Dashboard</h1>
+        <p class="text-gray-500 text-sm">Monitor performance and engagement.</p>
+    </div>
+
+    <!-- Sub-Navigation Tabs -->
+    <div class="border-b border-gray-200 mb-8">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='overview') }}"
+                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+               {% if view_mode == 'overview' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                Overview
+            </a>
+            <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='conversations') }}"
+                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+               {% if view_mode == 'conversations' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                Recent Logs
+            </a>
+            <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='events') }}"
+                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+               {% if view_mode == 'events' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                Conversion Events
+            </a>
+            <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='trends') }}"
+                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+               {% if view_mode == 'trends' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                Trends
+            </a>
+            <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='reports') }}"
+                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+               {% if view_mode == 'reports' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+                Exports
+            </a>
+        </nav>
+    </div>
+
+    <!-- ANALYTICS CONTENT -->
+    {% if view_mode == 'overview' %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wide">Total Conversations</h3>
+            <p class="text-3xl font-bold text-blue-600 mt-2">{{ total_conversations }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wide">AI Chat Ratio</h3>
+            <p class="text-3xl font-bold text-gray-800 mt-2">{{ ai_ratio }}%</p>
+            <p class="text-xs text-gray-400 mt-1">vs Standard Menu Clicks</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wide">Bot Success Rate</h3>
+            <p class="text-3xl font-bold text-green-600 mt-2">98.5%</p>
+            <p class="text-xs text-gray-400 mt-1">Simulated Metric</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if view_mode == 'conversations' %}
+    <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h3 class="font-bold text-gray-800">Latest Interactions</h3>
+        </div>
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Query /
+                        Action</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for log in logs %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ log.timestamp.strftime('%Y-%m-%d
+                        %H:%M') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span
+                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ 'bg-blue-100 text-blue-800' if log.interaction_type == 'ai_chat' else 'bg-green-100 text-green-800' }}">
+                            {{ log.interaction_type }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-900 truncate max-w-lg">{{ log.user_query }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="px-6 py-8 text-center text-gray-500">No recent interactions found for this
+                        client.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if view_mode == 'events' %}
+    <div class="bg-white shadow-sm rounded-lg p-8 border border-gray-200 max-w-3xl">
+        <h3 class="font-bold text-gray-800 mb-6">Button Interactions</h3>
+        <p class="text-sm text-gray-500 mb-6">Breakdown of what buttons users are clicking most often.</p>
+        <div class="space-y-6">
+            {% for key, val in events_breakdown.items() %}
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700">{{ key }}</span>
+                    <span class="text-sm font-bold text-gray-900">{{ val }} clicks</span>
+                </div>
+                {% set width_attr = 'style="width: ' ~ ([val, 100]|min) ~ '%;"' %}
+                <div class="w-full bg-gray-100 rounded-full h-3">
+                    <div class="bg-blue-600 h-3 rounded-full transition-all duration-1000" {{ width_attr|safe }}></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if view_mode == 'trends' %}
+    <div class="bg-white shadow-sm rounded-lg p-16 border border-gray-200 text-center">
+        <div class="inline-flex items-center justify-center p-4 bg-gray-100 rounded-full mb-6">
+            <svg class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg>
+        </div>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">Trend Analysis</h3>
+        <p class="text-gray-500 max-w-md mx-auto">We are collecting more data to generate peak hour heatmaps and topic
+            trend clouds.</p>
+        <button class="mt-6 text-blue-600 hover:text-blue-800 font-medium text-sm">Learn more about Trends</button>
+    </div>
+    {% endif %}
+
+    {% if view_mode == 'reports' %}
+    <div class="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-4">Export Data</h3>
+        <p class="text-sm text-gray-600 mb-6">Download detailed logs and analytics reports for offline analysis.</p>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+            <button
+                class="flex items-center justify-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 w-full sm:w-auto transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Export All Logs (CSV)
+            </button>
+            <button
+                class="flex items-center justify-center bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 w-full sm:w-auto transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download Summary PDF
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

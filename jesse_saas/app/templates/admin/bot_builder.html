@@ -1,0 +1,527 @@
+{% extends "admin/client_studio_layout.html" %}
+
+{% block studio_content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Bot Builder</h1>
+        <button type="submit" form="bot-form"
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">
+            Save Changes
+        </button>
+    </div>
+
+    <form id="bot-form" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Configuration -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <!-- Welcome Message & Image -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Welcome Experience</h3>
+
+
+
+                <!-- Welcome Text -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Greeting Message</label>
+                    <textarea name="welcome_message" id="welcome_input" rows="3"
+                        oninput="document.getElementById('preview-greeting').innerHTML = linkify((this.value || 'Hello! How can I help you today?').trim())"
+                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Hello! Welcome to {{ client.restaurant_name }}. How can I help you today?">{{ (kb.welcome_message or '') | trim }}</textarea>
+                    <p class="text-xs text-gray-500 mt-1">The first message sent by the bot to start the conversation.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Legacy Menu Panels Removed -->
+
+            <!-- General Questions Flow -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h3 class="text-lg font-semibold text-gray-800">Conversation Starters</h3>
+                    <span class="text-xs text-gray-500">Main Menu Buttons (e.g. Menu, Location, Contact)</span>
+                </div>
+
+                <div id="accordions-container" class="space-y-4">
+                    <!-- populated by JS -->
+                </div>
+
+                <button type="button" id="btn-add-main" onclick="BotBuilder.addNewButton()"
+                    class="mt-6 w-full py-2 border-2 border-dashed border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 font-medium flex items-center justify-center transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add Main Button
+                </button>
+
+                <input type="hidden" name="conversation_starters_json" id="conversation-starters-json">
+                <input type="hidden" name="flow_menu_json" id="flow-menu-json">
+            </div>
+
+            <!-- Menu Config Removed (Refactored to Starters) -->
+
+
+            <!-- Fallback Message -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Safety Net</h3>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fallback Message</label>
+                    <textarea name="fallback_message" rows="2"
+                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="I'm sorry, I didn't quite catch that. Could you rephrase?">{{ kb.fallback_message or "I'm sorry, I didn't quite get that." }}</textarea>
+                    <p class="text-xs text-gray-500 mt-1">What the bot says if it's unsure or encounters an error.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Live Preview -->
+        <div class="lg:col-span-1">
+            <div class="sticky top-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Live Preview</h3>
+
+                <!-- Mobile Mockup (Always Open App Interface) -->
+                <!-- Mobile Mockup (Shell Wrapper) -->
+                <div class="border-gray-900 bg-gray-900 rounded-[2.5rem] p-[8px] shadow-2xl mx-auto"
+                    style="height: 600px; width: 320px;">
+                    <div id="preview-screen"
+                        class="w-full h-full rounded-[2rem] overflow-hidden bg-[var(--bg-app)] relative flex flex-col font-sans transition-colors duration-300 transform translate-z-0"
+                        style="--theme-color: {{ client.theme_color or '#2563EB' }};">
+
+                        <!-- 1. HEADER (Sticky Top, Glass) -->
+                        <div
+                            class="bg-[var(--bg-app)]/95 backdrop-blur-sm border-b border-[var(--border-color)] px-4 py-3 flex items-center justify-between shrink-0 z-10 relative transition-colors duration-300 rounded-t-[2rem]">
+                            <div class="flex items-center gap-3">
+                                <div class="relative">
+                                    {% if client.knowledge_base and client.knowledge_base.avatar_image %}
+                                    <img src="{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) }}"
+                                        class="w-10 h-10 rounded-full object-cover border border-[var(--border-color)]">
+                                    {% else %}
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold border border-[var(--border-color)] text-white"
+                                        style="background-color: var(--theme-color);">
+                                        {{ client.restaurant_name[0] }}
+                                    </div>
+                                    {% endif %}
+                                    <span
+                                        class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-[var(--bg-app)] rounded-full"></span>
+                                </div>
+                                <div>
+                                    <h1
+                                        class="font-bold text-[var(--text-primary)] text-sm leading-tight transition-colors duration-300">
+                                        {{ client.restaurant_name }}</h1>
+                                    <p
+                                        class="text-xs text-[var(--text-secondary)] font-medium transition-colors duration-300">
+                                        Online</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <!-- Toggle Button -->
+                                <button type="button" onclick="togglePreviewTheme()"
+                                    class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition p-1 hover:bg-[var(--bg-surface)] rounded-full">
+                                    <svg id="preview-sun" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                    <svg id="preview-moon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                    </svg>
+                                </button>
+
+                                <button type="button" onclick="resetPreview()"
+                                    class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition p-1 hover:bg-[var(--bg-surface)] rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2. CHAT AREA (Scrollable Middle) -->
+                        <div id="preview-scroll-area"
+                            class="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth bg-[var(--bg-app)] relative z-0 transition-colors duration-300">
+
+
+
+                            <!-- Greeting Block -->
+                            <div class="flex flex-col items-start max-w-[90%]">
+                                <!-- Bot Bubble with Avatar -->
+                                <div class="flex items-end gap-2 mb-1">
+                                    <!-- Avatar -->
+                                    {% if client.knowledge_base and client.knowledge_base.avatar_image %}
+                                    <img src="{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) }}"
+                                        class="w-8 h-8 rounded-full object-cover border border-[var(--border-color)] shadow-sm">
+                                    {% else %}
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border border-[var(--border-color)] shadow-sm text-white"
+                                        style="background-color: var(--theme-color);">
+                                        {{ client.restaurant_name[0] }}
+                                    </div>
+                                    {% endif %}
+
+                                    <div id="preview-greeting"
+                                        class="px-4 py-3 rounded-2xl rounded-tl-none shadow-sm text-sm leading-relaxed border transition-colors duration-300 whitespace-pre-line"
+                                        style="background-color: var(--bg-bubble-bot); border-color: var(--border-color); color: var(--text-primary);">
+                                        {{ (kb.welcome_message or 'Hello! How can I help you today?') | trim }}</div>
+                                </div>
+
+                                <div id="preview-buttons"
+                                    class="flex flex-wrap gap-2 mt-2.5 ml-10 justify-start w-full">
+                                    <!-- Main Buttons injected here -->
+                                </div>
+                            </div>
+
+                            <!-- Conversation Area -->
+                            <div id="preview-conversation" class="space-y-4 w-full"></div>
+                        </div>
+
+                        <!-- 3. COMPOSER (Sticky Bottom) -->
+                        <div
+                            class="bg-[var(--bg-app)] p-4 shrink-0 border-t border-[var(--border-color)] z-20 transition-colors duration-300 rounded-b-[2rem]">
+                            <div class="relative flex items-center cursor-not-allowed opacity-80">
+                                <input type="text" placeholder="Type a message..." disabled
+                                    class="w-full bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm rounded-full pl-5 pr-12 py-3 focus:outline-none shadow-inner cursor-not-allowed placeholder-[var(--text-secondary)] transition-colors duration-300">
+                                <button disabled
+                                    class="absolute right-2 p-2 rounded-full shadow-lg flex items-center justify-center cursor-not-allowed text-white"
+                                    style="background-color: var(--theme-color);">
+                                    <svg class="w-4 h-4 transform rotate-90" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="#"
+                                    class="text-[10px] text-[var(--text-secondary)] font-medium tracking-wide">Powered
+                                    by
+                                    <span class="font-bold text-blue-600">JESSE</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button type="button" onclick="resetPreview()"
+                        class="text-xs text-gray-500 hover:text-blue-600 underline">Reset Simulation</button>
+                </div>
+            </div>
+
+            <!-- Launcher Preview REMOVED (Always Open Chat Mode) -->
+        </div>
+    </form>
+</div>
+
+<style>
+    /* CSS Variables Scoped to Preview (Default: Light Mode) */
+    #preview-screen {
+        --bg-app: #f3f4f6;
+        --bg-surface: #ffffff;
+        --bg-bubble-bot: #ffffff;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --border-color: #e5e7eb;
+    }
+
+    #preview-screen.dark-mode {
+        --bg-app: #121212;
+        --bg-surface: #1E1E1E;
+        --bg-bubble-bot: #2C2C2C;
+        --text-primary: #f3f4f6;
+        --text-secondary: #9ca3af;
+        --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+
+
+    /* Custom Scrollbar for Dark Mode Preview (Hidden via CSS) */
+    #preview-scroll-area::-webkit-scrollbar {
+        width: 0px;
+        display: none;
+    }
+
+    #preview-scroll-area {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    /* Theme Button for Preview */
+    .preview-theme-btn {
+        border: 1px solid var(--theme-color) !important;
+        color: var(--text-primary) !important;
+        background: transparent !important;
+        transition: all 0.2s;
+    }
+
+    .preview-theme-btn:hover {
+        background-color: var(--theme-color) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.3s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+</style>
+
+
+<!-- Data Injection -->
+<script id="starters-data" type="application/json">
+    {{ starters_list | tojson | safe }}
+</script>
+
+<script id="flow-menu-data" type="application/json">
+    {{ kb.flow_menu | tojson | safe }}
+</script>
+
+<script src="{{ url_for('static', filename='js/bot_builder.js') }}"></script>
+
+<script>
+    // Initialize things on load
+    document.addEventListener('DOMContentLoaded', function () {
+        // Parse initial data
+        let starters = [];
+        try {
+            starters = JSON.parse(document.getElementById('starters-data').textContent);
+        } catch (e) { console.error("Error parsing starters", e); }
+
+        // Init logic
+        BotBuilder.init(starters);
+
+        // Preview Theme Logic (Keep simple UI logic here or move to separate UI file)
+        window.togglePreviewTheme = function () {
+            const screen = document.getElementById('preview-screen');
+            screen.classList.toggle('dark-mode');
+            const isDark = screen.classList.contains('dark-mode');
+            document.getElementById('preview-sun').classList.toggle('hidden', !isDark);
+            document.getElementById('preview-moon').classList.toggle('hidden', isDark);
+        }
+
+        window.resetPreview = function () {
+            const previewButtons = document.getElementById('preview-buttons');
+            const previewConversation = document.getElementById('preview-conversation');
+            if (previewConversation) previewConversation.innerHTML = '';
+
+            // Re-render initial buttons
+            if (window.renderPreviewButtons) {
+                // We need to access current data from BotBuilder or re-use initial if not changed
+                // For now, re-triggering BotBuilder update might be cleaner if exposed, 
+                // but typically reset clears conversation history only.
+
+                // Re-render main buttons
+                if (BotBuilder) {
+                    // Force re-render of buttons in case they were disabled
+                    // Note: We need to access the data. 
+                    // Ideally BotBuilder should expose a "resetPreview" or "getStarters".
+                    location.reload(); // Simple reset for MVP
+                }
+            }
+        }
+        // Explicit Listener Attachment
+        const btnAdd = document.getElementById('btn-add-main');
+        if (btnAdd) btnAdd.onclick = BotBuilder.addNewButton;
+    });
+
+    // === PREVIEW RENDERING HELPERS (Shared with JS or kept here for simple templating) ===
+    // These are called by bot_builder.js via window.renderPreviewButtons
+
+    const botAvatarSrc = "{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) if client.knowledge_base.avatar_image else '' }}";
+    const clientNameInitial = "{{ client.restaurant_name[0] }}";
+    const themeColor = "{{ client.theme_color or '#2563EB' }}";
+
+    window.linkify = function (text) {
+        if (!text) return '';
+
+        // 1. Emails
+        text = text.replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi, '<a href="mailto:$1" class="text-blue-600 hover:text-blue-800 underline break-words z-50 relative pointer-events-auto">$1</a>');
+
+        // 2. Standard URLs
+        const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        text = text.replace(urlRegex, function (url) {
+            return '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline break-words z-50 relative pointer-events-auto">' + url + '</a>';
+        });
+
+        // 3. Naked Domains
+        const nakedRegex = /(^|[\s\n])((?:www\.|instagram\.com|tiktok\.com|facebook\.com|x\.com|twitter\.com)[a-zA-Z0-9\-\.\/\_\?\=\+\&\%\@]+)/gim;
+        text = text.replace(nakedRegex, function (match, prefix, content) {
+            return prefix + '<a href="https://' + content + '" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline break-words z-50 relative pointer-events-auto">' + content + '</a>';
+        });
+
+        return text;
+    }
+
+    window.createPill = function (label, onClick) {
+        const pill = document.createElement('button');
+        pill.className = `preview-theme-btn px-4 py-2 text-xs font-medium rounded-2xl shadow-sm flex-shrink-0 whitespace-normal h-auto leading-tight text-center max-w-[200px]`;
+        pill.innerText = label;
+        pill.type = 'button';
+        pill.onclick = (e) => onClick(e);
+        return pill;
+    }
+
+    window.renderPreviewButtons = function (buttons, targetContainer) {
+        if (!targetContainer) return;
+        targetContainer.innerHTML = '';
+        buttons.forEach((btn, idx) => {
+            if (!btn.label) return;
+            const pill = createPill(btn.label, (e) => simulateClick(btn, e, buttons));
+            targetContainer.appendChild(pill);
+        });
+    }
+
+    window.simulateClick = function (btnData, event, allButtons) {
+        // Disable clicked button group
+        // Sync with chat_widget.js: Don't disable for persistent actions
+        const isPersistent = btnData.action === 'open_menu' || btnData.action === 'link';
+
+        if (event && event.target && !isPersistent) {
+            const btn = event.target.closest('button');
+            if (btn) {
+                const container = btn.parentElement;
+                if (container) {
+                    const siblings = container.querySelectorAll('button');
+                    siblings.forEach(b => {
+                        b.disabled = true;
+                        b.classList.add('opacity-50', 'cursor-not-allowed');
+                    });
+                }
+            }
+        }
+
+        const previewConversation = document.getElementById('preview-conversation');
+
+        // 1. Add User Bubble
+        const userDiv = document.createElement('div');
+        userDiv.className = 'flex justify-end w-full animate-fade-in-up mb-2';
+
+        userDiv.innerHTML = `
+            <div class="flex items-end gap-2 mb-1 justify-end w-full">
+                <div class="rounded-2xl rounded-tr-none px-4 py-3 shadow-md text-sm text-white max-w-[85%] leading-relaxed font-medium whitespace-pre-line"
+                     style="background-color: ${themeColor}">${btnData.label}</div>
+            </div>
+        `;
+        previewConversation.appendChild(userDiv);
+
+        const scrollContainer = document.getElementById('preview-scroll-area');
+        if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
+
+        // Response Logic
+        setTimeout(() => {
+            // === HANDLE MAIN MENU RESTART ===
+            if (btnData.action === 'main_menu') {
+                const text = "Here are the main options:";
+                addBotBubble(text, allButtons); // recurses back to main
+                return;
+            }
+
+            // Standard Message / Link
+            let replyText = "";
+            let subButtons = btnData.sub_buttons || [];
+
+            // Check for blocks (Image + Text)
+            let contentHtml = "";
+
+            if (btnData.blocks && btnData.blocks.length > 0) {
+                // Images
+                const images = btnData.blocks.filter(b => b.type === 'image');
+                const textBlock = btnData.blocks.find(b => b.type === 'text');
+
+                if (images.length > 0) {
+                    contentHtml += `<div class="flex gap-2 mb-2 overflow-x-auto">`;
+                    images.forEach(img => {
+                        contentHtml += `<img src="${img.url}" class="w-24 h-24 object-cover rounded-lg border border-gray-200">`;
+                    });
+                    contentHtml += `</div>`;
+                }
+
+                if (textBlock && textBlock.text) {
+                    replyText = textBlock.text;
+                }
+            } else {
+                // Legacy / Simple
+                replyText = btnData.response_text || "I see.";
+            }
+
+            if (btnData.action === 'link') {
+                replyText = `Opening ${btnData.payload || 'link'}...`;
+            }
+
+            // Append Text to Content
+            if (replyText) {
+                contentHtml += `<div>${linkify(replyText)}</div>`;
+            }
+
+            // Render Bot Bubble
+            addBotBubble(contentHtml, subButtons, true);
+
+        }, 500);
+    }
+
+    function addBotBubble(contentHtml, buttonsToRender, isHtml = false) {
+        const previewConversation = document.getElementById('preview-conversation');
+        const botDiv = document.createElement('div');
+        botDiv.className = 'flex flex-col items-start w-full animate-fade-in-up mb-2';
+
+        let avatarHtml = '';
+        if (botAvatarSrc) {
+            avatarHtml = `<img src="${botAvatarSrc}" class="w-8 h-8 rounded-full object-cover border border-[var(--border-color)] shadow-sm">`;
+        } else {
+            const themeStyle = `style="background-color: ${themeColor}; color: white;"`;
+            avatarHtml = `<div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border border-[var(--border-color)] shadow-sm" ${themeStyle}>${clientNameInitial}</div>`;
+        }
+
+        botDiv.innerHTML = `
+            <div class="flex items-end gap-2 mb-1">
+                 ${avatarHtml}
+                <div class="px-4 py-3 rounded-2xl rounded-tl-none shadow-sm text-sm break-words max-w-[85%] leading-relaxed transition-colors duration-300 bg-white border border-gray-200 text-gray-800 whitespace-pre-line">${contentHtml}</div>
+            </div>
+            <div class="generated-buttons flex flex-wrap gap-2 mt-2 ml-10 justify-start"></div>
+        `;
+        previewConversation.appendChild(botDiv);
+
+        const newContainer = botDiv.querySelector('.generated-buttons');
+        if (buttonsToRender && buttonsToRender.length > 0) {
+            window.renderPreviewButtons(buttonsToRender, newContainer);
+        }
+
+        const scrollContainer = document.getElementById('preview-scroll-area');
+        if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }
+
+    // Force Sync Preview on Load
+    document.addEventListener('DOMContentLoaded', function () {
+        var input = document.getElementById('welcome_input');
+        var preview = document.getElementById('preview-greeting');
+        if (input && preview) {
+            preview.innerHTML = linkify((input.value || "Hello! How can I help you today?").trim());
+        }
+    });
+</script>
+{% endblock %}

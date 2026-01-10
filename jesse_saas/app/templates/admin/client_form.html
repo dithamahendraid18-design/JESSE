@@ -1,0 +1,552 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<div class="flex items-center mb-6">
+    <a href="{{ url_for('admin.dashboard') }}" class="text-gray-500 hover:text-gray-700 mr-4">&larr; Back</a>
+    <h1 class="text-2xl font-bold text-gray-800">{{ 'Admin Studio' if client else 'New Client' }}</h1>
+</div>
+
+<form method="POST" enctype="multipart/form-data" id="clientForm" class="w-full">
+
+    <!-- Tab Contents (Controlled by Sidebar) -->
+    <div class="space-y-6">
+
+        <!-- TAB 1: CLIENT HUB (Data Umum) -->
+        <div id="tab-hub" class="tab-content bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-lg font-bold mb-4 border-b pb-2 text-gray-800">Client Hub (Concierge Setup)</h3>
+
+            <!-- Grid Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                <!-- LEFT COL: INPUTS (Col-8) -->
+                <div class="lg:col-span-8 space-y-6">
+                    <!-- Basic Info Card -->
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="text-sm font-bold text-gray-600 mb-3 uppercase tracking-wider">Identity & Branding
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant Name</label>
+                                <input type="text" name="restaurant_name"
+                                    value="{{ client.restaurant_name if client else '' }}"
+                                    class="w-full px-3 py-2 border rounded" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Plan Type</label>
+                                <select name="plan_type" class="w-full px-3 py-2 border rounded bg-white">
+                                    <option value="basic" {{ 'selected' if client and client.plan_type=='basic' else ''
+                                        }}>Basic</option>
+                                    <option value="pro" {{ 'selected' if client and client.plan_type=='pro' else '' }}>
+                                        Pro</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Theme Color</label>
+                                <div class="flex items-center">
+                                    <input type="color" name="theme_color"
+                                        value="{{ client.theme_color if client else '#000000' }}"
+                                        class="h-10 w-12 p-0 border rounded mr-2">
+                                    <input type="text" name="theme_color_text"
+                                        value="{{ client.theme_color if client else '#000000' }}"
+                                        class="flex-1 px-3 py-2 border rounded font-mono text-sm uppercase"
+                                        onchange="this.previousElementSibling.value = this.value">
+                                </div>
+                            </div>
+                            {% if client %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select name="status" class="w-full px-3 py-2 border rounded bg-white">
+                                    <option value="active" {{ 'selected' if client.status=='active' else '' }}>Active
+                                    </option>
+                                    <option value="inactive" {{ 'selected' if client.status=='inactive' else '' }}>
+                                        Inactive</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">URL Slug</label>
+                                <div class="flex">
+                                    <span
+                                        class="inline-flex items-center px-3 rounded-l border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">@</span>
+                                    <input type="text" name="slug"
+                                        value="{{ client.slug if client and client.slug else '' }}"
+                                        class="w-full px-3 py-2 border rounded-r" placeholder="restaurant-name">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Renews On</label>
+                                <input type="date" name="renewal_date"
+                                    value="{{ client.renewal_date.strftime('%Y-%m-%d') if client and client.renewal_date else '' }}"
+                                    class="w-full px-3 py-2 border rounded">
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if client %}
+                    <!-- Contact Card -->
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="text-sm font-bold text-gray-600 mb-3 uppercase tracking-wider">Contact & Wifi</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+                                <input type="text" name="contact_phone" value="{{ kb.contact_phone or '' }}"
+                                    class="w-full px-3 py-2 border rounded" placeholder="+62...">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Password</label>
+                                <input type="text" name="wifi_password" value="{{ kb.wifi_password or '' }}"
+                                    class="w-full px-3 py-2 border rounded">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Reservation URL</label>
+                                <input type="url" name="reservation_url" value="{{ kb.reservation_url or '' }}"
+                                    class="w-full px-3 py-2 border rounded" placeholder="https://...">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Location Address</label>
+                                <input type="text" name="location_address" value="{{ kb.location_address or '' }}"
+                                    class="w-full px-3 py-2 border rounded">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Opening Hours</label>
+                                <textarea name="opening_hours" rows="2"
+                                    class="w-full px-3 py-2 border rounded">{{ kb.opening_hours or '' }}</textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">About Us (Short)</label>
+                                <textarea name="about_us" rows="2"
+                                    class="w-full px-3 py-2 border rounded">{{ kb.about_us or '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Avatar Upload -->
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bot Avatar</label>
+                        <div class="flex items-center gap-4">
+                            {% if kb.avatar_image %}
+                            <img src="{{ url_for('static', filename='uploads/avatars/' + kb.avatar_image) }}"
+                                class="w-12 h-12 rounded-full object-cover border shadow-sm">
+                            {% endif %}
+                            <input type="file" name="avatar" accept="image/*"
+                                class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        </div>
+                    </div>
+
+                    <!-- Admin Billing Note -->
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <h4 class="text-sm font-bold text-yellow-800 mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
+                            Admin Billing Note
+                        </h4>
+                        <textarea name="billing_note" rows="2"
+                            class="w-full px-3 py-2 border border-yellow-300 rounded bg-yellow-50 placeholder-yellow-400 text-sm"
+                            placeholder="Internal note: Payment date, PIC name, etc.">{{ client.billing_note if client.billing_note else '' }}</textarea>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- RIGHT COL: DEPLOYMENT & OUTPUT (Col-4) -->
+                <div class="lg:col-span-4 space-y-6">
+                    {% if client and client.status == 'active' %}
+
+                    <!-- Deployment Assets -->
+                    <div class="bg-white p-5 rounded-xl shadow-lg border border-blue-200 ring-1 ring-blue-100">
+                        <h4 class="text-blue-800 font-bold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Deployment Assets
+                        </h4>
+
+                        <!-- Direct Link -->
+                        <div class="mb-4">
+                            <label
+                                class="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Chatbot
+                                Link</label>
+                            <div class="flex">
+                                <input type="text" readonly value="{{ request.host_url }}chat/{{ client.public_id }}"
+                                    id="botLink"
+                                    class="w-full text-xs p-2 bg-gray-50 border rounded-l text-gray-600 font-mono">
+                                <button type="button" onclick="copyToClipboard('botLink')"
+                                    class="bg-blue-100 text-blue-700 px-3 py-1 rounded-r text-xs font-bold hover:bg-blue-200">Copy</button>
+                            </div>
+                            <a href="{{ url_for('standalone_chat', public_id=client.public_id) }}" target="_blank"
+                                class="text-xs text-blue-600 hover:underline mt-1 inline-block">Open in
+                                new tab &nearr;</a>
+                        </div>
+
+                        <!-- Embed Code -->
+                        <div class="mb-4">
+                            <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Embed
+                                Script</label>
+                            <div class="relative">
+                                <textarea readonly
+                                    class="w-full h-20 text-xs p-2 bg-gray-800 text-green-400 border rounded font-mono resize-none focus:outline-none"
+                                    id="embedCode">
+<script>
+    window.JESSE_ID = "{{ client.public_id }}";
+    (function () {
+        var s = document.createElement("script");
+        s.src = "{{ request.host_url }}static/widget.js";
+        s.async = true;
+        document.body.appendChild(s);
+    })();
+</script></textarea>
+                                <button type="button" onclick="copyToClipboard('embedCode')"
+                                    class="absolute top-2 right-2 bg-gray-700 text-white px-2 py-1 rounded text-xs opacity-70 hover:opacity-100">Copy</button>
+                            </div>
+                        </div>
+
+                        <!-- QR Code -->
+                        <div>
+                            <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-2">QR
+                                Code</label>
+                            <div class="flex items-center gap-4 bg-gray-50 p-3 rounded border">
+                                <img src="{{ url_for('admin.client_qr', client_id=client.id) }}"
+                                    class="w-20 h-20 bg-white p-1 border">
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-2">Unique QR for this client.</p>
+                                    <a href="{{ url_for('admin.client_qr', client_id=client.id) }}"
+                                        download="qr-{{ client.restaurant_name }}.png"
+                                        class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-black flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4">
+                                            </path>
+                                        </svg>
+                                        Download PNG
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Preview -->
+                    <div class="bg-gray-800 rounded-3xl p-4 shadow-2xl border-4 border-gray-700 relative mx-auto"
+                        style="width: 280px; height: 500px;">
+                        <div
+                            class="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-4 bg-gray-700 rounded-b-xl z-20">
+                        </div>
+                        <iframe src="{{ url_for('standalone_chat', public_id=client.public_id) }}?mode=fullscreen"
+                            class="w-full h-full rounded-2xl bg-white border-0 shadow-inner z-10 relative"></iframe>
+                    </div>
+
+                    {% elif client %}
+                    <!-- Inactive State -->
+                    <div class="bg-gray-100 p-6 rounded-lg text-center border-2 border-dashed border-gray-300">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
+                        </svg>
+                        <h4 class="text-gray-600 font-bold">Assets Locked</h4>
+                        <p class="text-sm text-gray-500 mt-1">Set status to <strong>Active</strong> to generate
+                            deployment links and QR codes.</p>
+                    </div>
+                    {% else %}
+                    <!-- New Client State -->
+                    <div class="bg-blue-50 p-6 rounded-lg text-center border-2 border-dashed border-blue-200">
+                        <p class="text-sm text-blue-600 font-medium">âœ¨ Create the client first to unlock deployment
+                            tools.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+        {% if client %}
+        <!-- TAB 2: BOT BUILDER (Buttons/Flows) -->
+        <div id="tab-builder" class="tab-content hidden bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-lg font-bold mb-4 border-b pb-2 text-gray-800">Bot Builder</h3>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Welcome Message</label>
+                <input type="text" name="welcome_message"
+                    value="{{ kb.welcome_message or 'Welcome! How can I help you?' }}"
+                    class="w-full px-3 py-2 border rounded" placeholder="Halo! Ada yang bisa dibantu?">
+            </div>
+
+            <div class="space-y-4 border-t pt-4">
+                <h4 class="text-md font-semibold text-gray-600">Custom Button Flows</h4>
+                <p class="text-xs text-gray-500 mb-2">Define what the bot says when users click standard buttons.</p>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Menu & Prices Response</label>
+                    <textarea name="flow_menu" rows="2"
+                        class="w-full px-3 py-2 border rounded text-sm placeholder-gray-400"
+                        placeholder="Default: Here is our menu: [URL]">{{ kb.flow_menu or '' }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Opening Hours Response</label>
+                    <textarea name="flow_hours" rows="2"
+                        class="w-full px-3 py-2 border rounded text-sm placeholder-gray-400"
+                        placeholder="Default: Our hours are: [Hours]">{{ kb.flow_hours or '' }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Location Response</label>
+                    <textarea name="flow_location" rows="2"
+                        class="w-full px-3 py-2 border rounded text-sm placeholder-gray-400"
+                        placeholder="Default: We are located at: [Address]">{{ kb.flow_location or '' }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">About Us Response</label>
+                    <textarea name="flow_about" rows="2"
+                        class="w-full px-3 py-2 border rounded text-sm placeholder-gray-400"
+                        placeholder="Default: [About Us Text]">{{ kb.flow_about or '' }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Contact Response</label>
+                    <textarea name="flow_contact" rows="2"
+                        class="w-full px-3 py-2 border rounded text-sm placeholder-gray-400"
+                        placeholder="Default: Book a table here: [URL]">{{ kb.flow_contact or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: MENU & PRICES -->
+        <div id="tab-menu" class="tab-content hidden bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-lg font-bold mb-4 border-b pb-2 text-gray-800">Menu & Prices</h3>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Menu Order Link (URL)</label>
+                    <input type="url" name="menu_url" value="{{ kb.menu_url or '' }}"
+                        class="w-full px-3 py-2 border rounded" placeholder="https://gofood.co.id/...">
+                    <p class="text-xs text-gray-500 mt-1">Direct link for ordering.</p>
+                </div>
+
+                <div class="border-t pt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Menu Image</label>
+                    <div class="flex items-start gap-6">
+                        {% if kb.menu_image %}
+                        <div class="text-center">
+                            <img src="{{ url_for('static', filename='uploads/menus/' + kb.menu_image) }}"
+                                class="h-32 w-auto rounded border shadow-sm mb-2">
+                            <p class="text-xs text-green-600 font-semibold">Current Image</p>
+                        </div>
+                        {% endif %}
+                        <div class="flex-1">
+                            <input type="file" name="menu_image" accept="image/*"
+                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            <p class="text-xs text-gray-500 mt-2">Display this image when users ask for the menu.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: AI SETTINGS -->
+        <div id="tab-ai" class="tab-content hidden bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-lg font-bold mb-4 border-b pb-2 text-gray-800">AI Settings</h3>
+            <p class="text-sm text-gray-600 mb-4">Provide more context for the AI to answer specific questions
+                accurately.</p>
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Payment Methods</label>
+                    <input type="text" name="payment_methods" value="{{ kb.payment_methods or '' }}"
+                        class="w-full px-3 py-2 border rounded text-sm" placeholder="e.g. Cash, QRIS, Visa, Mastercard">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Parking Info</label>
+                    <input type="text" name="parking_info" value="{{ kb.parking_info or '' }}"
+                        class="w-full px-3 py-2 border rounded text-sm"
+                        placeholder="e.g. Free street parking, Valet available">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Dietary Options</label>
+                    <input type="text" name="dietary_info" value="{{ kb.dietary_info or '' }}"
+                        class="w-full px-3 py-2 border rounded text-sm"
+                        placeholder="e.g. Halal certified, Vegetarian options available">
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: COMPLIANCE -->
+        <div id="tab-compliance" class="tab-content hidden bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-lg font-bold mb-4 border-b pb-2 text-gray-800">Compliance</h3>
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Policy / Rules</label>
+                    <textarea name="policy_info" rows="4" class="w-full px-3 py-2 border rounded text-sm"
+                        placeholder="e.g. Last order at 9:30 PM. No pets allowed inside. 10% Service Charge applies.">{{ kb.policy_info or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: PUBLISH CENTER -->
+        <div id="tab-publish" class="tab-content hidden bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-lg font-bold mb-4 border-b pb-2 text-gray-800">Publish Center</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Save Button Area -->
+                <div class="md:col-span-2 bg-blue-50 p-4 rounded-lg flex items-center justify-between">
+                    <div>
+                        <h4 class="font-bold text-blue-800">Save All Changes</h4>
+                        <p class="text-sm text-blue-600">Make sure to save after editing any tab.</p>
+                    </div>
+                </div>
+
+                <!-- Client Link -->
+                <div class="md:col-span-2">
+                    <label class="block text-xs uppercase tracking-wide text-gray-400 mb-2">Link for Clients (Share
+                        this!)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" readonly value="{{ request.host_url }}chat/{{ client.public_id }}"
+                            class="flex-1 bg-gray-100 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            id="shareLink">
+                        <button type="button" onclick="copyLink()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
+                            Copy
+                        </button>
+                    </div>
+                    <p id="copyMsg" class="text-green-600 text-xs mt-1 hidden">Link copied to clipboard!</p>
+                </div>
+
+                <!-- QR Code -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wide text-gray-400 mb-2">QR Code</label>
+                    <div class="flex items-center gap-4">
+                        <img src="{{ url_for('admin.client_qr', client_id=client.id) }}" alt="QR Code"
+                            class="w-16 h-16 border rounded">
+                        <a href="{{ url_for('admin.client_qr', client_id=client.id) }}" download="qr-code.png"
+                            class="text-sm text-blue-600 hover:underline">Download PNG</a>
+                    </div>
+                </div>
+
+                <!-- Preview Bot -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wide text-gray-400 mb-2">Preview Bot</label>
+                    <a href="{{ request.host_url }}chat/{{ client.public_id }}" target="_blank"
+                        class="block text-center bg-gray-800 hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-semibold transition"
+                        style="height: 64px; display: flex; align-items: center; justify-content: center;">
+                        Open Chat Preview &nearr;
+                    </a>
+                </div>
+
+                <!-- Embed Code -->
+                <div class="md:col-span-2">
+                    <label class="block text-xs uppercase tracking-wide text-gray-400 mb-2">Embed Code</label>
+                    <textarea readonly
+                        class="w-full h-20 bg-gray-900 border border-gray-700 rounded text-xs p-2 font-mono text-gray-300 focus:outline-none"
+                        onclick="this.select()"><script src="{{ request.host_url }}static/widget.js" data-id="{{ client.public_id }}"></script></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Save Button (Always Visible) -->
+        <div class="fixed bottom-6 right-6">
+            <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full shadow-lg flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                Save Changes
+            </button>
+        </div>
+
+        {% else %}
+        <!-- New Client View (Simple) -->
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+            <h3 class="text-lg font-bold mb-4">New Client Setup</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant Name</label>
+                    <input type="text" name="restaurant_name" class="w-full px-3 py-2 border rounded" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Plan Type</label>
+                    <select name="plan_type" class="w-full px-3 py-2 border rounded bg-white">
+                        <option value="basic">Basic</option>
+                        <option value="pro">Pro</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Theme Color</label>
+                    <input type="color" name="theme_color" value="#000000" class="h-10 w-12 p-0 border rounded">
+                </div>
+            </div>
+            <div class="mt-6">
+                <button type="submit"
+                    class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 shadow-md">
+                    Create Client
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</form>
+
+<script>
+    function copyLink() {
+        var copyText = document.getElementById("shareLink");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+
+        var msg = document.getElementById("copyMsg");
+        msg.classList.remove("hidden");
+        setTimeout(function () {
+            msg.classList.add("hidden");
+        }, 2000);
+    }
+
+    function switchTab(tabId) {
+        // 1. Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(el => {
+            el.classList.add('hidden');
+        });
+
+        // 2. Show active tab
+        const activeTab = document.getElementById(tabId);
+        if (activeTab) activeTab.classList.remove('hidden');
+
+        // 3. Update buttons style (in Sidebar)
+        // Note: Buttons are in base.html now, so we select them globally
+        document.querySelectorAll('button[id^="btn-tab-"]').forEach(btn => {
+            // Inactive style
+            btn.classList.remove('bg-blue-50', 'text-blue-700');
+            btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+        });
+
+        // 4. Highlight active button
+        const activeBtn = document.getElementById('btn-' + tabId);
+        if (activeBtn) {
+            activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            activeBtn.classList.add('bg-blue-50', 'text-blue-700');
+        }
+    }
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Tab Switching Logic
+    function switchTab(tabId) {
+        // ... (existing logic)
+    }
+
+    // New: Copy to Clipboard Logic
+    function copyToClipboard(elementId) {
+        var copyText = document.getElementById(elementId);
+
+        // Select logic for Input vs Textarea/Pre
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy command
+        navigator.clipboard.writeText(copyText.value).then(function () {
+            // Optional: Show Toast or change button text temporarily
+            alert("Copied to clipboard!");
+        }, function (err) {
+            console.error('Async: Could not copy text: ', err);
+        });
+    }
+</script>
+{% endblock %}

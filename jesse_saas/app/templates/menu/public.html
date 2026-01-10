@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ client.restaurant_name }} - Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --book-theme-color: {
+                    {
+                    client.knowledge_base.book_theme_color or client.theme_color or '#8B4513'
+                }
+            }
+
+            ;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent !important;
+        }
+
+        /* 3D Scene Setup */
+        .scene {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 2000px;
+        }
+
+        /* Mobile first book size - updated for Single Page Desktop */
+        .book {
+            position: relative;
+            width: 90vw;
+            max-width: 600px;
+            aspect-ratio: 3/5;
+            height: auto;
+            max-height: 85vh;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+
+        /* Page Styling */
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1), opacity 0.4s ease, visibility 0.4s;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            /* background-color: var(--book-theme-color) !important; REMOVED to fix 3D Same Sheet issue */
+            border-radius: 4px 12px 12px 4px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+            box-shadow: 20px 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .page.discarded {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* Front and Back of Pages */
+        .face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+            background-color: #8B4513;
+            /* Physical Fallback */
+            background-color: var(--book-theme-color) !important;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            border-left: 4px solid rgba(0, 0, 0, 0.05);
+            isolation: isolate;
+        }
+
+        /* Back Page Logic: Blank/Texture for "Discarded" pages */
+        .face.back {
+            transform: rotateY(180deg);
+            border-left: none;
+            border-right: 4px solid rgba(0, 0, 0, 0.05);
+            background: var(--book-theme-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .face.back::after {
+            content: '';
+        }
+
+        /* ... rest of CSS ... */
+        .face {
+            color: var(--book-text-color);
+        }
+
+        h2,
+        h3 {
+            color: var(--book-text-color);
+        }
+
+        .text-gray-800,
+        .text-gray-900,
+        .text-gray-600,
+        .text-gray-500,
+        .text-gray-400 {
+            color: var(--book-text-color) !important;
+        }
+
+        /* Menu Grid Scroll Enhancement */
+        .menu-grid {
+            flex: 1;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .menu-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .menu-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        /* Visual Spine Shadow */
+        .face::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 15px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.15), transparent);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .face.back::before {
+            left: auto;
+            right: 0;
+            background: linear-gradient(to left, rgba(0, 0, 0, 0.15), transparent);
+        }
+
+        /* Image Shine/Frame Effect */
+        .menu-item-image {
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+
+        /* TOC Shimmer */
+
+        /* TOC Shimmer */
+        .toc-item {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toc-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .toc-item:hover::after {
+            left: 100%;
+        }
+
+        .border-gray-50,
+        .border-b {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* If dark theme, borders should be light */
+        /* Lightbox */
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            cursor: zoom-out;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #lightbox.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        #lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            margin: auto;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #lightbox.show img {
+            transform: scale(1);
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            z-index: 10000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .close-lightbox:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(90deg) scale(1.1);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col items-center justify-center">
+
+    <script>
+        // Set dynamic text color based on brightness of theme color
+        (function () {
+            let themeColor = "{{ client.knowledge_base.book_theme_color or client.theme_color or '#8B4513' }}";
+
+            // NUCLEAR FIX: Ensure color is 100% opaque. 
+            // If it's RGBA, convert to solid RGB.
+            if (themeColor.startsWith('rgba')) {
+                const parts = themeColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
+                if (parts) {
+                    themeColor = `rgb(${parts[1]}, ${parts[2]}, ${parts[3]})`;
+                }
+            } else if (themeColor.length > 7 && themeColor.startsWith('#')) {
+                // If #rrggbbaa, strip aa
+                themeColor = themeColor.substring(0, 7);
+            }
+
+            // Force the CSS variable to be the sanitized opaque color
+            document.documentElement.style.setProperty('--book-theme-color', themeColor);
+
+            function hexToRgb(hex) {
+                if (!hex || hex[0] !== '#') return { r: 139, g: 69, b: 19 }; // Default Brown
+                if (hex.length === 4) {
+                    hex = '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+                }
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                return { r, g, b };
+            }
+
+            const rgb = themeColor.startsWith('rgb') ?
+                { r: parseInt(themeColor.match(/\d+/g)[0]), g: parseInt(themeColor.match(/\d+/g)[1]), b: parseInt(themeColor.match(/\d+/g)[2]) } :
+                hexToRgb(themeColor);
+
+            const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+            const textColor = brightness > 128 ? '#1f2937' : '#ffffff';
+            const mutedText = brightness > 128 ? '#4b5563' : 'rgba(255,255,255,0.7)';
+
+            document.documentElement.style.setProperty('--book-theme-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+            document.documentElement.style.setProperty('--book-text-color', textColor);
+            document.documentElement.style.setProperty('--book-text-muted', mutedText);
+
+            // Reinforce background color on all components directly
+            window.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.face').forEach(el => {
+                    el.style.backgroundColor = themeColor;
+                    el.style.opacity = '1';
+                });
+            });
+        })();
+    </script>
+
+    <div class="scene">
+        <div class="book" id="book">
+            <!-- Page 0: Cover (Front), Blank (Back) -->
+            <div class="page z-[60]" id="page-0" style="background-color: var(--book-theme-color) !important;">
+                {% set welcome_bg = '' %}
+                {% if client.knowledge_base.book_cover_image %}
+                {% set welcome_bg = url_for('static', filename='uploads/menu/' + client.knowledge_base.book_cover_image)
+                %}
+                {% endif %}
+
+                <div id="cover-face-front"
+                    class="face front flex flex-col items-center justify-center text-center p-8 text-white relative"
+                    style="background-color: var(--book-theme-color) !important;">
+                    <script>
+                        const coverEl = document.getElementById('cover-face-front');
+                        if (coverEl) {
+                            const bookColor = "{{ client.knowledge_base.book_theme_color or client.theme_color or '#8B4513' }}";
+                            coverEl.style.backgroundColor = bookColor;
+                            const bgUrl = "{{ welcome_bg }}";
+                            if (bgUrl) {
+                                coverEl.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('" + bgUrl + "')";
+                                coverEl.style.backgroundSize = "{{ client.knowledge_base.book_cover_style or 'cover' }}";
+                                coverEl.style.backgroundRepeat = "no-repeat";
+                                coverEl.style.backgroundPosition = "center";
+                            }
+                        }
+                    </script>
+
+                    <div class="absolute inset-2 border border-white/30 rounded-lg pointer-events-none"></div>
+
+                    {% if client.knowledge_base.book_logo_image %}
+                    <img src="{{ url_for('static', filename='uploads/menu/' + client.knowledge_base.book_logo_image) }}"
+                        class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-6 object-cover">
+                    {% elif client.knowledge_base.avatar_image %}
+                    <img src="{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) }}"
+                        class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-6 object-cover">
+                    {% endif %}
+
+                    <h1 class="text-4xl font-bold mb-2 shadow-sm">{{ client.restaurant_name }}</h1>
+                    <p class="text-lg opacity-90 italic">Digital Menu</p>
+
+                    <div class="mt-12 animate-bounce">
+                        <span
+                            class="text-xs uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">Tap
+                            to Open</span>
+                    </div>
+                </div>
+                <!-- Back of Cover: Empty/Decorative -->
+                <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
+            </div>
+
+            <!-- Page 1: Table of Contents (Front), Blank (Back) -->
+            <div class="page z-[59]" id="page-1" style="background-color: var(--book-theme-color) !important;">
+                <div class="face front flex flex-col justify-center items-center text-center p-8"
+                    style="background-color: var(--book-theme-color) !important;">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Table of Contents</h2>
+                    <ul class="space-y-3 text-gray-600">
+                        {% for category in menu_by_cat.keys() %}
+                        <li class="toc-item cursor-pointer hover:text-blue-600 transition-colors py-1 px-4 rounded-lg bg-black/5"
+                            onclick="jumpToCategory('{{ category }}')">{{ category }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p class="mt-8 text-xs text-gray-400">Tap to browse menu</p>
+                </div>
+                <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
+            </div>
+
+            <!-- Content Pages: 1 Category per Page -->
+            {% set ns = namespace(page_idx=2) %} <!-- Start at Page 2 (0=Cover, 1=TOC) -->
+
+            {% for cat, items in menu_by_cat.items() %}
+            <div class="page z-[{{ 58 - (ns.page_idx - 2) }}]" id="page-{{ ns.page_idx }}"
+                style="background-color: var(--book-theme-color) !important;">
+                <div class="face front" style="background-color: var(--book-theme-color) !important;">
+                    <div class="flex flex-col h-full">
+                        <!-- Premium Category Header -->
+                        <div class="mb-8 relative py-4 text-center">
+                            <h2 class="text-3xl font-bold tracking-tight uppercase"
+                                style="font-family: 'Playfair Display', serif; color: var(--book-text-color);">
+                                {{ cat }}
+                            </h2>
+                            <div class="w-12 h-1 bg-current mx-auto mt-2 opacity-30 rounded-full"></div>
+                        </div>
+
+                        <div class="menu-grid flex-1">
+                            {% for item in items %}
+                            <div class="group mb-6 last:mb-0 transition-all duration-300">
+                                <div class="flex gap-4 items-start pb-4 border-b border-current/10">
+                                    {% if item.image_url %}
+                                    <div class="w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-md menu-item-image ring-1 ring-white/10 cursor-zoom-in"
+                                        data-img-url="{{ url_for('static', filename='uploads/menu/' + item.image_url) }}"
+                                        onclick="event.stopPropagation(); openLightbox(this.dataset.imgUrl)">
+                                        <img src="{{ url_for('static', filename='uploads/menu/' + item.image_url) }}"
+                                            class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-baseline gap-2 mb-1">
+                                            <h3 class="text-base font-bold tracking-wide truncate"
+                                                style="color: var(--book-text-color);">
+                                                {{ item.name }}
+                                            </h3>
+                                            <div class="flex-shrink-0">
+                                                <span class="text-sm font-bold px-2 py-0.5 rounded bg-white/10"
+                                                    style="color: var(--book-text-color);">
+                                                    {{ currency }}{{ "{:,.0f}".format(item.price).replace(',', '.') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <p class="text-[11px] leading-relaxed opacity-70 line-clamp-3"
+                                            style="color: var(--book-text-color);">
+                                            {{ item.description or 'Exquisite flavors crafted with precision.' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Page Footer -->
+                        <div class="mt-4 text-center">
+                            <p class="text-[10px] tracking-widest uppercase opacity-40">
+                                {{ client.restaurant_name }} • Page {{ ns.page_idx }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Empty Back Face -->
+                <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
+            </div>
+            {% set ns.page_idx = ns.page_idx + 1 %}
+            {% endfor %}
+
+            <!-- Last Page: Back Cover (Optional) -->
+            <div class="page z-[{{ 58 - (ns.page_idx - 2) - 1 }}]" id="page-{{ ns.page_idx }}">
+                <div class="face front flex flex-col items-center justify-center text-center text-gray-400">
+                    <svg class="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
+                    <p class="text-sm font-medium">Thank you for viewing!</p>
+                </div>
+                <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
+            </div>
+
+            {% set ns.page_idx = ns.page_idx + 1 %}
+
+            <!-- Store Total Pages for JS -->
+            <input type="hidden" id="totalPages" value="{{ ns.page_idx }}">
+
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <button class="close-lightbox" aria-label="Close lightbox">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <img id="lightbox-img" src="" alt="Menu Item Large View" onclick="event.stopPropagation()">
+    </div>
+
+    <!-- Navigation Overlay Hints -->
+    <div class="nav-hint nav-right text-gray-600">
+        <svg class="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+    </div>
+
+    <script>
+        const book = document.getElementById('book');
+        const totalPagesRaw = document.getElementById('totalPages').value;
+        const totalPages = parseInt(totalPagesRaw);
+
+        let currentPage = 0; // 0 = Cover
+        const pages = document.querySelectorAll('.page');
+
+        // Initial Z-Index is set by Jinja for the stack. 
+        // JS only needs to handle z-index for the FLIPPED pile (Left Stack).
+        // Since we are "Single Page Focus", the Left Stack is essentially "discarded".
+        // We just need to make sure the TOPmost Left Page is BEHIND the book spine visual if any?
+        // Actually simple logic: Flipped pages have z-index = index.
+        // Page 0 (Flip) -> z-0.
+        // Page 1 (Flip) -> z-1.
+        // So recently flipped page is ON TOP of the left stack. That is correct.
+
+        let isFlipping = false;
+
+        function updateVisibility() {
+            pages.forEach((page, index) => {
+                // Reset basic properties
+                page.style.display = 'block';
+                page.style.visibility = 'visible';
+
+                if (index < currentPage) {
+                    // Left stack (already flipped)
+                    page.classList.add('flipped');
+                    page.style.zIndex = index;
+                    page.style.pointerEvents = 'none';
+                } else if (index === currentPage) {
+                    // Active page (centered)
+                    page.classList.remove('flipped');
+                    page.style.zIndex = 100;
+                    page.style.pointerEvents = isFlipping ? 'none' : 'auto';
+                } else if (index === currentPage + 1) {
+                    // Peek next
+                    page.classList.remove('flipped');
+                    page.style.zIndex = 50;
+                    page.style.pointerEvents = 'none';
+                } else {
+                    // Hidden
+                    page.style.display = 'none';
+                    page.style.pointerEvents = 'none';
+                }
+            });
+        }
+
+        function flipNext() {
+            if (currentPage < pages.length - 1 && !isFlipping) {
+                const currentEl = document.getElementById(`page-${currentPage}`);
+                if (currentEl) {
+                    isFlipping = true;
+                    // Start animation by adding class
+                    currentEl.classList.add('flipped');
+                    currentEl.style.zIndex = 150; // Ensure it's on top DURING flip
+
+                    setTimeout(() => {
+                        currentPage++;
+                        isFlipping = false;
+                        updateVisibility();
+                    }, 800); // Match CSS transition duration
+                }
+            }
+        }
+
+        function flipPrev() {
+            if (currentPage > 0 && !isFlipping) {
+                isFlipping = true;
+                currentPage--;
+                const prevEl = document.getElementById(`page-${currentPage}`);
+                if (prevEl) {
+                    prevEl.style.zIndex = 150; // Bring it back to top
+                    // Trigger animation by removing class
+                    setTimeout(() => {
+                        prevEl.classList.remove('flipped');
+                        setTimeout(() => {
+                            isFlipping = false;
+                            updateVisibility();
+                        }, 800);
+                    }, 10);
+                }
+            }
+        }
+
+        // Initial setup
+        updateVisibility();
+
+        // Click Handling
+        pages.forEach((page, index) => {
+            page.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Only navigate on the current active centered page
+                if (index !== currentPage) return;
+
+                const rect = page.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const width = rect.width;
+
+                if (x > width / 2) {
+                    flipNext();
+                } else {
+                    flipPrev();
+                }
+            });
+        });
+
+        // Touch logic (same as before)
+        let touchStartX = 0;
+        let touchEndX = 0;
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) flipNext();
+            if (touchEndX > touchStartX + 50) flipPrev();
+        });
+
+        // Jump to Category
+        // Note: Logic needs to find which page the header is on.
+        // The structure is flat now, so it should be robust.
+        function jumpToCategory(categoryName) {
+            const headers = document.querySelectorAll('h2');
+            let targetHeader = null;
+            for (let h of headers) {
+                if (h.innerText.trim() === categoryName) {
+                    targetHeader = h;
+                    break;
+                }
+            }
+            if (!targetHeader) return;
+            const parentPage = targetHeader.closest('.page');
+            if (!parentPage) return;
+
+            const pageId = parentPage.id;
+            const targetIndex = parseInt(pageId.split('-')[1]);
+
+            if (targetIndex === currentPage) return;
+
+            // Teleport Jump
+            book.style.opacity = '0';
+            setTimeout(() => {
+                currentPage = targetIndex;
+                updateVisibility();
+                book.style.opacity = '1';
+            }, 200);
+        }
+
+        // Lightbox Functions
+        function openLightbox(src) {
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            lb.style.display = 'flex';
+            setTimeout(() => {
+                lb.classList.add('show');
+            }, 10);
+            // Hide parent's close button
+            if (window.parent) {
+                window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: false }, '*');
+            }
+        }
+
+        function closeLightbox() {
+            const lb = document.getElementById('lightbox');
+            lb.classList.remove('show');
+            setTimeout(() => {
+                lb.style.display = 'none';
+            }, 300);
+            // Show parent's close button
+            if (window.parent) {
+                window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: true }, '*');
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JESSE Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    {% if session.get('admin_logged_in') %}
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-20">
+        <a href="{{ url_for('admin.dashboard') }}" class="text-xl font-bold text-gray-800 tracking-tight">JESSE <span
+                class="text-blue-600">SaaS</span></a>
+        <a href="{{ url_for('admin.logout') }}" class="text-sm text-gray-500 hover:text-red-600">Logout</a>
+    </nav>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 overflow-y-auto hidden md:block">
+            <div class="py-6 px-4 space-y-8">
+                <!-- Main Nav -->
+                <div>
+                    <h3 class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Platform</h3>
+                    <div class="space-y-1">
+                        <a href="{{ url_for('admin.dashboard') }}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 group {{ 'bg-gray-100 text-gray-900' if active_page == 'dashboard' else '' }}">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="{{ url_for('admin.clients_list') }}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 group {{ 'bg-gray-100 text-gray-900' if active_page == 'clients' else '' }}">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            Clients
+                        </a>
+                        <a href="{{ url_for('admin.system_logs') }}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 group {{ 'bg-gray-100 text-gray-900' if active_page == 'logs' else '' }}">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            System Logs
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Analytics Studio -->
+                <!-- Analytics Studio (Visible only when viewing a Client) -->
+                {% if client %}
+                <div>
+                    <!-- Client Name Header -->
+                    <h3 class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                        {{ client.restaurant_name }}
+                    </h3>
+
+                    <!-- Admin Studio Section -->
+                    <div class="mb-6">
+                        <a href="{{ url_for('admin.edit_client', client_id=client.id) }}"
+                            class="flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 group {{ 'bg-gray-100 text-gray-900' if active_page == 'hub' else '' }}">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Admin Studio
+                        </a>
+                    </div>
+
+                    <!-- Analytics Studio Section -->
+                    <h3 class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Analytics Studio
+                    </h3>
+                    <div class="space-y-1">
+                        <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='overview') }}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 group {{ 'bg-gray-100 text-gray-900' if active_page == 'overview' else '' }}">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                            Overview
+                        </a>
+                        <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='conversations') }}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 group {{ 'bg-gray-100 text-gray-900' if active_page == 'conversations' else '' }}">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            Conversations
+                        </a>
+                        <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='events') }}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 group {{ 'bg-gray-100 text-gray-900' if active_page == 'events' else '' }}">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                            </svg>
+                            Events / Conversions
+                        </a>
+                        <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='trends') }}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 group {{ 'bg-gray-100 text-gray-900' if active_page == 'trends' else '' }}">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                            Trends
+                        </a>
+                        <a href="{{ url_for('admin.client_stats', client_id=client.id, view_mode='reports') }}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 group {{ 'bg-gray-100 text-gray-900' if active_page == 'reports' else '' }}">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Reports (Export)
+                        </a>
+                        <!-- Link back to Edit Client -->
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Main Content (Scrollable) -->
+        <main class="flex-1 overflow-y-auto bg-gray-50 p-6 md:p-8">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4" role="alert">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% else %}
+    <!-- Login Page (No Sidebar) -->
+    <main class="container mx-auto px-6 py-8">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4" role="alert">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block login_content %}{% endblock %}
+    </main>
+    {% endif %}
+</body>
+
+</html>

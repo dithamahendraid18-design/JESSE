@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex h-[calc(100vh-64px)] bg-gray-50">
+    <!-- Studio Sidebar -->
+    <div class="w-64 bg-white border-r border-gray-200 flex flex-col">
+        <!-- Client Context Header -->
+        <div class="p-4 border-b border-gray-100 bg-gray-50">
+            <h2 class="text-sm font-semibold text-gray-800">{{ client.restaurant_name }}</h2>
+            <div class="flex items-center mt-1">
+                <span
+                    class="inline-block w-2 h-2 rounded-full {% if client.status == 'active' %}bg-green-500{% else %}bg-gray-400{% endif %} mr-2"></span>
+                <span class="text-xs text-gray-500 uppercase tracking-wide">{{ client.status }}</span>
+            </div>
+            <a href="{{ url_for('admin.clients_list') }}"
+                class="text-xs text-blue-600 hover:text-blue-800 flex items-center mt-2">
+                &larr; Back to Clients
+            </a>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+            {% set nav_items = [
+            ('admin.client_stats', 'Dashboard', 'layout-dashboard', active_page == 'overview' or active_page ==
+            'conversations' or active_page == 'events' or active_page == 'trends' or active_page == 'reports'),
+            ('admin.client_hub', 'Client Hub', 'home', active_page == 'hub'),
+            ('admin.client_bot', 'Bot Builder', 'message-square', active_page == 'bot'),
+            ('admin.client_menu', 'Menu & Prices', 'utensils', active_page == 'menu'),
+            ('admin.client_menu_book', 'Digital Book', 'book-open', active_page == 'menu_book'),
+            ('admin.client_ai', 'AI Settings', 'brain', active_page == 'ai'),
+            ('admin.client_compliance', 'Compliance', 'shield', active_page == 'compliance'),
+            ('admin.client_publish', 'Publish Center', 'globe', active_page == 'publish')
+            ] %}
+
+            {% for endpoint, label, icon, is_active in nav_items %}
+            <a href="{{ url_for(endpoint, client_id=client.id) }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                      {% if is_active %}
+                        bg-blue-50 text-blue-700
+                      {% else %}
+                        text-gray-700 hover:bg-gray-100 hover:text-gray-900
+                      {% endif %}">
+                <!-- Lucide Icons (Inline SVGs for simplicity without library) -->
+                {% if icon == 'layout-dashboard' %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z">
+                    </path>
+                </svg>
+                {% elif icon == 'home' %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                    </path>
+                </svg>
+                {% elif icon == 'message-square' %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                    </path>
+                </svg>
+                {% elif icon == 'utensils' %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                    </path>
+                </svg>
+                {% elif icon == 'book-open' %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                    </path>
+                </svg>
+                {% elif icon == 'brain' %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                    </path>
+                </svg>
+                {% elif icon == 'shield' %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                    </path>
+                </svg>
+                {% elif icon == 'globe' %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9">
+                    </path>
+                </svg>
+                {% endif %}
+
+                {{ label }}
+            </a>
+            {% endfor %}
+        </nav>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
+        {% block studio_content %}{% endblock %}
+    </main>
+</div>
+{% endblock %}

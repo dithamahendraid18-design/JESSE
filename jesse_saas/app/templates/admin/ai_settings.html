@@ -1,0 +1,193 @@
+{% extends "admin/client_studio_layout.html" %}
+
+{% block studio_content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">AI Brain Settings</h1>
+        <button type="submit" form="ai-form"
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">
+            Save Configuration
+        </button>
+    </div>
+
+    <form id="ai-form" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left Column: Brain Configuration -->
+        <div class="space-y-6">
+            <!-- Card 1: Provider & Credentials -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Provider & Model</h3>
+                <div class="space-y-4">
+                    <!-- Provider -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">AI Provider</label>
+                        <select name="ai_provider" id="provider-select"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                            <option value="groq" {% if kb.ai_provider=='groq' %}selected{% endif %}>Groq (Recommended)
+                            </option>
+                            <option value="openai" {% if kb.ai_provider=='openai' %}selected{% endif %}>OpenAI</option>
+                            <option value="anthropic" {% if kb.ai_provider=='anthropic' %}selected{% endif %}>Anthropic
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Model (Dynamic) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                        <select name="ai_model" id="model-select"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                            <!-- Populated by JS -->
+                        </select>
+                        <input type="hidden" id="current-model" value="{{ kb.ai_model }}">
+                    </div>
+
+                    <!-- API Key -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+                        <div class="relative">
+                            <input type="password" name="ai_api_key" id="api-key-input" placeholder="sk-..."
+                                class="w-full border rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm"
+                                autocomplete="off">
+                            <button type="button" onclick="toggleSecret()"
+                                class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-gray-600">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1" id="api-hint">
+                            {% if kb.ai_api_key %}
+                            Current key is set. Leave blank to keep it.
+                            {% else %}
+                            No key set. Please enter one.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Parameters -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Parameters</h3>
+                <div class="space-y-6">
+                    <!-- Temperature -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-sm font-medium text-gray-700">Creativity (Temperature)</label>
+                            <span class="text-sm font-bold text-blue-600" id="temp-display">{{ kb.temperature or 0.7
+                                }}</span>
+                        </div>
+                        <input type="range" name="temperature" min="0" max="1" step="0.1"
+                            value="{{ kb.temperature or 0.7 }}"
+                            oninput="document.getElementById('temp-display').innerText = this.value"
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                        <div class="flex justify-between text-xs text-gray-400 mt-1">
+                            <span>Precise (0.0)</span>
+                            <span>Balanced (0.5)</span>
+                            <span>Creative (1.0)</span>
+                        </div>
+                    </div>
+
+                    <!-- Max Tokens -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Max Tokens</label>
+                        <input type="number" name="max_tokens" value="{{ kb.max_tokens or 1024 }}" max="4096"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <p class="text-xs text-gray-500 mt-1">Limit response length to control costs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Persona -->
+        <div class="space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 h-full flex flex-col">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h3 class="text-lg font-semibold text-gray-800">System Persona</h3>
+                    <button type="button" onclick="loadTemplate()"
+                        class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded border">
+                        Load Restaurant Template
+                    </button>
+                </div>
+
+                <div class="flex-1">
+                    <textarea name="system_prompt" id="system-prompt"
+                        class="w-full h-full min-h-[400px] border rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm leading-relaxed"
+                        placeholder="You are a helpful assistant...">{{ kb.system_prompt or '' }}</textarea>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">
+                    This is the "Brain" of your bot. Be specific about its role, tone, and constraints.
+                </p>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const models = {
+        'groq': [
+            { id: 'llama3-70b-8192', name: 'Llama 3 70B (Recommended)' },
+            { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B' },
+            { id: 'gemma-7b-it', name: 'Gemma 7B' }
+        ],
+        'openai': [
+            { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' },
+            { id: 'gpt-4o', name: 'GPT-4o' }
+        ],
+        'anthropic': [
+            { id: 'claude-3-haiku-20240307', name: 'Claude 3 Haiku' },
+            { id: 'claude-3-sonnet-20240229', name: 'Claude 3 Sonnet' }
+        ]
+    };
+
+    const providerSelect = document.getElementById('provider-select');
+    const modelSelect = document.getElementById('model-select');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const currentModel = document.getElementById('current-model').value;
+
+    function populateModels() {
+        const provider = providerSelect.value;
+        const options = models[provider] || [];
+
+        modelSelect.innerHTML = '';
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.id;
+            option.innerText = opt.name;
+            if (opt.id === currentModel) {
+                option.selected = true;
+            }
+            modelSelect.appendChild(option);
+        });
+    }
+
+    providerSelect.addEventListener('change', () => {
+        populateModels();
+        // Clear API key visual warning if provider changes (optional)
+        document.getElementById('api-hint').innerText = "Provider changed. Please update API Key if needed.";
+        apiKeyInput.value = "";
+    });
+
+    function toggleSecret() {
+        if (apiKeyInput.type === "password") {
+            apiKeyInput.type = "text";
+        } else {
+            apiKeyInput.type = "password";
+        }
+    }
+
+    function loadTemplate() {
+        const template = `You are Jesse, a friendly and efficient AI waiter at {{ client.restaurant_name }}. \n\nYOUR ROLE:\n- Help customers understand the menu.\n- Answer questions about ingredients, price, and dietary info.\n- Take table reservations if asked (direct them to the link).\n\nTONE:\n- Warm, professional, and concise.\n- Do not be overly verbose.\n\nCONSTRAINTS:\n- Only answer questions related to the restaurant.\n- If you don't know an answer, apologize and suggest calling the restaurant.\n- Never make up menu items not in the database.`;
+
+        if (confirm("Overwrite current prompt?")) {
+            document.getElementById('system-prompt').value = template;
+        }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', populateModels);
+</script>
+{% endblock %}

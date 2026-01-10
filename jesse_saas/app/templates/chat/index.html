@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ client.restaurant_name }} - AI Assistant</title>
+
+    <!-- SEO & Open Graph -->
+    <meta name="description"
+        content="Chat with {{ client.restaurant_name }}'s AI Assistant for menu, hours, and reservations.">
+    <meta property="og:title" content="Chat with {{ client.restaurant_name }}">
+    <meta property="og:description" content="Ask me anything about our menu, location, or book a table instantly.">
+    <meta property="og:image"
+        content="{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) if client.knowledge_base.avatar_image else '' }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ client.restaurant_name }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Chat with {{ client.restaurant_name }}">
+    <meta name="twitter:description" content="Ask me anything about our menu, location, or book a table instantly.">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="{{ theme_color or '#2563EB' }}">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+
+            /* Fix: Ensure single line to prevent Jinja/CSS syntax errors */
+            /* --theme-color is defined in the body tag */
+
+            /* Light Mode (Default) match bot_builder */
+            --bg-app: #f3f4f6;
+            --bg-surface: #ffffff;
+            --bg-bubble-bot: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --btn-color: var(--theme-color);
+        }
+
+        .dark {
+            /* Dark Mode match bot_builder */
+            --bg-app: #121212;
+            --bg-surface: #1E1E1E;
+            --bg-bubble-bot: #2C2C2C;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        .chat-scroll::-webkit-scrollbar {
+            display: none;
+            width: 0px;
+        }
+
+        .chat-scroll {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* Transition for theme switch */
+        body,
+        main,
+        header,
+        footer,
+        div,
+        input,
+        button {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Theme Button Style (matches preview-theme-btn) */
+        .dynamic-btn {
+            border: 1px solid var(--btn-color) !important;
+            color: var(--text-primary) !important;
+            background: transparent !important;
+            transition: all 0.2s;
+        }
+
+        .dynamic-btn:hover {
+            background-color: var(--btn-color) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: currentColor;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+            margin: 0 1px;
+            opacity: 0.7;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+{% set is_embed = mode == 'embed' %}
+
+<!-- BODY: Handles Standalone (Desktop/Mobile) vs Embed layout -->
+
+<body id="body-el" style="--theme-color: {{ theme_color or '#2563EB' }};"
+    class="h-screen w-full flex flex-col font-sans antialiased overflow-hidden bg-[var(--bg-app)] transition-colors duration-300">
+
+    <!-- MAIN CONTAINER (The Phone Frame) -->
+    <main id="app-frame" class="w-full h-full flex flex-col relative bg-[var(--bg-app)] transition-colors duration-300">
+
+        <!-- 1. HEADER (Sticky Top, Glass) -->
+        <header
+            class="bg-[var(--bg-app)]/95 backdrop-blur-sm border-b border-[var(--border-color)] px-4 py-3 flex items-center justify-between shrink-0 z-20 relative transition-colors duration-300">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    {% if client.knowledge_base and client.knowledge_base.avatar_image %}
+                    <img src="{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) }}"
+                        class="w-10 h-10 rounded-full object-cover border border-[var(--border-color)]"
+                        alt="{{ client.restaurant_name }} Logo">
+                    {% else %}
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold border border-[var(--border-color)] text-white"
+                        style="background-color: var(--theme-color);">
+                        {{ client.restaurant_name[0] }}
+                    </div>
+                    {% endif %}
+                    <span
+                        class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-[var(--bg-app)] rounded-full"></span>
+                </div>
+                <div>
+                    <h1
+                        class="font-bold text-[var(--text-primary)] text-sm leading-tight transition-colors duration-300">
+                        {{ client.restaurant_name }}
+                    </h1>
+                    <p class="text-xs text-[var(--text-secondary)] font-medium transition-colors duration-300">Online
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()"
+                    class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition p-1.5 hover:bg-[var(--bg-surface)] rounded-full"
+                    title="Toggle Theme" aria-label="Toggle Dark Mode">
+                    <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+
+                <button onclick="window.location.reload()"
+                    class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition p-1.5 hover:bg-[var(--bg-surface)] rounded-full"
+                    title="Reset Chat" aria-label="Reset Conversation">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- 2. CHAT AREA (Scrollable Middle) -->
+        <div id="chat-container"
+            class="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth chat-scroll relative z-0 bg-[var(--bg-app)] transition-colors duration-300">
+
+
+
+            <!-- Greeting Block -->
+            <div class="flex flex-col items-start max-w-[90%]">
+                <!-- Bot Bubble with Avatar -->
+                <div class="flex items-end gap-2 mb-1">
+                    <!-- Avatar -->
+                    {% if client.knowledge_base and client.knowledge_base.avatar_image %}
+                    <img src="{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) }}"
+                        class="w-8 h-8 rounded-full object-cover border border-[var(--border-color)] shadow-sm"
+                        alt="{{ client.restaurant_name }} Avatar">
+                    {% else %}
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border border-[var(--border-color)] shadow-sm text-white"
+                        style="background-color: var(--theme-color);">
+                        {{ client.restaurant_name[0] }}
+                    </div>
+                    {% endif %}
+
+                    <div class="px-4 py-3 rounded-2xl rounded-tl-none shadow-sm text-sm leading-relaxed border transition-colors duration-300 max-w-[85%] break-words whitespace-pre-line"
+                        style="background-color: var(--bg-bubble-bot); border-color: var(--border-color); color: var(--text-primary);">
+                        {{ (kb.welcome_message or 'Hello! How can I help you today?') | trim }}</div>
+                </div>
+
+                <script>
+                        (function () {
+                            try {
+                                // Helper for inline linkify
+                                function inlineLinkify(text) {
+                                    if (!text) return '';
+
+                                    // 1. Emails
+                                    text = text.replace(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi, '<a href="mailto:$1" class="text-blue-600 hover:text-blue-800 underline break-words z-50 relative pointer-events-auto">$1</a>');
+
+                                    // 2. Standard URLs
+                                    const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+                                    text = text.replace(urlRegex, function (url) {
+                                        return '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline break-words z-50 relative pointer-events-auto">' + url + '</a>';
+                                    });
+
+                                    // 3. Naked Domains
+                                    const nakedRegex = /(^|[\s\n])((?:www\.|instagram\.com|tiktok\.com|facebook\.com|x\.com|twitter\.com)[a-zA-Z0-9\-\.\/\_\?\=\+\&\%\@]+)/gim;
+                                    text = text.replace(nakedRegex, function (match, prefix, content) {
+                                        return prefix + '<a href="https://' + content + '" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline break-words z-50 relative pointer-events-auto">' + content + '</a>';
+                                    });
+
+                                    return text;
+                                }
+
+
+                                var bubbles = document.querySelectorAll('.whitespace-pre-line');
+                                if (bubbles.length > 0) {
+                                    var greeting = bubbles[0];
+                                    // 1. Get text (trim is handled by CSS/Server mostly, but we force trim here)
+                                    var rawText = greeting.innerText || greeting.textContent;
+                                    rawText = rawText.trim();
+
+                                    // 2. Linkify and set HTML
+                                    greeting.innerHTML = inlineLinkify(rawText);
+                                }
+                            } catch (e) { }
+                        })();
+                </script>
+                <!-- Quick Actions -->
+                <div id="quick-actions"
+                    class="generated-buttons flex flex-wrap gap-2 mt-2.5 ml-10 justify-start w-full">
+                    {% for btn in starters %}
+                    <button data-index="{{ loop.index0 }}"
+                        onclick="handleAction(STARTERS_DATA[this.dataset.index], event)"
+                        class="dynamic-btn px-4 py-2 rounded-2xl text-xs font-medium border shadow-sm whitespace-normal h-auto leading-tight text-center max-w-[200px]"
+                        style="--btn-color: {{ theme_color }};">
+                        {{ btn.label }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Dynamic Conversation -->
+            <div id="conversation-area" class="space-y-4 w-full" role="log" aria-live="polite" aria-atomic="false">
+            </div>
+            <div id="messages-end"></div>
+        </div>
+
+        <!-- 3. COMPOSER (Sticky Bottom) -->
+        <footer
+            class="shrink-0 p-4 border-t bg-[var(--bg-app)] border-[var(--border-color)] transition-colors duration-300 z-20">
+            <form id="chat-form" onsubmit="handleUserSubmit(event)" class="relative flex items-center">
+                <input type="text" id="user-input" placeholder="Type a message..." aria-label="Type your message"
+                    class="w-full bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm rounded-full pl-5 pr-12 py-3.5 focus:outline-none shadow-inner transition-colors duration-300 placeholder-[var(--text-secondary)]"
+                    style="--tw-ring-color: var(--theme-color);" autocomplete="off">
+                <button type="submit" aria-label="Send Message"
+                    class="absolute right-2 p-2 text-white rounded-full hover:opacity-90 transition shadow-lg flex items-center justify-center"
+                    style="background-color: var(--theme-color);">
+                    <svg class="w-4 h-4 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </form>
+
+            {% if not client.is_white_labeled %}
+            <div class="text-center mt-3">
+                <a href="#"
+                    class="text-[10px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium tracking-wide transition-colors">
+                    Powered by <span class="font-bold text-blue-600">JESSE</span>
+                </a>
+            </div>
+            {% endif %}
+        </footer>
+
+    </main>
+
+    <!-- Logic Script -->
+    <script id="starters-data-json" type="application/json">
+        {{ starters | tojson | safe }}
+    </script>
+    <script id="menu-data-json" type="application/json">
+        {{ menu_data | tojson | safe }}
+    </script>
+    <script id="menu-config-json" type="application/json">
+        {{ menu_config | tojson | safe }}
+    </script>
+    <script>
+        const CLIENT_THEME = "{{ theme_color }}";
+        const CLIENT_INITIAL = "{{ client.restaurant_name[0] }}";
+        const CLIENT_PUBLIC_ID = "{{ client.public_id }}";
+        const BOT_AVATAR_URL = "{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) if client.knowledge_base and client.knowledge_base.avatar_image else '' }}";
+
+        // Dynamic Menu Data
+        let MENU_DATA = [];
+        const MENU_CURRENCY = "{{ currency }}";
+
+        try {
+            const menuContent = document.getElementById('menu-data-json').textContent;
+            if (menuContent && menuContent.trim()) {
+                MENU_DATA = JSON.parse(menuContent);
+            }
+        } catch (e) {
+            console.error('Failed to parse menu data', e);
+        }
+
+        let MENU_CONFIG = { message: "", buttons: [] };
+        try {
+            const configContent = document.getElementById('menu-config-json').textContent;
+            if (configContent && configContent.trim()) {
+                const parsed = JSON.parse(configContent);
+                if (parsed) {
+                    if (typeof parsed === 'string' && parsed.trim().startsWith('{')) {
+                        MENU_CONFIG = JSON.parse(parsed);
+                    } else if (typeof parsed === 'object') {
+                        MENU_CONFIG = parsed;
+                    } else if (typeof parsed === 'string') {
+                        MENU_CONFIG.message = parsed;
+                    }
+                }
+            }
+        } catch (e) { console.error('Failed to parse menu config', e); }
+
+        let STARTERS_DATA = [];
+        try {
+            STARTERS_DATA = JSON.parse(document.getElementById('starters-data-json').textContent);
+        } catch (e) {
+            console.error('Failed to parse starters data', e);
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/chat_widget.js') }}"></script>
+</body>
+
+</html>

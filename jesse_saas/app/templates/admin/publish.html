@@ -1,0 +1,120 @@
+{% extends "admin/client_studio_layout.html" %}
+
+{% block studio_content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Publish Center</h1>
+            <p class="text-sm text-gray-500">Manage deployment, security, and maintenance status.</p>
+        </div>
+        <button type="submit" form="publish-form"
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">
+            Save Changes
+        </button>
+    </div>
+
+    <form id="publish-form" method="POST" class="space-y-8">
+        <!-- Card 1: Maintenance Mode -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-900">Maintenance Mode</h3>
+                <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if client.is_maintenance_mode %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+                    {% if client.is_maintenance_mode %}OFFLINE{% else %}LIVE{% endif %}
+                </span>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="max-w-xl">
+                        <p class="text-sm text-gray-600">
+                            When active, the bot will show a "Under Maintenance" message to all users.
+                            Use this when updating the menu or prompts to prevent inconsistent answers.
+                        </p>
+                    </div>
+                    <!-- Toggle -->
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_maintenance_mode" value="true" class="sr-only peer" {% if
+                            client.is_maintenance_mode %}checked{% endif %}>
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600">
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Website Integration -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900">Website Integration</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-600">
+                    Copy and paste the following code into your website's <code>&lt;body&gt;</code> or
+                    <code>&lt;head&gt;</code> tag to deploy the chat widget.
+                </p>
+
+                <div class="relative group">
+                    <div class="absolute right-2 top-2">
+                        <button type="button" onclick="copyCode()"
+                            class="bg-gray-700 text-white text-xs px-2 py-1 rounded hover:bg-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Copy
+                        </button>
+                    </div>
+                    <pre id="embed-code"
+                        class="bg-gray-800 text-gray-100 p-4 rounded-lg text-sm font-mono overflow-x-auto whitespace-pre-wrap">&lt;script 
+  src="{{ url_for('static', filename='widget.js', _external=True) }}" 
+  data-client-slug="{{ client.slug }}" 
+  async&gt;
+&lt;/script&gt;</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Security -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900">Security & Whitelisting</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Allowed Domains (CORS)</label>
+                    <input type="text" name="allowed_domains" value="{{ client.allowed_domains or '' }}"
+                        placeholder="example.com, lunaresto.com"
+                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <p class="text-xs text-gray-500 mt-2">
+                        Leave empty to allow all domains (Not recommended for production).
+                        Enter domains separated by commas to prevent other websites from stealing your bot.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Direct Test -->
+        <div class="bg-blue-50 border border-blue-100 rounded-lg p-6 flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-semibold text-blue-900">Direct Access Test</h3>
+                <p class="text-sm text-blue-700">Open the full-page chat interface to test exactly what your users see.
+                </p>
+            </div>
+            <a href="{{ url_for('standalone_chat', public_id=client.public_id) }}" target="_blank"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-2">
+                Open Chat
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function copyCode() {
+        const code = document.getElementById('embed-code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            alert('Code copied to clipboard!');
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="h-full bg-gray-50 p-6 md:p-8 overflow-y-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-end mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 tracking-tight">SaaS Control Tower</h1>
+            <p class="text-gray-500 mt-1">Real-time overview of business performance and system health.</p>
+        </div>
+        <div class="flex gap-3">
+            <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <span class="w-2 h-2 mr-1 bg-green-500 rounded-full animate-pulse"></span>
+                System Operational
+            </span>
+        </div>
+    </div>
+
+    <!-- 1. KPI Cards (Existing Features Preserved) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- MRR Card -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Estimated MRR</h3>
+                <span class="p-2 bg-green-50 text-green-600 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline mb-2">
+                <span class="text-3xl font-bold text-gray-900">${{ stats.mrr }}</span>
+                <span class="ml-2 text-xs text-green-500 font-bold bg-green-100 px-2 py-0.5 rounded-full">+12%</span>
+            </div>
+            <p class="text-xs text-gray-400">Recurring revenue from Pro plans</p>
+        </div>
+
+        <!-- System Load -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">System Load</h3>
+                <span class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline mb-2">
+                <span class="text-3xl font-bold text-gray-900">{{ stats.total_interactions }}</span>
+                <span class="ml-2 text-xs text-gray-500 font-medium">hits</span>
+            </div>
+            <p class="text-xs text-gray-400">Total API calls processed</p>
+        </div>
+
+        <!-- Token Cost -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">AI Costs</h3>
+                <span class="p-2 bg-orange-50 text-orange-600 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline mb-2">
+                <span class="text-3xl font-bold text-gray-900">${{ stats.token_cost }}</span>
+                <span class="ml-2 text-xs text-gray-400 font-medium">est.</span>
+            </div>
+            <p class="text-xs text-gray-400">Pass-through LLM fees</p>
+        </div>
+
+        <!-- Active Clients -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Assets</h3>
+                <span class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                        </path>
+                    </svg>
+                </span>
+            </div>
+            <div class="flex items-baseline mb-2">
+                <span class="text-3xl font-bold text-gray-900">{{ stats.total_clients }}</span>
+                <span class="ml-2 text-xs text-gray-500 font-medium">deployments</span>
+            </div>
+            <div class="flex gap-2 text-xs">
+                <span class="text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded font-medium">{{ stats.pro_clients }}
+                    Pro</span>
+                <span class="text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{{ stats.basic_clients }} Basic</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Main Content Grid (New Features) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- LEFT: Global Live Feed -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">Global Pulse</h3>
+                    <span class="flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                </div>
+                <div class="divide-y divide-gray-100 max-h-[500px] overflow-y-auto">
+                    {% for log in recent_logs %}
+                    <div class="p-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-3">
+                                <!-- Client Avatar/Icon -->
+                                <div
+                                    class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0">
+                                    {{ log.client.restaurant_name[:2].upper() }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">{{ log.client.restaurant_name }}</p>
+                                    <p class="text-xs text-gray-500 flex items-center gap-1">
+                                        {{ log.interaction_type }}
+                                        <span>&bull;</span>
+                                        {{ log.timestamp.strftime('%H:%M:%S') }}
+                                        <span class="hidden group-hover:inline text-blue-500 ml-2">&rarr; View
+                                            Log</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="mt-2 pl-11 text-sm text-gray-600 font-mono bg-gray-50 p-2 rounded border border-gray-100 truncate">
+                            {{ log.user_query }}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="p-8 text-center text-gray-500 text-sm">Waiting for incoming traffic...</div>
+                    {% endfor %}
+                </div>
+                <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                    <a href="{{ url_for('admin.system_logs') }}"
+                        class="text-xs font-bold text-blue-600 hover:text-blue-800 uppercase tracking-wide">View All
+                        System Logs</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Top Performers & Health -->
+        <div class="space-y-6">
+            <!-- Top Clients -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="font-bold text-gray-800 mb-4">Top Performing Assets</h3>
+                <div class="space-y-4">
+                    {% for client in top_clients %}
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-400 font-bold text-sm">#{{ loop.index }}</span>
+                            <a href="{{ url_for('admin.client_hub', client_id=client.id) }}"
+                                class="text-sm font-medium text-gray-700 hover:text-blue-600 truncate max-w-[120px]">
+                                {{ client.restaurant_name }}
+                            </a>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-sm font-bold text-gray-900">{{ client.interaction_count }}</span>
+                            <span class="block text-[10px] text-gray-400 uppercase">Interactions</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Promotion / Upsell Placeholder -->
+            <div
+                class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="font-bold text-lg mb-1">Scale Your Business</h3>
+                    <p class="text-gray-400 text-sm mb-4">3 clients are approaching their Basic plan limits.</p>
+                    <button
+                        class="bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        Review Limits
+                    </button>
+                </div>
+                <!-- Decorative elements -->
+                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-500 rounded-full opacity-20 blur-xl">
+                </div>
+                <div class="absolute bottom-0 right-10 w-16 h-16 bg-purple-500 rounded-full opacity-20 blur-xl"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
