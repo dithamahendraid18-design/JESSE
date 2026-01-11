@@ -47,10 +47,7 @@ class BotService:
         if 'welcome_image' in files:
             file = files['welcome_image']
             if file and file.filename != '':
-                if os.environ.get('VERCEL'):
-                    upload_folder = os.path.join('/tmp', 'uploads', 'welcome')
-                else:
-                    upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'welcome')
+                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'welcome')
                 
                 try:
                     os.makedirs(upload_folder, exist_ok=True)
@@ -74,10 +71,7 @@ class BotService:
         if 'book_cover' in files:
             file = files['book_cover']
             if file and file.filename != '':
-                if os.environ.get('VERCEL'):
-                    upload_folder = os.path.join('/tmp', 'uploads', 'menu')
-                else:
-                    upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
+                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
                     
                 try:
                     os.makedirs(upload_folder, exist_ok=True)
@@ -91,10 +85,7 @@ class BotService:
         if 'book_logo' in files:
             file = files['book_logo']
             if file and file.filename != '':
-                if os.environ.get('VERCEL'):
-                    upload_folder = os.path.join('/tmp', 'uploads', 'menu')
-                else:
-                    upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
+                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
                     
                 try:
                     os.makedirs(upload_folder, exist_ok=True)

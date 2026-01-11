@@ -100,11 +100,7 @@ class ClientManager:
                     db.session.add(kb)
                     db.session.commit() 
                 
-                # Vercel Read-Only fix: Use /tmp if on Serverless
-                if os.environ.get('VERCEL'):
-                    upload_folder = os.path.join('/tmp', 'uploads', 'avatars')
-                else:
-                    upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'avatars')
+                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'avatars')
 
                 try:
                     os.makedirs(upload_folder, exist_ok=True)
@@ -113,7 +109,6 @@ class ClientManager:
                     client.knowledge_base.avatar_image = filename
                 except OSError as e:
                     print(f"Upload Error (Read-Only FS?): {e}")
-                    # Don't crash the request, just skip the file save
                     pass
 
         db.session.commit()

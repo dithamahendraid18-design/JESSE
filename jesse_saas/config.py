@@ -30,7 +30,11 @@ class Config:
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'admin123'
     
     # Paths
-    UPLOAD_FOLDER = os.path.join(basedir, 'app', 'static', 'uploads')
+    # Paths
+    if os.environ.get('VERCEL'):
+        UPLOAD_FOLDER = os.path.join('/tmp', 'uploads')
+    else:
+        UPLOAD_FOLDER = os.path.join(basedir, 'app', 'static', 'uploads')
     
     # Business Logic / Pricing
     PRICING_PRO_MONTHLY = 49
