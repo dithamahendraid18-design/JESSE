@@ -83,7 +83,23 @@ class BotService:
                 os.makedirs(upload_folder, exist_ok=True)
                 filename = secure_filename(f"logo_{client.public_id}_{file.filename}")
                 file.save(os.path.join(upload_folder, filename))
+                filename = secure_filename(f"logo_{client.public_id}_{file.filename}")
+                file.save(os.path.join(upload_folder, filename))
                 kb.book_logo_image = filename
+                
+        # 5. Last Page Content
+        if 'last_page_title' in form_data:
+            kb.last_page_title = form_data.get('last_page_title')
+        if 'last_page_order_desc' in form_data:
+            kb.last_page_order_desc = form_data.get('last_page_order_desc')
+        if 'last_page_res_desc' in form_data:
+            kb.last_page_res_desc = form_data.get('last_page_res_desc')
+            
+        # 6. Table of Contents
+        if 'toc_title' in form_data:
+            kb.toc_title = form_data.get('toc_title')
+        if 'toc_footer_text' in form_data:
+            kb.toc_footer_text = form_data.get('toc_footer_text')
 
         db.session.commit()
         return kb

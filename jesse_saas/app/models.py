@@ -98,8 +98,17 @@ class KnowledgeBase(db.Model):
     book_theme_color = db.Column(db.String(7), nullable=True) # e.g. #8B4513
     book_cover_image = db.Column(db.String(255), nullable=True) # Specific Portrait Cover
     book_cover_style = db.Column(db.String(20), default='cover') # 'cover' or 'contain'
-    book_logo_image = db.Column(db.String(255), nullable=True) # Specific Book Branding
+    book_logo_image = db.Column(db.String(255), nullable=True) # Logo on cover
+    
+    # Last Page / Back Cover Content
+    last_page_title = db.Column(db.String(100), default="Thank You for Visiting")
+    last_page_order_desc = db.Column(db.Text, default="Enjoy our food from the comfort of your home. We deliver straight to your door.")
+    last_page_res_desc = db.Column(db.Text, default="Planning a special dinner? Book a table with us and let us serve you.")
 
+    # Table of Contents Content
+    toc_title = db.Column(db.String(100), default="Table of Contents")
+    toc_footer_text = db.Column(db.String(200), default="Tap to browse menu")
+    
     # Dynamic Intent Flows
     flow_menu = db.Column(db.Text, nullable=True)
     flow_hours = db.Column(db.Text, nullable=True)

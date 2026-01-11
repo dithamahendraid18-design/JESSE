@@ -118,6 +118,57 @@
                 <p class="text-xs text-gray-500 mt-2">Overrides the main avatar for the book cover.</p>
             </div>
 
+            <!-- Table of Contents Settings -->
+            <div class="border-t border-gray-100 pt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Table of Contents Settings</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <!-- TOC Title -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Page Title</label>
+                        <input type="text" name="toc_title"
+                            value="{{ client.knowledge_base.toc_title or 'Table of Contents' }}"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            placeholder="Table of Contents">
+                    </div>
+                    <!-- Footer Text -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Footer Label</label>
+                        <input type="text" name="toc_footer_text"
+                            value="{{ client.knowledge_base.toc_footer_text or 'Tap to browse menu' }}"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            placeholder="Tap to browse menu">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last Page / Back Cover Content -->
+            <div class="border-t border-gray-100 pt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Last Page Content</h3>
+
+                <!-- Title -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Back Cover Title</label>
+                    <input type="text" name="last_page_title"
+                        value="{{ client.knowledge_base.last_page_title or 'Thank You for Visiting' }}"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                </div>
+
+                <!-- Order Online Section -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">"Order Online" Description</label>
+                    <textarea name="last_page_order_desc" rows="2"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">{{ client.knowledge_base.last_page_order_desc or 'Enjoy our food from the comfort of your home.' }}</textarea>
+                </div>
+
+                <!-- Reservation Section -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">"Table Reservation"
+                        Description</label>
+                    <textarea name="last_page_res_desc" rows="2"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">{{ client.knowledge_base.last_page_res_desc or 'Planning a special dinner? Book a table with us.' }}</textarea>
+                </div>
+            </div>
+
             <div class="pt-4 border-t border-gray-100 flex justify-end">
                 <button type="submit"
                     class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium shadow-sm transition-colors">
