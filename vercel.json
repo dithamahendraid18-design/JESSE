@@ -1,15 +1,8 @@
 {
-    "version": 2,
-    "builds": [
+    "rewrites": [
         {
-            "src": "jesse_saas/run.py",
-            "use": "@vercel/python"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "jesse_saas/run.py"
+            "source": "/(.*)",
+            "destination": "/api/index"
         }
     ]
 }
