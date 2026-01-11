@@ -3,18 +3,16 @@ import sys
 
 # Vercel entry point
 # Add the compiled code directory to sys.path
-# Note: Vercel places code in /var/task usually, so we ensure root is in path
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
-# Go up one level to get to project root
 project_root = os.path.dirname(current_dir)
+
+# Add project root
 sys.path.append(project_root)
 
-# Also add jesse_saas specifically if needed, but project_root + relative imports should work
-# if app code is in jesse_saas package
+# Add 'jesse_saas' directory specifically so we can import 'app' directly
+jesse_saas_dir = os.path.join(project_root, 'jesse_saas')
+sys.path.append(jesse_saas_dir)
 
-from jesse_saas.app import create_app
+from app import create_app
 
 app = create_app()
-
-# Vercel requires the variable 'app' to be available
