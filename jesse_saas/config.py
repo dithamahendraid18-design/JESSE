@@ -14,10 +14,14 @@ class Config:
     if not _db_url:
         if os.environ.get('VERCEL'):
              # Vercel Runtime: Use /tmp
+             print("⚠️  WARNING: Running on Vercel without DATABASE_URL. Using ephemeral SQLite in /tmp. DATA WILL BE LOST.")
              _db_url = 'sqlite:////tmp/site.db'
         else:
              # Local Dev: Use project folder
+             print("ℹ️  Running locally. Using local site.db.")
              _db_url = 'sqlite:///' + os.path.join(basedir, 'site.db')
+    else:
+        print(f"✅  Database configured from environment: {_db_url.split('@')[-1] if '@' in _db_url else 'External DB'}")
 
     SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
