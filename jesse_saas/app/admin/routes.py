@@ -342,13 +342,16 @@ def client_qr(client_id):
     client = Client.query.get_or_404(client_id)
     target_url = f"{request.host_url}chat/{client.public_id}"
     
-    img = qrcode.make(target_url)
+    # Use SVG factory to avoid Pillow dependency (saves ~50MB)
+    import qrcode.image.svg
+    factory = qrcode.image.svg.SvgPathImage
+    img = qrcode.make(target_url, image_factory=factory)
     
     buf = io.BytesIO()
     img.save(buf)
     buf.seek(0)
     
-    return send_file(buf, mimetype='image/png')
+    return send_file(buf, mimetype='image/svg+xml')
 
 @bp.route('/client/<int:client_id>/stats')
 @bp.route('/client/<int:client_id>/stats/<view_mode>')

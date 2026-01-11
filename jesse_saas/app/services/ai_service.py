@@ -1,27 +1,19 @@
 import os
-from groq import Groq
+import requests
+import json
 
-# Initialize Groq Client
-# Ensure GROQ_API_KEY is in your .env
-client = None
-
-def get_client():
-    global client
-    if client is None:
-        api_key = os.environ.get("GROQ_API_KEY")
-        if api_key:
-            client = Groq(api_key=api_key)
-    return client
+# Replaces Groq SDK to save space (removes pydantic, anyio, etc)
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 def generate_smart_reply(user_message, client_model, kb):
     """
-    Generates a response using Groq (Llama 3.1) based on the restaurant's Knowledge Base.
+    Generates a response using Groq API (Llama 3.1) via raw HTTP requests.
     """
-    groq = get_client()
-    if not groq:
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
         return "System Error: AI Service not configured (Missing API Key)."
 
-    # Construct System Prompt
+    # Construct System Prompt (Preserved from original)
     system_prompt = f"""
 You are the AI Concierge for {client_model.restaurant_name}.
 Your job is to answer guest questions strictly based on the provided context.
@@ -46,17 +38,26 @@ GUIDELINES:
 - Do NOT make up facts.
 """
 
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant"),
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message}
+        ],
+        "temperature": 0.7,
+        "max_tokens": 150
+    }
+
     try:
-        completion = groq.chat.completions.create(
-            model=os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant"),
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message}
-            ],
-            temperature=0.7,
-            max_tokens=150,
-        )
-        return completion.choices[0].message.content
+        response = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data['choices'][0]['message']['content']
     except Exception as e:
         print(f"AI Error: {e}")
         return "I'm having trouble connecting to my brain right now. Please try again."
