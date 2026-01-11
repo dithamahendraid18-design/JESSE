@@ -1,0 +1,27 @@
+# Exclude heavy media uploads
+jesse_saas/app/static/uploads/
+
+# Exclude local database
+jesse_saas/site.db
+*.sqlite3
+*.db
+
+# Exclude virtual environments
+venv/
+.venv/
+env/
+
+# Exclude compiled python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Exclude git
+.git/
+.gitignore
+
+# Exclude dev-only files
+scripts/
+tests/
+*.log
