@@ -1,1 +1,1 @@
-web: gunicorn jesse_saas.run:app
+web: gunicorn --chdir jesse_saas run:app

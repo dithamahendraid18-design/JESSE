@@ -1,3 +1,9 @@
+import os
+import sys
+
+# Add this directory to sys.path so 'app' can be imported when running from root
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from app import create_app, db
 from app.models import Client, KnowledgeBase, InteractionLog
 import os
