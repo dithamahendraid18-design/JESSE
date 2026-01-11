@@ -47,12 +47,18 @@ class BotService:
         if 'welcome_image' in files:
             file = files['welcome_image']
             if file and file.filename != '':
-                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'welcome')
-                os.makedirs(upload_folder, exist_ok=True)
+                if os.environ.get('VERCEL'):
+                    upload_folder = os.path.join('/tmp', 'uploads', 'welcome')
+                else:
+                    upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'welcome')
                 
-                filename = secure_filename(f"{client.public_id}_{file.filename}")
-                file.save(os.path.join(upload_folder, filename))
-                kb.welcome_image_url = filename
+                try:
+                    os.makedirs(upload_folder, exist_ok=True)
+                    filename = secure_filename(f"{client.public_id}_{file.filename}")
+                    file.save(os.path.join(upload_folder, filename))
+                    kb.welcome_image_url = filename
+                except OSError:
+                    pass
 
         # 4. Book Assets (Cover & Logo)
         
@@ -68,24 +74,36 @@ class BotService:
         if 'book_cover' in files:
             file = files['book_cover']
             if file and file.filename != '':
-                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
-                os.makedirs(upload_folder, exist_ok=True)
-                filename = secure_filename(f"cover_{client.public_id}_{file.filename}")
-                file.save(os.path.join(upload_folder, filename))
-                kb.book_cover_image = filename
+                if os.environ.get('VERCEL'):
+                    upload_folder = os.path.join('/tmp', 'uploads', 'menu')
+                else:
+                    upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
+                    
+                try:
+                    os.makedirs(upload_folder, exist_ok=True)
+                    filename = secure_filename(f"cover_{client.public_id}_{file.filename}")
+                    file.save(os.path.join(upload_folder, filename))
+                    kb.book_cover_image = filename
+                except OSError:
+                    pass
                 
         # Book Logo
         if 'book_logo' in files:
             file = files['book_logo']
             if file and file.filename != '':
-                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu') # Reuse menu folder or avatars
-                # Let's use menu for book specific assets
-                os.makedirs(upload_folder, exist_ok=True)
-                filename = secure_filename(f"logo_{client.public_id}_{file.filename}")
-                file.save(os.path.join(upload_folder, filename))
-                filename = secure_filename(f"logo_{client.public_id}_{file.filename}")
-                file.save(os.path.join(upload_folder, filename))
-                kb.book_logo_image = filename
+                if os.environ.get('VERCEL'):
+                    upload_folder = os.path.join('/tmp', 'uploads', 'menu')
+                else:
+                    upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
+                    
+                try:
+                    os.makedirs(upload_folder, exist_ok=True)
+                    filename = secure_filename(f"logo_{client.public_id}_{file.filename}")
+                    file.save(os.path.join(upload_folder, filename))
+                    # Why save twice in original? Fixed here.
+                    kb.book_logo_image = filename
+                except OSError:
+                    pass
                 
         # 5. Last Page Content
         if 'last_page_title' in form_data:

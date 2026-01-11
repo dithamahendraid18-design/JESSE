@@ -94,16 +94,27 @@ class ClientManager:
                 from app.models import KnowledgeBase
                 
                 # Ensure KB exists for avatar storage logic (legacy link)
+                # Ensure KB exists for avatar storage logic
                 if not client.knowledge_base:
                     kb = KnowledgeBase(client_id=client.id)
                     db.session.add(kb)
-                    db.session.commit() # Commit to get ID if needed, though simpler just to have obj
+                    db.session.commit() 
                 
-                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'avatars')
-                os.makedirs(upload_folder, exist_ok=True)
-                filename = secure_filename(f"{client.public_id}_{file.filename}")
-                file.save(os.path.join(upload_folder, filename))
-                client.knowledge_base.avatar_image = filename
+                # Vercel Read-Only fix: Use /tmp if on Serverless
+                if os.environ.get('VERCEL'):
+                    upload_folder = os.path.join('/tmp', 'uploads', 'avatars')
+                else:
+                    upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'avatars')
+
+                try:
+                    os.makedirs(upload_folder, exist_ok=True)
+                    filename = secure_filename(f"{client.public_id}_{file.filename}")
+                    file.save(os.path.join(upload_folder, filename))
+                    client.knowledge_base.avatar_image = filename
+                except OSError as e:
+                    print(f"Upload Error (Read-Only FS?): {e}")
+                    # Don't crash the request, just skip the file save
+                    pass
 
         db.session.commit()
         return client
