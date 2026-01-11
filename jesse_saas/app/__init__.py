@@ -14,6 +14,11 @@ def create_app(config_class=Config):
     # Register Models (Importing them ensures they are known to SQLAlchemy/Migrate)
     from . import models
 
+    # Auto-create tables for SQLite fallback (Vercel) to ensure app works immediately
+    # This is a safety net when not using Postgres/Migrations in production yet
+    with app.app_context():
+        db.create_all()
+
     # Register Blueprints
     from .api.routes import bp as api_bp
     app.register_blueprint(api_bp)

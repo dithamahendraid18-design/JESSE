@@ -4,13 +4,22 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-prod'
-    # Database: Prefer specific Vercel URL, then generic DATABASE_URL, then sqlite fallback
-    # Also fix 'postgres://' legacy prefix for SQLAlchemy
+    # Database: Prefer specific Vercel URL, then generic DATABASE_URL
+    # Fallback to SQLite. On Vercel, must use /tmp (writable) instead of root (read-only)
     _db_url = os.environ.get('POSTGRES_URL_NON_POOLING') or os.environ.get('DATABASE_URL')
+    
     if _db_url and _db_url.startswith('postgres://'):
         _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
 
-    SQLALCHEMY_DATABASE_URI = _db_url or 'sqlite:///' + os.path.join(basedir, 'site.db')
+    if not _db_url:
+        if os.environ.get('VERCEL'):
+             # Vercel Runtime: Use /tmp
+             _db_url = 'sqlite:////tmp/site.db'
+        else:
+             # Local Dev: Use project folder
+             _db_url = 'sqlite:///' + os.path.join(basedir, 'site.db')
+
+    SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Security
