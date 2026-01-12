@@ -277,7 +277,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
                         <div class="flex items-center gap-4">
                             {% if client.knowledge_base and client.knowledge_base.avatar_image %}
-                            <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
+                            <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
                                 class="h-12 w-12 rounded-full object-cover border">
                             {% else %}
                             <div

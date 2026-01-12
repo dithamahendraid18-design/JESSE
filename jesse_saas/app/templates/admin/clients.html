@@ -86,8 +86,7 @@
                         <div class="flex-shrink-0 h-10 w-10">
                             {% if client.knowledge_base and client.knowledge_base.avatar_image %}
                             <img class="h-10 w-10 rounded-full object-cover"
-                                src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
-                                alt="">
+                                src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}" alt="">
                             {% else %}
                             <div
                                 class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">

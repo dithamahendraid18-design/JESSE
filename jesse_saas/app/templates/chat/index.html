@@ -12,7 +12,7 @@
     <meta property="og:title" content="Chat with {{ client.restaurant_name }}">
     <meta property="og:description" content="Ask me anything about our menu, location, or book a table instantly.">
     <meta property="og:image"
-        content="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) if client.knowledge_base.avatar_image else '' }}">
+        content="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') if client.knowledge_base.avatar_image else '' }}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ client.restaurant_name }}">
     <meta name="twitter:card" content="summary_large_image">
@@ -181,7 +181,7 @@
             <div class="flex items-center gap-3">
                 <div class="relative">
                     {% if client.knowledge_base and client.knowledge_base.avatar_image %}
-                    <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
+                    <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
                         class="w-10 h-10 rounded-full object-cover border border-[var(--border-color)]"
                         alt="{{ client.restaurant_name }} Logo">
                     {% else %}
@@ -244,7 +244,7 @@
                 <div class="flex items-end gap-2 mb-1">
                     <!-- Avatar -->
                     {% if client.knowledge_base and client.knowledge_base.avatar_image %}
-                    <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
+                    <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
                         class="w-8 h-8 rounded-full object-cover border border-[var(--border-color)] shadow-sm"
                         alt="{{ client.restaurant_name }} Avatar">
                     {% else %}
@@ -361,7 +361,7 @@
         const CLIENT_THEME = "{{ theme_color }}";
         const CLIENT_INITIAL = "{{ client.restaurant_name[0] }}";
         const CLIENT_PUBLIC_ID = "{{ client.public_id }}";
-        const BOT_AVATAR_URL = "{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) if client.knowledge_base and client.knowledge_base.avatar_image else '' }}";
+        const BOT_AVATAR_URL = "{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') if client.knowledge_base and client.knowledge_base.avatar_image else '' }}";
 
         // Dynamic Menu Data
         let MENU_DATA = [];

@@ -57,10 +57,28 @@ def create_app(config_class=Config):
             
         return jsonify(status)
 
+    # Register Template Helper for Cloudinary/Local URLs
+    from app.services.upload_service import UploadService
+    
+    @app.context_processor
+    def utility_processor():
+        def resolve_file(filename, folder=''):
+            if not filename: return None
+            if UploadService.is_remote_url(filename):
+                return filename
+            # Local file logic
+            from flask import url_for
+            path = filename if '/' in filename else f"{folder}/{filename}"
+            return url_for('uploaded_file', filename=path)
+        return dict(resolve_file=resolve_file)
+
     @app.route('/uploads/<path:filename>')
     def uploaded_file(filename):
         from flask import send_from_directory, current_app
-        return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+        # This route is for LOCAL dev only or Vercel /tmp fallback
+        # In cloud mode, resolve_file should return the remote URL directly, never hitting this.
+        upload_folder = current_app.config['UPLOAD_FOLDER']
+        return send_from_directory(upload_folder, filename)
 
     @app.route('/')
     def index():
