@@ -25,6 +25,12 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    # Connection Pooling Stability (Fixes SSL closed unexpectedly)
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+    }
 
     # Security
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'admin123'
