@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models import Client, KnowledgeBase, InteractionLog
 from app.extensions import db
+from app.services.upload_service import UploadService
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -19,13 +20,23 @@ def get_client_config(public_id):
         except:
             starters = []
 
+    
+    def resolve_url(path, folder):
+        if not path: return None
+        if UploadService.is_remote_url(path): return path
+        # If local logic (folder/filename)
+        if '/' in path:
+            return request.host_url + 'static/uploads/' + path
+        # Legacy local logic (filename only)
+        return request.host_url + f'static/uploads/{folder}/' + path
+
     return jsonify({
         "restaurant_name": client.restaurant_name,
         "theme_color": client.theme_color,
         "plan_type": client.plan_type,
         "welcome_message": kb.welcome_message if kb else "Welcome!",
-        "avatar_url": request.host_url + 'static/uploads/avatars/' + kb.avatar_image if kb and kb.avatar_image else None,
-        "welcome_image_url": request.host_url + 'static/uploads/welcome/' + kb.welcome_image_url if kb and kb.welcome_image_url else None,
+        "avatar_url": resolve_url(kb.avatar_image, 'avatars') if kb else None,
+        "welcome_image_url": resolve_url(kb.welcome_image_url, 'welcome') if kb else None,
         "conversation_starters": starters
     }), 200
 
@@ -66,7 +77,12 @@ def chat():
         
         if "menu" in msg_lower:
             text = kb.flow_menu or "Here is our menu:"
-            reply = f"{text}\n\n[Open Menu]({kb.menu_url})" if kb.menu_url else (text if kb.flow_menu else "Menu not available.")
+            menu_url = kb.menu_url if kb.menu_url else None
+            # If menu_url is stored but it's a file? Current logic: menu_url is a String URL usually.
+            # But what if I want to serve the digital menu book URL?
+            # Standard logic: menu_url text field.
+            
+            reply = f"{text}\n\n[Open Menu]({menu_url})" if menu_url else (text if kb.flow_menu else "Menu not available.")
         
         elif "wifi" in msg_lower:
             reply = f"WiFi Password: {kb.wifi_password}" if kb.wifi_password else "No WiFi information."

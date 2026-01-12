@@ -3,6 +3,7 @@ from app.models import Client, KnowledgeBase, InteractionLog, MenuItem
 from app.extensions import db
 from app.services.analytics import AnalyticsService
 from app.services.client_manager import ClientManager
+from app.services.upload_service import UploadService
 from config import Config
 import qrcode
 import io
@@ -27,15 +28,19 @@ def require_login():
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if is_logged_in():
-        return redirect(url_for('admin.dashboard'))
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    # Allow accessing login page even if logged in (to force re-login)
+    pass
 
     if request.method == 'POST':
         password = request.form.get('password')
         admin_pass = Config.ADMIN_PASSWORD
         
         if password == admin_pass:
+            session.clear() # Clear old session first
             session['admin_logged_in'] = True
+            session.permanent = False # Browser session only (cleared on close)
             return redirect(url_for('admin.dashboard'))
         else:
             flash('Invalid Password')
@@ -189,17 +194,7 @@ def client_menu(client_id):
         image_url = None
         if 'image' in request.files:
             file = request.files['image']
-            if file and file.filename != '':
-                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
-                try:
-                    os.makedirs(upload_folder, exist_ok=True)
-                    filename = secure_filename(f"{client.public_id}_{file.filename}")
-                    file.save(os.path.join(upload_folder, filename))
-                    image_url = filename
-                except OSError as e:
-                    print(f"Error saving menu image: {e}")
-                    # On Vercel read-only or permission error, just fail gracefully or log
-                    pass
+            image_url = UploadService.upload(file, folder='menu', public_id_prefix=f"{client.public_id}")
         
         item = MenuItem(
             client_id=client.id,
@@ -231,16 +226,9 @@ def client_menu_edit(client_id, item_id):
     
     if 'image' in request.files:
         file = request.files['image']
-        if file and file.filename != '':
-            upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
-            try:
-                os.makedirs(upload_folder, exist_ok=True)
-                filename = secure_filename(f"{item.client.public_id}_{file.filename}")
-                file.save(os.path.join(upload_folder, filename))
-                item.image_url = filename
-            except OSError as e:
-                print(f"Error saving menu image: {e}")
-                pass
+        url = UploadService.upload(file, folder='menu', public_id_prefix=f"{item.client.public_id}")
+        if url:
+             item.image_url = url
 
     db.session.commit()
     flash('Item updated.', 'success')
@@ -411,11 +399,20 @@ def upload_bot_image():
             os.makedirs(upload_dir, exist_ok=True)
             
             # Save File
-            file.save(os.path.join(upload_dir, filename))
+            # Save File via Service
+            url = UploadService.upload(file, folder='bot_images')
             
-            # Use the new dynamic route for serving
-            url = url_for('uploaded_file', filename=f'bot_images/{filename}')
-            return jsonify({'url': url})
+            if not url:
+                return jsonify({'error': 'Upload failed'}), 500
+                
+            # If local return, we need to wrap it in url_for, but UploadService returns path relative to upload folder?
+            # Our UploadService returns either http URL OR "folder/filename".
+            
+            if UploadService.is_remote_url(url):
+                return jsonify({'url': url})
+            else:
+                # Local fallback logic
+                return jsonify({'url': url_for('uploaded_file', filename=url)})
             
     except Exception as e:
         print(f"UPLOAD ERROR: {str(e)}") # Log to Vercel/Console

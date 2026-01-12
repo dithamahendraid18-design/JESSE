@@ -29,6 +29,11 @@ class Config:
     # Security
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD') or 'admin123'
     
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
+    CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
+    CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
+    
     # Paths
     # Paths
     if os.environ.get('VERCEL'):

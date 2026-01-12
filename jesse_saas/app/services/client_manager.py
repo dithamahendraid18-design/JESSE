@@ -10,6 +10,7 @@ except ImportError:
 
 from app.models import Client, KnowledgeBase
 from app.extensions import db
+from app.services.upload_service import UploadService
 
 class ClientManager:
     @staticmethod
@@ -88,28 +89,10 @@ class ClientManager:
         if files and 'avatar' in files:
             file = files['avatar']
             if file and file.filename != '':
-                from werkzeug.utils import secure_filename
-                import os
-                from flask import current_app
-                from app.models import KnowledgeBase
-                
-                # Ensure KB exists for avatar storage logic (legacy link)
-                # Ensure KB exists for avatar storage logic
-                if not client.knowledge_base:
-                    kb = KnowledgeBase(client_id=client.id)
-                    db.session.add(kb)
-                    db.session.commit() 
-                
-                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'avatars')
-
-                try:
-                    os.makedirs(upload_folder, exist_ok=True)
-                    filename = secure_filename(f"{client.public_id}_{file.filename}")
-                    file.save(os.path.join(upload_folder, filename))
-                    client.knowledge_base.avatar_image = filename
-                except OSError as e:
-                    print(f"Upload Error (Read-Only FS?): {e}")
-                    pass
+                # Upload via Service
+                url = UploadService.upload(file, folder='avatars', public_id_prefix=client.public_id)
+                if url:
+                    client.knowledge_base.avatar_image = url
 
         db.session.commit()
         return client

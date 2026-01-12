@@ -1,9 +1,8 @@
-import json
-import os
 from werkzeug.utils import secure_filename
 from flask import current_app
 from app.extensions import db
 from app.models import KnowledgeBase
+from app.services.upload_service import UploadService
 
 class BotService:
     @staticmethod
@@ -46,16 +45,9 @@ class BotService:
         # Check for new upload
         if 'welcome_image' in files:
             file = files['welcome_image']
-            if file and file.filename != '':
-                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'welcome')
-                
-                try:
-                    os.makedirs(upload_folder, exist_ok=True)
-                    filename = secure_filename(f"{client.public_id}_{file.filename}")
-                    file.save(os.path.join(upload_folder, filename))
-                    kb.welcome_image_url = filename
-                except OSError:
-                    pass
+            url = UploadService.upload(file, folder='welcome', public_id_prefix=client.public_id)
+            if url:
+                kb.welcome_image_url = url
 
         # 4. Book Assets (Cover & Logo)
         
@@ -70,31 +62,16 @@ class BotService:
         # Book Cover Upload
         if 'book_cover' in files:
             file = files['book_cover']
-            if file and file.filename != '':
-                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
-                    
-                try:
-                    os.makedirs(upload_folder, exist_ok=True)
-                    filename = secure_filename(f"cover_{client.public_id}_{file.filename}")
-                    file.save(os.path.join(upload_folder, filename))
-                    kb.book_cover_image = filename
-                except OSError:
-                    pass
+            url = UploadService.upload(file, folder='menu', public_id_prefix=f"cover_{client.public_id}")
+            if url:
+                kb.book_cover_image = url
                 
         # Book Logo
         if 'book_logo' in files:
             file = files['book_logo']
-            if file and file.filename != '':
-                upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], 'menu')
-                    
-                try:
-                    os.makedirs(upload_folder, exist_ok=True)
-                    filename = secure_filename(f"logo_{client.public_id}_{file.filename}")
-                    file.save(os.path.join(upload_folder, filename))
-                    # Why save twice in original? Fixed here.
-                    kb.book_logo_image = filename
-                except OSError:
-                    pass
+            url = UploadService.upload(file, folder='menu', public_id_prefix=f"logo_{client.public_id}")
+            if url:
+                kb.book_logo_image = url
                 
         # 5. Last Page Content
         if 'last_page_title' in form_data:
