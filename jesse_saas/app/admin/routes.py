@@ -28,8 +28,7 @@ def require_login():
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
-@bp.route('/login', methods=['GET', 'POST'])
-def login():
+
     # Allow accessing login page even if logged in (to force re-login)
     pass
 
