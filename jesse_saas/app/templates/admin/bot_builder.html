@@ -92,7 +92,7 @@
                             <div class="flex items-center gap-3">
                                 <div class="relative">
                                     {% if client.knowledge_base and client.knowledge_base.avatar_image %}
-                                    <img src="{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) }}"
+                                    <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
                                         class="w-10 h-10 rounded-full object-cover border border-[var(--border-color)]">
                                     {% else %}
                                     <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold border border-[var(--border-color)] text-white"
@@ -151,7 +151,7 @@
                                 <div class="flex items-end gap-2 mb-1">
                                     <!-- Avatar -->
                                     {% if client.knowledge_base and client.knowledge_base.avatar_image %}
-                                    <img src="{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) }}"
+                                    <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
                                         class="w-8 h-8 rounded-full object-cover border border-[var(--border-color)] shadow-sm">
                                     {% else %}
                                     <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border border-[var(--border-color)] shadow-sm text-white"
@@ -352,7 +352,7 @@
     // === PREVIEW RENDERING HELPERS (Shared with JS or kept here for simple templating) ===
     // These are called by bot_builder.js via window.renderPreviewButtons
 
-    const botAvatarSrc = "{{ url_for('static', filename='uploads/avatars/' + client.knowledge_base.avatar_image) if client.knowledge_base.avatar_image else '' }}";
+    const botAvatarSrc = "{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) if client.knowledge_base.avatar_image else '' }}";
     const clientNameInitial = "{{ client.restaurant_name[0] }}";
     const themeColor = "{{ client.theme_color or '#2563EB' }}";
 

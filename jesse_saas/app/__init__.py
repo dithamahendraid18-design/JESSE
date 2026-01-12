@@ -24,7 +24,13 @@ def create_app(config_class=Config):
     app.register_blueprint(api_bp)
 
     from .admin.routes import bp as admin_bp
+    from .admin.routes import bp as admin_bp
     app.register_blueprint(admin_bp)
+
+    @app.route('/uploads/<path:filename>')
+    def uploaded_file(filename):
+        from flask import send_from_directory, current_app
+        return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
 
     @app.route('/')
     def index():

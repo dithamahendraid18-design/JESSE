@@ -409,11 +409,8 @@ def upload_bot_image():
         try:
             os.makedirs(upload_dir, exist_ok=True)
             file.save(os.path.join(upload_dir, filename))
-            # Note: construct URL manually since static folder might not serve /tmp directly
-            # For Vercel /tmp, serving static files is tricky. 
-            # We return a placeholder or need a route to serve it.
-            # For now, keep as is for local/writable, safeguard for crash.
-            url = url_for('static', filename=f'uploads/bot_images/{filename}')
+            # Correctly generate URL using the dynamic route
+            url = url_for('uploaded_file', filename=f'bot_images/{filename}')
             return jsonify({'url': url})
         except OSError:
             return jsonify({'error': 'Save failed (Read-only FS)'}), 500
