@@ -6,7 +6,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-prod'
     # Database: Prefer specific Vercel URL, then generic DATABASE_URL
     # Fallback to SQLite. On Vercel, must use /tmp (writable) instead of root (read-only)
-    _db_url = os.environ.get('POSTGRES_URL_NON_POOLING') or os.environ.get('DATABASE_URL')
+    _db_url = os.environ.get('POSTGRES_URL') or os.environ.get('POSTGRES_URL_NON_POOLING') or os.environ.get('DATABASE_URL')
     
     if _db_url and _db_url.startswith('postgres://'):
         _db_url = _db_url.replace('postgres://', 'postgresql://', 1)

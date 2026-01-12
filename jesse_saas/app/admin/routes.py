@@ -392,27 +392,33 @@ def client_stats(client_id, view_mode='overview'):
     return render_template('admin/analytics.html', client=client, view_mode=view_mode, active_page=view_mode, **context)
 
 @bp.route('/upload/bot-image', methods=['POST'])
+@bp.route('/upload/bot-image', methods=['POST'])
 def upload_bot_image():
-    if 'image' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
-    
-    file = request.files['image']
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
+    try:
+        if 'image' not in request.files:
+            return jsonify({'error': 'No file part'}), 400
         
-    if file:
-        filename = secure_filename(f"bot_{datetime.now().timestamp()}_{file.filename}")
-        filename = secure_filename(f"bot_{datetime.now().timestamp()}_{file.filename}")
-        # Use UPLOAD_FOLDER from config + 'bot_images'
-        upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'bot_images')
-        
-        try:
+        file = request.files['image']
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+            
+        if file:
+            filename = secure_filename(f"bot_{datetime.now().timestamp()}_{file.filename}")
+            # Use UPLOAD_FOLDER from config + 'bot_images'
+            upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'bot_images')
+            
+            # Ensure upload folder exists (crucial for local/tmp)
             os.makedirs(upload_dir, exist_ok=True)
+            
+            # Save File
             file.save(os.path.join(upload_dir, filename))
-            # Correctly generate URL using the dynamic route
+            
+            # Use the new dynamic route for serving
             url = url_for('uploaded_file', filename=f'bot_images/{filename}')
             return jsonify({'url': url})
-        except OSError:
-            return jsonify({'error': 'Save failed (Read-only FS)'}), 500
-        
-    return jsonify({'error': 'Upload failed'}), 500
+            
+    except Exception as e:
+        print(f"UPLOAD ERROR: {str(e)}") # Log to Vercel/Console
+        return jsonify({'error': f"Server Error: {str(e)}"}), 500
+
+    return jsonify({'error': 'Upload failed unknown'}), 500
