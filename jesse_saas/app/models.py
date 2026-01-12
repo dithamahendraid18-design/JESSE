@@ -89,7 +89,7 @@ class KnowledgeBase(db.Model):
     opening_hours = db.Column(db.Text, nullable=True)
     wifi_password = db.Column(db.String(100), nullable=True)
     contact_phone = db.Column(db.String(50), nullable=True)
-    welcome_message = db.Column(db.String(200), default="Welcome! How can I help you?")
+    welcome_message = db.Column(db.Text, default="Welcome! How can I help you?")
     welcome_image_url = db.Column(db.String(255), nullable=True) # Hero Image
     avatar_image = db.Column(db.String(255), nullable=True)
     menu_image = db.Column(db.String(255), nullable=True)

@@ -70,6 +70,17 @@ def create_app(config_class=Config):
     def favicon():
         return "", 204
 
+    @app.route('/fix-db-schema')
+    def fix_db_schema():
+        from sqlalchemy import text
+        try:
+            with db.engine.connect() as conn:
+                conn.execute(text("ALTER TABLE knowledge_base ALTER COLUMN welcome_message TYPE TEXT;"))
+                conn.commit()
+            return "Schema Fixed: welcome_message is now TEXT."
+        except Exception as e:
+            return f"Error: {e}", 500
+
     # Standalone Chat Page (SSR Simulator)
     @app.route('/chat/<public_id>')
     def standalone_chat(public_id):
