@@ -27,6 +27,36 @@ def create_app(config_class=Config):
     from .admin.routes import bp as admin_bp
     app.register_blueprint(admin_bp)
 
+    @app.route('/db-debug')
+    def db_debug():
+        from flask import jsonify, request
+        from sqlalchemy import inspect, text
+        
+        status = {}
+        try:
+            # 1. Check Connection
+            with db.engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            status['connection'] = 'OK'
+            
+            # 2. Check Tables
+            inspector = inspect(db.engine)
+            tables = inspector.get_table_names()
+            status['tables'] = tables
+            
+            # 3. Force Init (Optional)
+            if request.args.get('init') == 'true':
+                db.create_all()
+                status['init_attempt'] = 'Ran db.create_all()'
+                # Refresh tables
+                status['tables_after_init'] = inspect(db.engine).get_table_names()
+
+        except Exception as e:
+            status['error'] = str(e)
+            return jsonify(status), 500
+            
+        return jsonify(status)
+
     @app.route('/uploads/<path:filename>')
     def uploaded_file(filename):
         from flask import send_from_directory, current_app
