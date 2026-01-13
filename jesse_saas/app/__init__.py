@@ -80,6 +80,13 @@ def create_app(config_class=Config):
         upload_folder = current_app.config['UPLOAD_FOLDER']
         return send_from_directory(upload_folder, filename)
 
+    @app.route('/favicon.png')
+    def favicon():
+        from flask import send_from_directory
+        import os
+        return send_from_directory(os.path.join(app.root_path, 'static', 'img'),
+                                   'favicon.png', mimetype='image/png')
+
     @app.route('/')
     def index():
         return "JESSE SaaS Backend Active. Go to /admin/login."
