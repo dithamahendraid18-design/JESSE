@@ -729,6 +729,34 @@
             });
         });
 
+        // Swipe Handling for Mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const SWIPE_THRESHOLD = 50;
+
+        book.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        book.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+
+            if (Math.abs(swipeDistance) > SWIPE_THRESHOLD) {
+                if (swipeDistance < 0) {
+                    // Swiped Left -> Next Page
+                    flipNext();
+                } else {
+                    // Swiped Right -> Prev Page
+                    flipPrev();
+                }
+            }
+        }
+
         // Touch logic (same as before)
         let touchStartX = 0;
         let touchEndX = 0;
