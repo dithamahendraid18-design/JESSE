@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ client.restaurant_name }} - Menu</title>
+    <link rel="icon" type="image/png"
+        href="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') if client.knowledge_base.avatar_image else url_for('static', filename='favicon.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap"

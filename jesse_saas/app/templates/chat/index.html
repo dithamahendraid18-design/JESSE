@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ client.restaurant_name }} - AI Assistant</title>
-
+    <link rel="icon" type="image/png"
+        href="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') if client.knowledge_base.avatar_image else url_for('static', filename='favicon.png') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- SEO & Open Graph -->
     <meta name="description"
         content="Chat with {{ client.restaurant_name }}'s AI Assistant for menu, hours, and reservations.">
