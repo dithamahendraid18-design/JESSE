@@ -38,15 +38,16 @@
             justify-content: center;
             align-items: center;
             perspective: 2000px;
-            overflow: hidden;
+            /* overflow: hidden; Removed to prevent clipping wide open book */
         }
 
-        /* Mobile first book size - updated for Single Page Desktop */
+        /* Standard Book Size - Wider Ratio */
         .book {
             position: relative;
             width: 90vw;
             max-width: 600px;
-            aspect-ratio: 3/5;
+            aspect-ratio: 3/4;
+            /* 3/4 Ratio (0.75) matches the "Wide" screenshot better than 3/5 (0.6) */
             height: auto;
             max-height: 85vh;
             transform-style: preserve-3d;
