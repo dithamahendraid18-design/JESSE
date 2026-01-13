@@ -170,7 +170,7 @@
 <!-- BODY: Handles Standalone (Desktop/Mobile) vs Embed layout -->
 
 <body id="body-el" style="--theme-color: {{ theme_color or '#2563EB' }};"
-    class="h-screen w-full flex flex-col font-sans antialiased overflow-hidden bg-[var(--bg-app)] transition-colors duration-300">
+    class="h-[100dvh] w-full flex flex-col font-sans antialiased overflow-hidden bg-[var(--bg-app)] transition-colors duration-300">
 
     <!-- MAIN CONTAINER (The Phone Frame) -->
     <main id="app-frame" class="w-full h-full flex flex-col relative bg-[var(--bg-app)] transition-colors duration-300">
@@ -323,7 +323,7 @@
             class="shrink-0 p-4 border-t bg-[var(--bg-app)] border-[var(--border-color)] transition-colors duration-300 z-20">
             <form id="chat-form" onsubmit="handleUserSubmit(event)" class="relative flex items-center">
                 <input type="text" id="user-input" placeholder="Type a message..." aria-label="Type your message"
-                    class="w-full bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm rounded-full pl-5 pr-12 py-3.5 focus:outline-none shadow-inner transition-colors duration-300 placeholder-[var(--text-secondary)]"
+                    class="w-full bg-[var(--bg-surface)] border border-[var(--border-color)] text-base md:text-sm rounded-full pl-5 pr-12 py-3.5 focus:outline-none shadow-inner transition-colors duration-300 placeholder-[var(--text-secondary)]"
                     style="--tw-ring-color: var(--theme-color);" autocomplete="off">
                 <button type="submit" aria-label="Send Message"
                     class="absolute right-2 p-2 text-white rounded-full hover:opacity-90 transition shadow-lg flex items-center justify-center"
