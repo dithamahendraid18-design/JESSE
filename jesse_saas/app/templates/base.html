@@ -11,7 +11,11 @@
             font-family: 'Inter', sans-serif;
         }
     </style>
+    {% if client and client.knowledge_base and client.knowledge_base.avatar_image %}
+    <link rel="icon" type="image/png" href="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}">
+    {% else %}
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+    {% endif %}
 </head>
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
