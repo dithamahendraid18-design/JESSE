@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ client.restaurant_name }} - Menu</title>
-    <link rel="icon" type="image/png"
-        href="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') if client.knowledge_base.avatar_image else url_for('static', filename='favicon.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap"
@@ -38,23 +36,133 @@
             justify-content: center;
             align-items: center;
             perspective: 2000px;
-            /* overflow: hidden; Removed to prevent clipping wide open book */
         }
 
-        /* Standard Book Size - Wider Ratio */
+        /* Mobile first book size - updated for Single Page Desktop */
         .book {
             position: relative;
             width: 90vw;
             max-width: 600px;
-            aspect-ratio: 3/4;
-            /* 3/4 Ratio (0.75) matches the "Wide" screenshot better than 3/5 (0.6) */
+            aspect-ratio: 3/5;
             height: auto;
             max-height: 85vh;
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1);
         }
 
+        /* Page Styling */
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1), opacity 0.4s ease, visibility 0.4s;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            /* background-color: var(--book-theme-color) !important; REMOVED to fix 3D Same Sheet issue */
+            border-radius: 4px 12px 12px 4px;
+            opacity: 1;
+            visibility: visible;
+        }
 
+        .page.flipped {
+            transform: rotateY(-180deg);
+            box-shadow: 20px 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .page.discarded {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* Front and Back of Pages */
+        .face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+            background-color: #8B4513;
+            /* Physical Fallback */
+            background-color: var(--book-theme-color) !important;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            border-left: 4px solid rgba(0, 0, 0, 0.05);
+            isolation: isolate;
+        }
+
+        /* Back Page Logic: Blank/Texture for "Discarded" pages */
+        .face.back {
+            transform: rotateY(180deg);
+            border-left: none;
+            border-right: 4px solid rgba(0, 0, 0, 0.05);
+            background: var(--book-theme-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .face.back::after {
+            content: '';
+        }
+
+        /* ... rest of CSS ... */
+        .face {
+            color: var(--book-text-color);
+        }
+
+        h2,
+        h3 {
+            color: var(--book-text-color);
+        }
+
+        .text-gray-800,
+        .text-gray-900,
+        .text-gray-600,
+        .text-gray-500,
+        .text-gray-400 {
+            color: var(--book-text-color) !important;
+        }
+
+        /* Menu Grid Scroll Enhancement */
+        .menu-grid {
+            flex: 1;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        /* Scrollbar Hiding (Global) */
+        ::-webkit-scrollbar {
+            width: 0px !important;
+            height: 0px !important;
+            display: none !important;
+            background: transparent;
+        }
+
+        /* Firefox */
+        * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        .menu-grid::-webkit-scrollbar {
+            display: none;
+        }
 
         /* Visual Spine Shadow */
         .face::before {
@@ -230,7 +338,8 @@
             <div class="page z-[60]" id="page-0" style="background-color: var(--book-theme-color) !important;">
                 {% set welcome_bg = '' %}
                 {% if client.knowledge_base.book_cover_image %}
-                {% set welcome_bg = resolve_file(client.knowledge_base.book_cover_image, 'menu') %}
+                {% set welcome_bg = url_for('uploaded_file', filename='menu/' + client.knowledge_base.book_cover_image)
+                %}
                 {% endif %}
 
                 <div id="cover-face-front"
@@ -254,10 +363,10 @@
                     <div class="absolute inset-2 border border-white/30 rounded-lg pointer-events-none"></div>
 
                     {% if client.knowledge_base.book_logo_image %}
-                    <img src="{{ resolve_file(client.knowledge_base.book_logo_image, 'menu') }}"
+                    <img src="{{ url_for('uploaded_file', filename='menu/' + client.knowledge_base.book_logo_image) }}"
                         class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-6 object-cover pointer-events-none">
                     {% elif client.knowledge_base.avatar_image %}
-                    <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
+                    <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
                         class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-6 object-cover pointer-events-none">
                     {% endif %}
 
@@ -408,9 +517,9 @@
                                 <div class="flex gap-4 items-start pb-4 border-b border-current/10">
                                     {% if item.image_url %}
                                     <div class="w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-md menu-item-image ring-1 ring-white/10 cursor-zoom-in"
-                                        data-img-url="{{ resolve_file(item.image_url, 'menu') }}"
+                                        data-img-url="{{ url_for('uploaded_file', filename='menu/' + item.image_url) }}"
                                         onclick="event.stopPropagation(); openLightbox(this.dataset.imgUrl)">
-                                        <img src="{{ resolve_file(item.image_url, 'menu') }}"
+                                        <img src="{{ url_for('uploaded_file', filename='menu/' + item.image_url) }}"
                                             class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                                     </div>
                                     {% endif %}
@@ -691,35 +800,15 @@
             });
         });
 
-        // Swipe Handling for Mobile
+        // Touch logic (same as before)
         let touchStartX = 0;
         let touchEndX = 0;
-        const SWIPE_THRESHOLD = 50;
-
-        book.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-
-        book.addEventListener('touchend', e => {
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', e => {
             touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, { passive: true });
-
-        function handleSwipe() {
-            const swipeDistance = touchEndX - touchStartX;
-
-            if (Math.abs(swipeDistance) > SWIPE_THRESHOLD) {
-                if (swipeDistance < 0) {
-                    // Swiped Left -> Next Page
-                    flipNext();
-                } else {
-                    // Swiped Right -> Prev Page
-                    flipPrev();
-                }
-            }
-        }
-
-
+            if (touchEndX < touchStartX - 50) flipNext();
+            if (touchEndX > touchStartX + 50) flipPrev();
+        });
 
         // Jump to Category
         // Note: Logic needs to find which page the header is on.

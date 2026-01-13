@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ client.restaurant_name }} - AI Assistant</title>
-    <link rel="icon" type="image/png"
-        href="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') if client.knowledge_base.avatar_image else url_for('static', filename='favicon.png') }}">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- SEO & Open Graph -->
     <meta name="description"
         content="Chat with {{ client.restaurant_name }}'s AI Assistant for menu, hours, and reservations.">
@@ -322,11 +320,10 @@
 
         <!-- 3. COMPOSER (Sticky Bottom) -->
         <footer
-            class="shrink-0 p-3 border-t bg-[var(--bg-app)] border-[var(--border-color)] transition-colors duration-300 z-20">
-            <form id="chat-form" onsubmit="handleUserSubmit(event)"
-                class="relative flex items-center max-w-2xl mx-auto w-full">
+            class="shrink-0 p-4 border-t bg-[var(--bg-app)] border-[var(--border-color)] transition-colors duration-300 z-20">
+            <form id="chat-form" onsubmit="handleUserSubmit(event)" class="relative flex items-center">
                 <input type="text" id="user-input" placeholder="Type a message..." aria-label="Type your message"
-                    class="w-full bg-[var(--bg-surface)] border border-[var(--border-color)] text-base md:text-sm rounded-full pl-5 pr-12 py-3 focus:outline-none shadow-inner transition-colors duration-300 placeholder-[var(--text-secondary)]"
+                    class="w-full bg-[var(--bg-surface)] border border-[var(--border-color)] text-base md:text-sm rounded-full pl-5 pr-12 py-3.5 focus:outline-none shadow-inner transition-colors duration-300 placeholder-[var(--text-secondary)]"
                     style="--tw-ring-color: var(--theme-color);" autocomplete="off">
                 <button type="submit" aria-label="Send Message"
                     class="absolute right-2 p-2 text-white rounded-full hover:opacity-90 transition shadow-lg flex items-center justify-center"

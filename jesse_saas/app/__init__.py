@@ -88,10 +88,6 @@ def create_app(config_class=Config):
     def favicon():
         return "", 204
 
-    @app.route('/favicon.png')
-    def favicon_png():
-        return "", 204
-
     @app.route('/fix-db-schema')
     def fix_db_schema():
         from sqlalchemy import text
