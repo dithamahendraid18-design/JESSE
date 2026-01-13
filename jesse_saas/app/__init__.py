@@ -91,9 +91,7 @@ def create_app(config_class=Config):
     def index():
         return "JESSE SaaS Backend Active. Go to /admin/login."
 
-    @app.route('/favicon.ico')
-    def favicon():
-        return "", 204
+
 
     @app.route('/fix-db-schema')
     def fix_db_schema():
