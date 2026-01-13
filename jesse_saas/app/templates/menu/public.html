@@ -34,9 +34,6 @@
         .scene {
             width: 100vw;
             height: 100vh;
-            /* Fallback */
-            height: 100dvh;
-            /* Mobile Viewport Fix */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -47,53 +44,16 @@
         /* Mobile first book size - updated for Single Page Desktop */
         .book {
             position: relative;
-            width: 95vw;
-            /* Slightly wider on mobile */
-            max-width: 500px;
-            aspect-ratio: 9/16;
-            /* Taller Aspect Ratio for Mobile Phones */
+            width: 90vw;
+            max-width: 600px;
+            aspect-ratio: 3/5;
             height: auto;
-            max-height: 85dvh;
-            /* Use dynamic viewport height */
+            max-height: 85vh;
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1);
         }
 
-        @media (min-width: 768px) {
-            .book {
-                width: 500px;
-                aspect-ratio: 3/5;
-                /* Standard Ratio for Desktop */
-            }
-        }
 
-        /* Font adjustments for mobile */
-        @media (max-width: 640px) {
-            h1 {
-                font-size: 2rem !important;
-            }
-
-            h2 {
-                font-size: 1.5rem !important;
-            }
-
-            h3 {
-                font-size: 1rem !important;
-            }
-
-            p {
-                font-size: 0.875rem !important;
-            }
-
-            .menu-item-image {
-                width: 4rem;
-                height: 4rem;
-            }
-
-            .face {
-                padding: 16px !important;
-            }
-        }
 
         /* Visual Spine Shadow */
         .face::before {
