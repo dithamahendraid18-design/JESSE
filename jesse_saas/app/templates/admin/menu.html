@@ -362,7 +362,17 @@
     // IMPROVEMENT: Pass category_order to the template logic.
     // For now, let's rely on a robust client-side collection.
 
-    const initialOrder = {{ client.knowledge_base.category_order | default ('[]', true) | safe }};
+</script>
+
+<!-- Data Injection -->
+<script id="category-order-data" type="application/json">
+        {{ client.knowledge_base.category_order | default("[]", true) | safe }}
+</script>
+
+<script>
+    // Safe JSON Parse
+    const categoryOrderRaw = document.getElementById('category-order-data').textContent;
+    const initialOrder = categoryOrderRaw ? JSON.parse(categoryOrderRaw) : [];
 
     function openReorderModal() {
         const activeCategories = getCategories();
@@ -396,11 +406,11 @@
             const div = document.createElement('div');
             div.className = "flex items-center justify-between bg-gray-100 p-2 rounded";
             div.innerHTML = `
-                <span class="font-medium text-gray-700">${cat}</span>
-                <div class="flex gap-1">
-                    <button onclick="moveCategory(${index}, -1)" class="p-1 px-2 hover:bg-gray-200 rounded text-gray-500">↑</button>
-                    <button onclick="moveCategory(${index}, 1)" class="p-1 px-2 hover:bg-gray-200 rounded text-gray-500">↓</button>
-                </div>
+        <span class="font-medium text-gray-700">${cat}</span>
+        <div class="flex gap-1">
+            <button onclick="moveCategory(${index}, -1)" class="p-1 px-2 hover:bg-gray-200 rounded text-gray-500">↑</button>
+            <button onclick="moveCategory(${index}, 1)" class="p-1 px-2 hover:bg-gray-200 rounded text-gray-500">↓</button>
+        </div>
             `;
             categoryListContainer.appendChild(div);
         });
