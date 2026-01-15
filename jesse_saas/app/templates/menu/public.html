@@ -340,8 +340,7 @@
             <div class="page z-[60]" id="page-0" style="background-color: var(--book-theme-color) !important;">
                 {% set welcome_bg = '' %}
                 {% if client.knowledge_base.book_cover_image %}
-                {% set welcome_bg = url_for('uploaded_file', filename='menu/' + client.knowledge_base.book_cover_image)
-                %}
+                {% set welcome_bg = resolve_file(client.knowledge_base.book_cover_image, 'menu') %}
                 {% endif %}
 
                 <div id="cover-face-front"
@@ -365,10 +364,10 @@
                     <div class="absolute inset-2 border border-white/30 rounded-lg pointer-events-none"></div>
 
                     {% if client.knowledge_base.book_logo_image %}
-                    <img src="{{ url_for('uploaded_file', filename='menu/' + client.knowledge_base.book_logo_image) }}"
+                    <img src="{{ resolve_file(client.knowledge_base.book_logo_image, 'menu') }}"
                         class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-6 object-cover pointer-events-none">
                     {% elif client.knowledge_base.avatar_image %}
-                    <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
+                    <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
                         class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-6 object-cover pointer-events-none">
                     {% endif %}
 
