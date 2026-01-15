@@ -487,7 +487,8 @@
             <!-- Content Pages: 1 Category per Page -->
             {% set ns = namespace(page_idx=2) %} <!-- Start at Page 2 (0=Cover, 1=TOC) -->
 
-            {% for cat, items in menu_by_cat.items() %}
+            {% for cat in sorted_categories %}
+            {% set items = menu_by_cat[cat] %}
             <div class="page z-[{{ 58 - (ns.page_idx - 2) }}]" id="page-{{ ns.page_idx }}"
                 style="background-color: var(--book-theme-color) !important;">
                 <div class="face front" style="background-color: var(--book-theme-color) !important;">
