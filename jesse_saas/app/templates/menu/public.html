@@ -518,9 +518,9 @@
                                 <div class="flex gap-4 items-start pb-4 border-b border-current/10">
                                     {% if item.image_url %}
                                     <div class="w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-md menu-item-image ring-1 ring-white/10 cursor-zoom-in"
-                                        data-img-url="{{ url_for('uploaded_file', filename='menu/' + item.image_url) }}"
+                                        data-img-url="{{ resolve_file(item.image_url, 'menu') }}"
                                         onclick="event.stopPropagation(); openLightbox(this.dataset.imgUrl)">
-                                        <img src="{{ url_for('uploaded_file', filename='menu/' + item.image_url) }}"
+                                        <img src="{{ resolve_file(item.image_url, 'menu') }}"
                                             class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                                     </div>
                                     {% endif %}
