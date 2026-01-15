@@ -117,9 +117,11 @@ def create_app(config_class=Config):
         from sqlalchemy import text
         try:
             with db.engine.connect() as conn:
-                conn.execute(text("ALTER TABLE knowledge_base ALTER COLUMN welcome_message TYPE TEXT;"))
+                # Check if column exists first? Postgres safe add:
+                # conn.execute(text("ALTER TABLE knowledge_base ADD COLUMN IF NOT EXISTS category_order TEXT;"))
+                conn.execute(text("ALTER TABLE knowledge_base ADD COLUMN IF NOT EXISTS category_order TEXT;"))
                 conn.commit()
-            return "Schema Fixed: welcome_message is now TEXT."
+            return "Schema Fixed: category_order column added."
         except Exception as e:
             return f"Error: {e}", 500
 

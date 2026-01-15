@@ -16,6 +16,16 @@
             </svg>
             Add New Item
         </button>
+
+        <!-- Reorder Categories Button -->
+        <button onclick="openReorderModal()"
+            class="ml-3 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 font-medium flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+            </svg>
+            Reorder Categories
+        </button>
     </div>
 
     <!-- Menu Items Table -->
@@ -285,5 +295,149 @@
             }
         }
     }
+</script>
+
+<!-- Reorder Categories Modal -->
+<div id="reorder-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title-reorder">Reorder
+                            Categories</h3>
+                        <p class="text-xs text-gray-500 mb-4">Click UP/DOWN to change the order. This affects the public
+                            menu.</p>
+
+                        <div class="mt-2 space-y-2" id="category-list-container">
+                            <!-- Categories injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" onclick="saveCategoryOrder()"
+                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Save Order
+                </button>
+                <button type="button" onclick="closeReorderModal()"
+                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Existing script...
+    const reorderModal = document.getElementById('reorder-modal');
+    const categoryListContainer = document.getElementById('category-list-container');
+    let currentCategories = []; // Will be populated
+
+    // Parse existing category order from backend or default
+    // We can infer categories from menu items in the table or pass them explicitly?
+    // Let's scrape them from the table for simplicity or pass from backend.
+    // Ideally passed from backend. For now, let's look at the DOM unique badges.
+
+    function getCategories() {
+        // Collect unique categories from the table + standard ones if missing?
+        // Actually, we should only show categories that EXIST or are in the PREVIOUS ORDER.
+        // Let's grab all badges.
+        const badges = document.querySelectorAll('td .text-\\[10px\\]');
+        const cats = new Set();
+        badges.forEach(b => cats.add(b.innerText.trim()));
+
+        // Also check if we have a stored order (we can't easily access that variable here without passing it)
+        // Let's assume the user wants to order the VISIBLE categories.
+        return Array.from(cats);
+    }
+
+    // Since we don't have the "stored_order" easily accessible in this static JS without templating,
+    // let's fetch it or just rely on what we have.
+    // IMPROVEMENT: Pass category_order to the template logic.
+    // For now, let's rely on a robust client-side collection.
+
+    const initialOrder = {{ client.knowledge_base.category_order | default ('[]', true) | safe }};
+
+    function openReorderModal() {
+        const activeCategories = getCategories();
+        // Merge: Start with initialOrder, then add any new ones found in activeCategories
+        let displayOrder = [...initialOrder];
+
+        activeCategories.forEach(c => {
+            if (!displayOrder.includes(c)) displayOrder.push(c);
+        });
+
+        // Remove ones that are no longer active? 
+        // Maybe keep them to be safe, or filter. Let's filter to only show Active ones + Standard Order
+        // Actually, just show all unique active categories, sorted by the saved order.
+
+        currentCategories = displayOrder.filter(c => activeCategories.includes(c));
+
+        // If empty (first run), just use active categories alphabetical
+        if (currentCategories.length === 0) currentCategories = activeCategories.sort();
+
+        renderCategoryList();
+        reorderModal.classList.remove('hidden');
+    }
+
+    function closeReorderModal() {
+        reorderModal.classList.add('hidden');
+    }
+
+    function renderCategoryList() {
+        categoryListContainer.innerHTML = '';
+        currentCategories.forEach((cat, index) => {
+            const div = document.createElement('div');
+            div.className = "flex items-center justify-between bg-gray-100 p-2 rounded";
+            div.innerHTML = `
+                <span class="font-medium text-gray-700">${cat}</span>
+                <div class="flex gap-1">
+                    <button onclick="moveCategory(${index}, -1)" class="p-1 px-2 hover:bg-gray-200 rounded text-gray-500">↑</button>
+                    <button onclick="moveCategory(${index}, 1)" class="p-1 px-2 hover:bg-gray-200 rounded text-gray-500">↓</button>
+                </div>
+            `;
+            categoryListContainer.appendChild(div);
+        });
+    }
+
+    function moveCategory(index, direction) {
+        if (direction === -1 && index > 0) {
+            [currentCategories[index], currentCategories[index - 1]] = [currentCategories[index - 1], currentCategories[index]];
+        } else if (direction === 1 && index < currentCategories.length - 1) {
+            [currentCategories[index], currentCategories[index + 1]] = [currentCategories[index + 1], currentCategories[index]];
+        }
+        renderCategoryList();
+    }
+
+    async function saveCategoryOrder() {
+        try {
+            const response = await fetch("{{ url_for('admin.client_menu_reorder_categories', client_id=client.id) }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ order: currentCategories }),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                location.reload(); // Reload to see effective sort if we applied it to the table?
+                // The main table is sorted by category? Not necessarily logic yet.
+                // But this will definitely affect Public View.
+                // Optionally verify success message.
+            } else {
+                alert("Failed to save: " + result.error);
+            }
+        } catch (e) {
+            alert("Error saving: " + e);
+        }
+    }
+
 </script>
 {% endblock %}

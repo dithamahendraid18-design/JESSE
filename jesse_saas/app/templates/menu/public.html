@@ -430,7 +430,7 @@
                     <!-- List Container (Scrollable if needed) -->
                     <div
                         class="flex-1 w-full max-w-sm flex flex-col justify-center gap-3 overflow-y-auto pr-1 custom-scrollbar">
-                        {% for category in menu_by_cat.keys() %}
+                        {% for category in sorted_categories %}
                         <div onclick="window.jumpToCategory('{{ category }}')"
                             class="group relative cursor-pointer overflow-hidden rounded-xl bg-white/10 backdrop-blur-md border border-white/25 shadow-sm mb-3 transition-colors duration-300 hover:bg-white/20">
                             <div class="relative z-10 p-4 flex items-center justify-between">

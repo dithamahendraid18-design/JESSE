@@ -248,16 +248,27 @@ def client_menu_toggle(client_id, item_id):
         'item_id': item.id
     })
 
-@bp.route('/client/<int:client_id>/menu/<int:item_id>/delete', methods=['POST'])
-def client_menu_delete(client_id, item_id):
-    item = MenuItem.query.get_or_404(item_id)
-    if item.client_id != client_id:
-        return "Unauthorized", 403
-    
     db.session.delete(item)
     db.session.commit()
     flash('Item deleted.')
     return redirect(url_for('admin.client_menu', client_id=client_id))
+
+@bp.route('/client/<int:client_id>/menu/reorder-categories', methods=['POST'])
+def client_menu_reorder_categories(client_id):
+    client = Client.query.get_or_404(client_id)
+    kb = client.knowledge_base
+    if not kb:
+         return jsonify({'error': 'KB not found'}), 404
+         
+    import json
+    try:
+        data = request.get_json()
+        new_order = data.get('order', []) # Expect list of strings
+        kb.category_order = json.dumps(new_order)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @bp.route('/client/<int:client_id>/bot-builder', methods=['GET', 'POST'])
 def client_bot(client_id):

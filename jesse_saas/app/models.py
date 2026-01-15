@@ -98,6 +98,7 @@ class KnowledgeBase(db.Model):
     book_theme_color = db.Column(db.String(7), nullable=True) # e.g. #8B4513
     book_cover_image = db.Column(db.String(255), nullable=True) # Specific Portrait Cover
     book_cover_style = db.Column(db.String(20), default='cover') # 'cover' or 'contain'
+    category_order = db.Column(db.Text, nullable=True) # JSON list of ordered categories: ["Food", "Drink", "Dessert"]
     book_logo_image = db.Column(db.String(255), nullable=True) # Logo on cover
     
     # Last Page / Back Cover Content
