@@ -100,6 +100,7 @@ def create_app(config_class=Config):
         return send_from_directory(upload_folder, filename)
 
     @app.route('/favicon.png')
+    @app.route('/favicon.ico')
     def serve_favicon():
         from flask import send_from_directory
         import os
