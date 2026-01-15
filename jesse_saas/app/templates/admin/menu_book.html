@@ -30,7 +30,7 @@
                     </div>
                     {% endif %}
 
-                    <input type="file" name="book_cover" onchange="this.form.submit()"
+                    <input type="file" name="book_cover" onchange="validateFileSize(this) && this.form.submit()"
                         class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
 
                     <div
@@ -109,7 +109,7 @@
                     </div>
                     {% endif %}
                     <div class="flex-1">
-                        <input type="file" name="book_logo"
+                        <input type="file" name="book_logo" onchange="validateFileSize(this)"
                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                         <button type="submit" class="mt-2 text-xs text-blue-600 font-medium hover:underline">Update Book
                             Logo</button>
@@ -202,4 +202,19 @@
     </div>
 
 </div>
+
+</div>
+
+<script>
+    // File Size Validation
+    function validateFileSize(input) {
+        if (input.files && input.files[0]) {
+            const fileSize = input.files[0].size / 1024 / 1024; // in MB
+            if (fileSize > 4.0) {
+                alert('File is too large (Maximum 4MB). Please compress the image or choose a smaller one.');
+                input.value = ''; // Clear the input
+            }
+        }
+    }
+</script>
 {% endblock %}
