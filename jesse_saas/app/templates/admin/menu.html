@@ -65,15 +65,16 @@
                             <!-- Category Badge -->
                             {% if item.category == 'Food' %}
                             <span
-                                class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Food</span>
+                                class="category-badge px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Food</span>
                             {% elif item.category == 'Drink' %}
                             <span
-                                class="px-2 py-0.5 rounded text-[10px] font-semibold bg-green-100 text-green-800">Drink</span>
+                                class="category-badge px-2 py-0.5 rounded text-[10px] font-semibold bg-green-100 text-green-800">Drink</span>
                             {% elif item.category == 'Dessert' %}
                             <span
-                                class="px-2 py-0.5 rounded text-[10px] font-semibold bg-pink-100 text-pink-800">Dessert</span>
+                                class="category-badge px-2 py-0.5 rounded text-[10px] font-semibold bg-pink-100 text-pink-800">Dessert</span>
                             {% else %}
-                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-800">{{
+                            <span
+                                class="category-badge px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-800">{{
                                 item.category }}</span>
                             {% endif %}
                         </div>
