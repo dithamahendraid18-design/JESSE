@@ -201,10 +201,27 @@ def create_app(config_class=Config):
                 menu_by_cat[cat] = []
             menu_by_cat[cat].append(item)
 
+        # Sort Categories based on KB order
+        import json
+        sorted_categories = []
+        if client.knowledge_base and client.knowledge_base.category_order:
+             try:
+                 saved_order = json.loads(client.knowledge_base.category_order)
+                 for cat in saved_order:
+                     if cat in menu_by_cat:
+                         sorted_categories.append(cat)
+             except:
+                 pass
+        
+        # Append remaining categories
+        remaining = sorted([k for k in menu_by_cat.keys() if k not in sorted_categories])
+        sorted_categories.extend(remaining)
+
         return render_template(
             'menu/public.html',
             client=client,
             menu_by_cat=menu_by_cat,
+            sorted_categories=sorted_categories,
             currency=client.currency_symbol or '$',
             theme_color=client.theme_color or '#2563EB'
         )
