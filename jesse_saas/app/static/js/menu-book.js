@@ -95,8 +95,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // 4. Click Navigation (Desktop)
     // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // 4. Click Navigation (Background/Margins)
+    // -------------------------------------------------------------------------
     pages.forEach((page, index) => {
         page.addEventListener('click', (e) => {
+            // CRITICAL FIX: Prevent double-firing if user clicked a button/link inside the page
+            // and the event bubbled up here.
+            if (e.target.closest('button, a, .menu-grid, .scroll-indicator, input, [onclick]')) {
+                return;
+            }
+
             e.stopPropagation();
 
             // Only navigate on the current active centered page
