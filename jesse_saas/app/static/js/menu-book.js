@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Reset basic properties
             page.style.display = 'block';
             page.style.visibility = 'visible';
+            page.style.transform = ''; // Clear inline transforms to let CSS classes work
 
             if (index < currentPage) {
                 // Left stack (already flipped)
@@ -58,11 +59,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Navigation (Flip) Logic
     // -------------------------------------------------------------------------
     window.flipNext = function () { // Exposed to global window for onclick handlers
-        // Hard Debounce: Prevent any flip if < 1.2s since last one
-        // Increased to 1200ms to safely cover the 800ms transition + ghost clicks
-        if (Date.now() - lastFlipTime < 1200) return;
+        // Hard Debounce: Prevent any flip if < 1.0s since last one
+
+        console.log(`[FlipNext] Attempt. Current: ${currentPage}, isFlipping: ${isFlipping}, TimeDiff: ${Date.now() - lastFlipTime}`);
+
+        if (Date.now() - lastFlipTime < 1000) {
+            console.log("[FlipNext] Blocked by Debounce");
+            return;
+        }
 
         if (currentPage < pages.length - 1 && !isFlipping) {
+            console.log("[FlipNext] ALLOWED. Starting flip.");
+
             // IMMEDIATE LOCK
             isFlipping = true;
             lastFlipTime = Date.now();
@@ -75,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 setTimeout(() => {
                     currentPage++;
+                    console.log(`[FlipNext] Animation Done. New Page: ${currentPage}`);
                     isFlipping = false;
                     book.classList.remove('flipping-active');
                     updateVisibility();
@@ -89,12 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.flipPrev = function () { // Exposed to global window
         // Hard Debounce
-        if (Date.now() - lastFlipTime < 1200) return;
+        console.log(`[FlipPrev] Attempt. Current: ${currentPage}`);
+        if (Date.now() - lastFlipTime < 1000) return;
 
         if (currentPage > 0 && !isFlipping) {
             isFlipping = true;
             lastFlipTime = Date.now();
-
             book.classList.add('flipping-active');
 
             currentPage--;
@@ -120,8 +129,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // 4. Click Navigation (Background/Margins)
     // -------------------------------------------------------------------------
+
+    // Global Touch Lock: Prevent 'click' firing right after 'touchend' (Ghost Clicks)
+    let lastTouchTime = 0;
+
     pages.forEach((page, index) => {
         page.addEventListener('click', (e) => {
+            // IGNORE clicks caused by Touch interaction?
+            // NO. Since we disabled Swipe/TouchEnd handling, we MUST allow 'click' to process the navigation.
+            // if (Date.now() - lastTouchTime < 500) return;
+
             // CRITICAL FIX: Prevent double-firing if user clicked a button/link inside the page
             // and the event bubbled up here.
             if (e.target.closest('button, a, .menu-grid, .scroll-indicator, input, [onclick]')) {
@@ -148,47 +165,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // 5. Touch / Swipe Logic
     // -------------------------------------------------------------------------
-    // Note: Swipe is currently disabled for debugging mobile scroll issues.
-    // Uncomment below if swipe navigation is desired.
+    // SWIPE DISABLED: To prevent conflicts with vertical scrolling on the menu.
+    // Navigation is restricted to Tapping (Edges/Buttons) only.
 
+    /*
     let touchStartX = 0;
     let touchEndX = 0;
     let touchStartY = 0;
 
     document.addEventListener('touchstart', e => {
-        // CRITICAL: If touching menu grid, let browser handle native scroll. DO NOT INTERFERE.
+        lastTouchTime = Date.now();
         if (e.target.closest('.menu-grid')) return;
-
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
 
     document.addEventListener('touchend', e => {
-        // CRITICAL: Ignore interaction if it started/ended in grid
         if (e.target.closest('.menu-grid')) return;
-        if (touchStartX === 0 && touchStartY === 0) return; // touches ignored by start
+        if (touchStartX === 0 && touchStartY === 0) return;
 
         touchEndX = e.changedTouches[0].screenX;
         let touchEndY = e.changedTouches[0].screenY;
 
-        // Calculate differences
         let xDiff = touchEndX - touchStartX;
         let yDiff = touchEndY - touchStartY;
 
-        // Check for vertical scroll dominance FIRST
-        // If user moved vertically more than 30px, assume they meant to scroll, not flip.
         if (Math.abs(yDiff) > 30) return;
-
-        // If horizontal move is too small, ignore (noise)
         if (Math.abs(xDiff) < 70) return;
 
         if (xDiff < 0) window.flipNext();
         if (xDiff > 0) window.flipPrev();
 
-        // Reset
         touchStartX = 0;
         touchStartY = 0;
     }, { passive: true });
+    */
+
 
     // -------------------------------------------------------------------------
     // 6. Jump To Category Logic
@@ -221,14 +233,15 @@ document.addEventListener('DOMContentLoaded', () => {
         function step() {
             if (currentPage === targetIndex) {
                 isFlipping = false;
+                book.classList.remove('flipping-active');
                 updateVisibility(); // Restore clicks
                 return;
             }
             currentPage += direction;
             updateVisibility();
 
-            // Speed depends on distance? Fixed 150ms is good for "riffling" effect
-            setTimeout(step, 150);
+            // FIX: Increase delay to 400ms to allow 800ms transition to partially complete
+            setTimeout(step, 400);
         }
         step();
     };

@@ -59,45 +59,51 @@
             pointer-events: none !important;
         }
 
-        /* CRITICAL FIX: Force concrete height on mobile for scroll height calculation */
-        @media (max-width: 768px) {
+        /* GEOMETRY FIX: Smart Aspect Ratio Sizing */
+        .book {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            aspect-ratio: 3/5;
+            max-width: 450px;
+            margin: auto;
+        }
 
-            /* HEIGHT-DRIVEN SIZING: Prevents distortion and guarantees scroll height */
+        /* Case 1: Screen is TALLER/NARROWER than book (Portrait Mobile) -> Constrain by Width */
+        @media (max-aspect-ratio: 3/5) {
             .book {
-                width: 90vw;
-                /* Fallback width */
-                height: 80vh;
-                /* Explicit Height to prevent collapse */
-                max-width: 450px;
-                aspect-ratio: 3/5;
-                margin-left: auto;
-                margin-right: auto;
-                /* Center vertically */
-                position: absolute;
-                /* Lock in place */
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-            }
-
-            /* ISOLATION SHIELD: Prevent browser gestures on containers */
-            .book,
-            .page,
-            .face {
-                touch-action: none;
-                cursor: default !important;
-                /* Prevent tap highlight/delay */
-            }
-
-            /* HOLE IN SHIELD: Explicitly allow vertical scroll on content */
-            .menu-grid {
-                touch-action: pan-y !important;
-                -webkit-user-select: auto !important;
-                /* Ensure content is interactable */
-                -moz-user-select: auto !important;
-                user-select: auto !important;
+                width: 85vw;
+                height: auto;
             }
         }
+
+        /* Case 2: Screen is SHORTER/WIDER than book (Landscape/Desktop) -> Constrain by Height */
+        @media (min-aspect-ratio: 3/5) {
+            .book {
+                height: 85vh;
+                width: auto;
+            }
+        }
+
+        /* ISOLATION SHIELD: Prevent browser gestures on containers */
+        .book,
+        .page,
+        .face {
+            touch-action: none;
+            cursor: default !important;
+            /* Prevent tap highlight/delay */
+        }
+
+        /* HOLE IN SHIELD: Explicitly allow vertical scroll on content */
+        .menu-grid {
+            touch-action: pan-y !important;
+            -webkit-user-select: auto !important;
+            /* Ensure content is interactable */
+            -moz-user-select: auto !important;
+            user-select: auto !important;
+        }
+
 
         /* Page Styling */
         .page {
@@ -450,7 +456,7 @@
                         <!-- Header -->
                         <div class="mb-4 relative w-full text-center">
                             <!-- Back Button (Left) -->
-                            <button onclick="flipPrev()"
+                            <button
                                 class="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
                                 style="color: var(--book-text-color);">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -466,7 +472,7 @@
                             <div class="w-16 h-1 bg-current mx-auto mt-3 opacity-30 rounded-full"></div>
 
                             <!-- Next Button (Right) -->
-                            <button onclick="flipNext()"
+                            <button
                                 class="absolute right-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
                                 style="color: var(--book-text-color);">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -546,7 +552,7 @@
                             <!-- Premium Category Header -->
                             <div class="mb-8 relative py-4 text-center">
                                 <!-- Back Button (Left) -->
-                                <button onclick="flipPrev()"
+                                <button
                                     class="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
                                     style="color: var(--book-text-color);">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -562,7 +568,7 @@
                                 <div class="w-12 h-1 bg-current mx-auto mt-2 opacity-30 rounded-full"></div>
 
                                 <!-- Next Button (Right) -->
-                                <button onclick="flipNext()"
+                                <button
                                     class="absolute right-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
                                     style="color: var(--book-text-color);">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -755,7 +761,11 @@
 
 
 
-        <script src="{{ url_for('static', filename='js/menu-book.js') }}"></script>
+        <!-- Debug Version Indicator -->
+        <div
+            style="position:fixed; bottom:5px; left:5px; font-size:10px; color:rgba(0,0,0,0.3); z-index:9999; pointer-events:none;">
+            v5.2 (GeometryFixed)</div>
+        <script src="{{ url_for('static', filename='js/menu-book.js') }}?v=5.2"></script>
 </body>
 
 </html>
