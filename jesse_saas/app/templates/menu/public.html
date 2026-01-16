@@ -61,9 +61,20 @@
                 /* Disable ratio dependency */
             }
 
-            /* Allow vertical scroll on grid explicitly */
+            /* ISOLATION SHIELD: Prevent browser gestures on containers */
+            .book,
+            .page,
+            .face {
+                touch-action: none;
+                cursor: default !important;
+                /* Prevent tap highlight/delay */
+            }
+
+            /* HOLE IN SHIELD: Explicitly allow vertical scroll on content */
             .menu-grid {
                 touch-action: pan-y !important;
+                -webkit-user-select: auto !important;
+                /* Ensure content is interactable */
             }
         }
 
@@ -538,7 +549,7 @@
                         </div>
 
                         <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
-                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translate3d(0,0,0); backface-visibility: hidden;">
+                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translateZ(0); backface-visibility: hidden;">
                             {% for item in items %}
                             <div class="group mb-6 last:mb-0 transition-all duration-300">
                                 <div class="flex gap-4 items-start pb-4 border-b border-current/10">
@@ -619,7 +630,7 @@
 
                         <!-- Middle Content Wrapper (Full Width - Scrollable) -->
                         <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
-                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translate3d(0,0,0); backface-visibility: hidden;">
+                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translateZ(0); backface-visibility: hidden;">
 
                             <!-- 2. Order Online Area -->
                             <div
