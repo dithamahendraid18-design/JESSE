@@ -50,6 +50,8 @@
             max-height: 85vh;
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1);
+            will-change: transform;
+            /* Hardware Acceleration Hint */
         }
 
         /* CRITICAL FIX: Force concrete height on mobile for scroll height calculation */
@@ -97,6 +99,8 @@
             transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1), opacity 0.4s ease;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            will-change: transform;
+            /* Hardware Acceleration Hint */
             /* background-color: var(--book-theme-color) !important; REMOVED to fix 3D Same Sheet issue */
             border-radius: 4px 12px 12px 4px;
             opacity: 1;

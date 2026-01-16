@@ -153,11 +153,15 @@ document.addEventListener('DOMContentLoaded', () => {
         let xDiff = touchEndX - touchStartX;
         let yDiff = touchEndY - touchStartY;
 
-        // If vertical scroll is significant, IGNORE (it was a scroll, not a swap)
-        if (Math.abs(yDiff) > Math.abs(xDiff)) return;
+        // Check for vertical scroll dominance FIRST
+        // If user moved vertically more than 30px, assume they meant to scroll, not flip.
+        if (Math.abs(yDiff) > 30) return;
 
-        if (xDiff < -50) window.flipNext();
-        if (xDiff > 50) window.flipPrev();
+        // If horizontal move is too small, ignore (noise)
+        if (Math.abs(xDiff) < 70) return;
+
+        if (xDiff < 0) window.flipNext();
+        if (xDiff > 0) window.flipPrev();
 
         // Reset
         touchStartX = 0;
