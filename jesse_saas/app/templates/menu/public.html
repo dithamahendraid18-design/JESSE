@@ -523,8 +523,7 @@
                         </div>
 
                         <div class="menu-grid flex-1 flex flex-col w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
-                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50;"
-                            ontouchmove="event.stopPropagation()">
+                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translate3d(0,0,0); backface-visibility: hidden;">
                             {% for item in items %}
                             <div class="group mb-6 last:mb-0 transition-all duration-300">
                                 <div class="flex gap-4 items-start pb-4 border-b border-current/10">
@@ -604,8 +603,7 @@
 
                         <!-- Middle Content Wrapper (Full Width - Scrollable) -->
                         <div class="menu-grid flex-1 flex flex-col justify-start gap-4 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
-                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50;"
-                            ontouchmove="event.stopPropagation()">
+                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translate3d(0,0,0); backface-visibility: hidden;">
 
                             <!-- 2. Order Online Area -->
                             <div
