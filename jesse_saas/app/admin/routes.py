@@ -4,6 +4,7 @@ from app.extensions import db
 from app.services.analytics import AnalyticsService
 from app.services.client_manager import ClientManager
 from app.services.upload_service import UploadService
+from app.services.menu_service import MenuService
 from config import Config
 import qrcode
 import io
@@ -58,13 +59,8 @@ def dashboard():
     # Global Live Feed
     recent_logs = InteractionLog.query.order_by(InteractionLog.timestamp.desc()).limit(15).all()
     
-    # Top Performing Assets (Clients by interaction volume)
-    # Note: efficient SQL group_by preferred for scale, using list sort for MVP
-    all_clients = Client.query.all()
-    for c in all_clients:
-        c.interaction_count = c.logs.count()
-    
-    top_clients = sorted(all_clients, key=lambda x: x.interaction_count, reverse=True)[:5]
+    # Top Performing Assets (Clients by interaction volume) - Optimized
+    top_clients = AnalyticsService.get_top_clients(limit=5)
 
     return render_template('admin/dashboard.html', 
                            stats=stats,
@@ -185,77 +181,49 @@ def client_menu(client_id):
     client = Client.query.get_or_404(client_id)
 
     if request.method == 'POST':
-        name = request.form['name']
-        price = float(request.form['price'])
-        category = request.form['category']
-        description = request.form.get('description')
-        
-        image_url = None
-        if 'image' in request.files:
-            file = request.files['image']
-            image_url = UploadService.upload(file, folder='menu', public_id_prefix=f"{client.public_id}")
-        
-        item = MenuItem(
-            client_id=client.id,
-            name=name,
-            price=price,
-            category=category,
-            description=description,
-            image_url=image_url,
-            is_available=True
-        )
-        db.session.add(item)
-        db.session.commit()
-        flash('Menu item added.', 'success')
+        try:
+            MenuService.create_item(client, request.form, request.files)
+            flash('Menu item added.', 'success')
+        except ValueError as e:
+            flash(str(e), 'error')
+            
         return redirect(url_for('admin.client_menu', client_id=client.id))
 
-    menu_items = client.menu_items.order_by(MenuItem.category.desc(), MenuItem.name).all()
+    menu_items = MenuService.get_items(client.id)
     return render_template('admin/menu.html', client=client, menu_items=menu_items, active_page='menu')
 
 @bp.route('/client/<int:client_id>/menu/<int:item_id>/edit', methods=['POST'])
+@bp.route('/client/<int:client_id>/menu/<int:item_id>/edit', methods=['POST'])
 def client_menu_edit(client_id, item_id):
-    item = MenuItem.query.get_or_404(item_id)
-    if item.client_id != client_id:
-        return "Unauthorized", 403
+    try:
+        MenuService.update_item(item_id, request.form, request.files, client_id_check=client_id)
+        flash('Item updated.', 'success')
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'error')
         
-    item.name = request.form['name']
-    item.price = float(request.form['price'])
-    item.category = request.form['category']
-    item.description = request.form.get('description')
-    
-    if 'image' in request.files:
-        file = request.files['image']
-        url = UploadService.upload(file, folder='menu', public_id_prefix=f"{item.client.public_id}")
-        if url:
-             item.image_url = url
-
-    db.session.commit()
-    flash('Item updated.', 'success')
     return redirect(url_for('admin.client_menu', client_id=client_id))
 
 @bp.route('/client/<int:client_id>/menu/<int:item_id>/toggle', methods=['POST'])
+@bp.route('/client/<int:client_id>/menu/<int:item_id>/toggle', methods=['POST'])
 def client_menu_toggle(client_id, item_id):
-    item = MenuItem.query.get_or_404(item_id)
-    if item.client_id != client_id:
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    item.is_available = not item.is_available
-    db.session.commit()
-    
-    return jsonify({
-        'success': True, 
-        'new_status': item.is_available,
-        'item_id': item.id
-    })
+    try:
+        new_status = MenuService.toggle_availability(item_id, client_id_check=client_id)
+        return jsonify({
+            'success': True, 
+            'new_status': new_status,
+            'item_id': item_id
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 403
+@bp.route('/client/<int:client_id>/menu/<int:item_id>/delete', methods=['POST'])
 @bp.route('/client/<int:client_id>/menu/<int:item_id>/delete', methods=['POST'])
 def client_menu_delete(client_id, item_id):
-    item = MenuItem.query.get_or_404(item_id)
-    if item.client_id != client_id:
-        return "Unauthorized", 403
-    
-    db.session.delete(item)
-    db.session.commit()
-    flash('Item deleted.')
+    try:
+        MenuService.delete_item(item_id, client_id_check=client_id)
+        flash('Item deleted.')
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'error')
+        
     return redirect(url_for('admin.client_menu', client_id=client_id))
 @bp.route('/client/<int:client_id>/menu/reorder-categories', methods=['POST'])
 def client_menu_reorder_categories(client_id):

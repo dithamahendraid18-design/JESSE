@@ -63,32 +63,7 @@ def create_app(config_class=Config):
     @app.context_processor
     def utility_processor():
         def resolve_file(filename, folder='', width=None):
-            if not filename: return None
-            
-            # Check if it's a remote URL (Cloudinary)
-            if UploadService.is_remote_url(filename):
-                # Optimize Cloudinary URLs
-                if 'cloudinary.com' in filename and '/upload/' in filename:
-                    import re
-                    # Default transformations: Auto format (WebP/AVIF), Auto Quality
-                    transforms = ['f_auto', 'q_auto']
-                    
-                    if width:
-                        transforms.append(f'w_{width}')
-                        transforms.append('c_limit') # Resize but maintain aspect ratio (don't crop)
-                    
-                    transform_str = ','.join(transforms)
-                    
-                    # Inject transformations after /upload/
-                    # Pattern: match /upload/ and replace with /upload/{transforms}/
-                    return re.sub(r'(/upload/)', f'\\1{transform_str}/', filename, count=1)
-                
-                return filename
-
-            # Local file logic
-            from flask import url_for
-            path = filename if '/' in filename else f"{folder}/{filename}"
-            return url_for('uploaded_file', filename=path)
+            return UploadService.resolve_url(filename, width=width)
         return dict(resolve_file=resolve_file)
 
     @app.route('/uploads/<path:filename>')

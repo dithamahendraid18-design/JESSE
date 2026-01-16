@@ -1,5 +1,7 @@
 from app.models import Client, InteractionLog
 from config import Config
+from app.extensions import db
+from sqlalchemy import func
 
 class AnalyticsService:
     @staticmethod
@@ -26,6 +28,35 @@ class AnalyticsService:
             'total_interactions': total_interactions,
             'token_cost': round(token_cost_est, 2)
         }
+
+    @staticmethod
+    def get_top_clients(limit=5):
+        """
+        Efficiently fetches top 5 clients by interaction volume using SQL group_by.
+        """
+        # Outer Join to include clients with 0 logs (though 'top' implies implies activity)
+        # We want count of logs per client.
+        
+        # Select client, count(logs) 
+        # Join clients logs
+        # Group by client.id
+        # Order by count desc
+        
+        results = db.session.query(
+            Client, 
+            func.count(InteractionLog.id).label('interaction_count')
+        ).outerjoin(InteractionLog, Client.id == InteractionLog.client_id)\
+         .group_by(Client.id)\
+         .order_by(func.count(InteractionLog.id).desc())\
+         .limit(limit).all()
+        
+        # Unpack results: results is list of (Client, count) tuples
+        top_clients = []
+        for client, count in results:
+            client.interaction_count = count # Attach attribute dynamically for template
+            top_clients.append(client)
+            
+        return top_clients
 
     @staticmethod
     def get_client_stats(status_filter='all', plan_filter='all'):
