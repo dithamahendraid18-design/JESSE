@@ -54,11 +54,16 @@
 
         /* CRITICAL FIX: Force concrete height on mobile for scroll height calculation */
         @media (max-width: 768px) {
-            /* 
-               REMOVED: height: 75vh !important; 
-               REMOVED: aspect-ratio: unset !important;
-               Reason: Distorted visuals. Relying on "Absolute Inset" inner layout for scroll now.
-            */
+
+            /* HEIGHT-DRIVEN SIZING: Prevents distortion and guarantees scroll height */
+            .book {
+                height: 75vh !important;
+                width: auto !important;
+                /* Let width adapt to ratio */
+                aspect-ratio: 3/5 !important;
+                max-width: 90vw;
+                /* Safety cap */
+            }
 
             /* ISOLATION SHIELD: Prevent browser gestures on containers */
             .book,
