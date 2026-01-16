@@ -61,15 +61,9 @@
                 /* Disable ratio dependency */
             }
 
-            /* Isolate gestures on mobile */
-            body {
-                touch-action: none;
-                /* Disable global browser gestures */
-            }
-
+            /* Allow vertical scroll on grid explicitly */
             .menu-grid {
                 touch-action: pan-y !important;
-                /* Explicitly allow vertical scroll */
             }
         }
 
@@ -543,8 +537,8 @@
                             </button>
                         </div>
 
-                        <div class="menu-grid w-full overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
-                            style="height: calc(100% - 100px); display: block; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50;">
+                        <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
+                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translate3d(0,0,0); backface-visibility: hidden;">
                             {% for item in items %}
                             <div class="group mb-6 last:mb-0 transition-all duration-300">
                                 <div class="flex gap-4 items-start pb-4 border-b border-current/10">
@@ -624,8 +618,8 @@
                         </div>
 
                         <!-- Middle Content Wrapper (Full Width - Scrollable) -->
-                        <div class="menu-grid w-full overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
-                            style="height: calc(100% - 80px); display: block; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50;">
+                        <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
+                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translate3d(0,0,0); backface-visibility: hidden;">
 
                             <!-- 2. Order Online Area -->
                             <div
