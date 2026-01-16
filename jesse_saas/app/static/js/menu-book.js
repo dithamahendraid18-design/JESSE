@@ -129,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Note: Swipe is currently disabled for debugging mobile scroll issues.
     // Uncomment below if swipe navigation is desired.
 
-    /*
     let touchStartX = 0;
     let touchEndX = 0;
     let touchStartY = 0;
@@ -164,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
         touchStartX = 0;
         touchStartY = 0;
     }, { passive: true });
-    */
 
     // -------------------------------------------------------------------------
     // 6. Jump To Category Logic
