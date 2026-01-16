@@ -54,18 +54,29 @@
             /* Hardware Acceleration Hint */
         }
 
+        .book.flipping-active {
+            pointer-events: none !important;
+        }
+
         /* CRITICAL FIX: Force concrete height on mobile for scroll height calculation */
         @media (max-width: 768px) {
 
             /* HEIGHT-DRIVEN SIZING: Prevents distortion and guarantees scroll height */
             .book {
-                width: auto !important;
-                height: auto !important;
-                max-width: 90vw;
-                max-height: 80vh;
-                aspect-ratio: 3/5 !important;
+                width: 90vw;
+                /* Fallback width */
+                height: 80vh;
+                /* Explicit Height to prevent collapse */
+                max-width: 450px;
+                aspect-ratio: 3/5;
                 margin-left: auto;
                 margin-right: auto;
+                /* Center vertically */
+                position: absolute;
+                /* Lock in place */
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
             }
 
             /* ISOLATION SHIELD: Prevent browser gestures on containers */
@@ -741,12 +752,7 @@
             <img id="lightbox-img" src="" alt="Menu Item Large View" onclick="event.stopPropagation()">
         </div>
 
-        <!-- Navigation Overlay Hints -->
-        <div class="nav-hint nav-right text-gray-600">
-            <svg class="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-        </div>
+
 
         <script src="{{ url_for('static', filename='js/menu-book.js') }}"></script>
 </body>

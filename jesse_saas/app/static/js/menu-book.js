@@ -58,14 +58,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Navigation (Flip) Logic
     // -------------------------------------------------------------------------
     window.flipNext = function () { // Exposed to global window for onclick handlers
-        // Hard Debounce: Prevent any flip if < 1s since last one
-        if (Date.now() - lastFlipTime < 1000) return;
+        // Hard Debounce: Prevent any flip if < 1.2s since last one
+        // Increased to 1200ms to safely cover the 800ms transition + ghost clicks
+        if (Date.now() - lastFlipTime < 1200) return;
 
         if (currentPage < pages.length - 1 && !isFlipping) {
             const currentEl = document.getElementById(`page-${currentPage}`);
             if (currentEl) {
                 isFlipping = true;
-                lastFlipTime = Date.now(); // Set lock
+                lastFlipTime = Date.now();
+
+                // Add global lock class to prevent any interaction on the book
+                book.classList.add('flipping-active');
 
                 currentEl.classList.add('flipped');
                 currentEl.style.zIndex = 150; // Ensure it's on top DURING flip
@@ -73,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     currentPage++;
                     isFlipping = false;
+                    book.classList.remove('flipping-active');
                     updateVisibility();
                 }, 800); // 0.8s Match CSS transition duration
             }
@@ -81,11 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.flipPrev = function () { // Exposed to global window
         // Hard Debounce
-        if (Date.now() - lastFlipTime < 1000) return;
+        if (Date.now() - lastFlipTime < 1200) return;
 
         if (currentPage > 0 && !isFlipping) {
             isFlipping = true;
-            lastFlipTime = Date.now(); // Set lock
+            lastFlipTime = Date.now();
+
+            book.classList.add('flipping-active');
 
             currentPage--;
             const prevEl = document.getElementById(`page-${currentPage}`);
@@ -96,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     prevEl.classList.remove('flipped');
                     setTimeout(() => {
                         isFlipping = false;
+                        book.classList.remove('flipping-active');
                         updateVisibility();
                     }, 800);
                 }, 10);
