@@ -52,6 +52,27 @@
             transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1);
         }
 
+        /* CRITICAL FIX: Force concrete height on mobile for scroll height calculation */
+        @media (max-width: 768px) {
+            .book {
+                height: 75vh !important;
+                /* Force explicit height */
+                aspect-ratio: unset !important;
+                /* Disable ratio dependency */
+            }
+
+            /* Isolate gestures on mobile */
+            body {
+                touch-action: none;
+                /* Disable global browser gestures */
+            }
+
+            .menu-grid {
+                touch-action: pan-y !important;
+                /* Explicitly allow vertical scroll */
+            }
+        }
+
         /* Page Styling */
         .page {
             position: absolute;
