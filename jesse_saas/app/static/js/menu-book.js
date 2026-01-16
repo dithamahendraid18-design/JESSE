@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 0; // 0 = Cover
     const pages = document.querySelectorAll('.page');
     let isFlipping = false;
+    let lastFlipTime = 0; // Hard debounce timestamp
 
     // -------------------------------------------------------------------------
     // 2. Visibility & Stacking Logic
@@ -57,10 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Navigation (Flip) Logic
     // -------------------------------------------------------------------------
     window.flipNext = function () { // Exposed to global window for onclick handlers
+        // Hard Debounce: Prevent any flip if < 1s since last one
+        if (Date.now() - lastFlipTime < 1000) return;
+
         if (currentPage < pages.length - 1 && !isFlipping) {
             const currentEl = document.getElementById(`page-${currentPage}`);
             if (currentEl) {
                 isFlipping = true;
+                lastFlipTime = Date.now(); // Set lock
+
                 currentEl.classList.add('flipped');
                 currentEl.style.zIndex = 150; // Ensure it's on top DURING flip
 
@@ -74,8 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.flipPrev = function () { // Exposed to global window
+        // Hard Debounce
+        if (Date.now() - lastFlipTime < 1000) return;
+
         if (currentPage > 0 && !isFlipping) {
             isFlipping = true;
+            lastFlipTime = Date.now(); // Set lock
+
             currentPage--;
             const prevEl = document.getElementById(`page-${currentPage}`);
             if (prevEl) {
