@@ -57,12 +57,13 @@
 
             /* HEIGHT-DRIVEN SIZING: Prevents distortion and guarantees scroll height */
             .book {
-                height: 75vh !important;
                 width: auto !important;
-                /* Let width adapt to ratio */
-                aspect-ratio: 3/5 !important;
+                height: auto !important;
                 max-width: 90vw;
-                /* Safety cap */
+                max-height: 80vh;
+                aspect-ratio: 3/5 !important;
+                margin-left: auto;
+                margin-right: auto;
             }
 
             /* ISOLATION SHIELD: Prevent browser gestures on containers */
