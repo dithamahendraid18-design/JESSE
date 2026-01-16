@@ -522,7 +522,7 @@
                             </button>
                         </div>
 
-                        <div class="menu-grid flex-1 w-full h-full overflow-y-auto pr-2 custom-scrollbar touch-pan-y"
+                        <div class="menu-grid flex-1 w-full h-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y"
                             style="-webkit-overflow-scrolling: touch;">
                             {% for item in items %}
                             <div class="group mb-6 last:mb-0 transition-all duration-300">
@@ -813,15 +813,38 @@
             });
         });
 
-        // Touch logic (same as before)
+        // Touch logic with Scroll Protection
         let touchStartX = 0;
         let touchEndX = 0;
-        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
         document.addEventListener('touchend', e => {
             touchEndX = e.changedTouches[0].screenX;
-            if (touchEndX < touchStartX - 50) flipNext();
-            if (touchEndX > touchStartX + 50) flipPrev();
-        });
+            let touchEndY = e.changedTouches[0].screenY;
+
+            // Calculate differences
+            let xDiff = touchEndX - touchStartX;
+            let yDiff = touchEndY - touchStartY;
+
+            // If vertical scroll is significant, IGNORE (it was a scroll, not a swap)
+            if (Math.abs(yDiff) > Math.abs(xDiff)) return;
+
+            // Also ignore if touch started in a scrollable container
+            const target = e.target;
+            if (target.closest('.menu-grid') || target.closest('.overflow-y-auto')) {
+                // Double check if we are actually at the edge? 
+                // For simplicity, let's just be less aggressive with flips on grid
+                if (Math.abs(xDiff) < 80) return; // Require wider swipe inside grid
+            }
+
+            if (xDiff < -50) flipNext();
+            if (xDiff > 50) flipPrev();
+        }, { passive: true });
 
         // Jump to Category
         // Note: Logic needs to find which page the header is on.
