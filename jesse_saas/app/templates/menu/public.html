@@ -421,106 +421,11 @@
 
             <!-- Page 1: Table of Contents (Front), Blank (Back) -->
             <div class="page z-[59]" id="page-1" style="background-color: var(--book-theme-color) !important;">
-                <div class="face front flex flex-col items-center pt-8 px-6 pb-6"
-                    style="background-color: var(--book-theme-color) !important;">
+                <div class="face front pt-8 px-6 pb-6" style="background-color: var(--book-theme-color) !important;">
+                    <div class="absolute inset-0 flex flex-col items-center overflow-hidden p-6">
 
-                    <!-- Header -->
-                    <div class="mb-4 relative w-full text-center">
-                        <!-- Back Button (Left) -->
-                        <button onclick="flipPrev()"
-                            class="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
-                            style="color: var(--book-text-color);">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 19l-7-7 7-7"></path>
-                            </svg>
-                        </button>
-
-                        <h2 class="text-3xl font-bold tracking-tight uppercase px-8"
-                            style="font-family: 'Playfair Display', serif; color: var(--book-text-color);">
-                            {{ client.knowledge_base.toc_title or 'Table of Contents' }}
-                        </h2>
-                        <div class="w-16 h-1 bg-current mx-auto mt-3 opacity-30 rounded-full"></div>
-
-                        <!-- Next Button (Right) -->
-                        <button onclick="flipNext()"
-                            class="absolute right-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
-                            style="color: var(--book-text-color);">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                                </path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- List Container (Scrollable if needed) -->
-                    <div class="flex-1 w-full max-w-sm flex flex-col justify-center gap-3 overflow-y-auto pr-1 custom-scrollbar touch-pan-y"
-                        style="-webkit-overflow-scrolling: touch;">
-                        {% for category in sorted_categories %}
-                        <div onclick="window.jumpToCategory('{{ category }}')"
-                            class="group relative cursor-pointer overflow-hidden rounded-xl bg-white/10 backdrop-blur-md border border-white/25 shadow-sm mb-3 transition-colors duration-300 hover:bg-white/20">
-                            <div class="relative z-10 p-4 flex items-center justify-between">
-                                <span class="text-lg font-bold tracking-wide uppercase truncate pr-4"
-                                    style="color: var(--book-text-color);">
-                                    {{ category }}
-                                </span>
-                                <div
-                                    class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center transition-colors group-hover:bg-white/20">
-                                    <svg class="w-4 h-4 opacity-70 group-hover:opacity-100"
-                                        style="color: var(--book-text-color);" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-
-                        <!-- Last Page Link -->
-                        <div data-target="{{ client.knowledge_base.last_page_title or 'Thank You' }}"
-                            onclick="window.jumpToCategory(this.getAttribute('data-target'))"
-                            class="group relative cursor-pointer overflow-hidden rounded-xl bg-white/10 backdrop-blur-md border border-white/25 shadow-sm transition-colors duration-300 hover:bg-white/20">
-                            <div class="relative z-10 p-4 flex items-center justify-between">
-                                <span class="text-lg font-bold tracking-wide uppercase truncate pr-4"
-                                    style="color: var(--book-text-color);">
-                                    Order & Reservation
-                                </span>
-                                <div
-                                    class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center transition-colors group-hover:bg-white/20">
-                                    <svg class="w-4 h-4 opacity-70 group-hover:opacity-100"
-                                        style="color: var(--book-text-color);" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Footer -->
-                    <div class="mt-8 text-center animate-pulse">
-                        <p class="text-xs uppercase tracking-widest opacity-60 font-medium"
-                            style="color: var(--book-text-color);">
-                            {{ client.knowledge_base.toc_footer_text or 'Tap to browse menu' }}
-                        </p>
-                    </div>
-                </div>
-                <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
-            </div>
-
-            <!-- Content Pages: 1 Category per Page -->
-            {% set ns = namespace(page_idx=2) %} <!-- Start at Page 2 (0=Cover, 1=TOC) -->
-
-            {% for cat in sorted_categories %}
-            {% set items = menu_by_cat[cat] %}
-            <div class="page z-[{{ 58 - (ns.page_idx - 2) }}]" id="page-{{ ns.page_idx }}"
-                style="background-color: var(--book-theme-color) !important;">
-                <div class="face front" style="background-color: var(--book-theme-color) !important;">
-                    <div class="absolute inset-0 flex flex-col overflow-hidden p-6">
-                        <!-- Premium Category Header -->
-                        <div class="mb-8 relative py-4 text-center">
+                        <!-- Header -->
+                        <div class="mb-4 relative w-full text-center">
                             <!-- Back Button (Left) -->
                             <button onclick="flipPrev()"
                                 class="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
@@ -533,9 +438,9 @@
 
                             <h2 class="text-3xl font-bold tracking-tight uppercase px-8"
                                 style="font-family: 'Playfair Display', serif; color: var(--book-text-color);">
-                                {{ cat }}
+                                {{ client.knowledge_base.toc_title or 'Table of Contents' }}
                             </h2>
-                            <div class="w-12 h-1 bg-current mx-auto mt-2 opacity-30 rounded-full"></div>
+                            <div class="w-16 h-1 bg-current mx-auto mt-3 opacity-30 rounded-full"></div>
 
                             <!-- Next Button (Right) -->
                             <button onclick="flipNext()"
@@ -543,479 +448,579 @@
                                 style="color: var(--book-text-color);">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
+                                        d="M9 5l7 7-7 7">
+                                    </path>
                                 </svg>
                             </button>
                         </div>
 
-                        <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
+                        <!-- List Container (Scrollable if needed) -->
+                        <div class="menu-grid flex-1 w-full max-w-sm flex flex-col justify-center gap-3 min-h-0 overflow-y-auto pr-1 custom-scrollbar touch-pan-y pointer-events-auto"
                             style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translateZ(0); backface-visibility: hidden;">
-                            {% for item in items %}
-                            <div class="group mb-6 last:mb-0 transition-all duration-300">
-                                <div class="flex gap-4 items-start pb-4 border-b border-current/10">
-                                    {% if item.image_url %}
-                                    <div class="w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-md menu-item-image ring-1 ring-white/10"
-                                        style="touch-action: pan-y;"
-                                        data-img-url="{{ resolve_file(item.image_url, 'menu', width=1200) }}"
-                                        onclick="event.stopPropagation(); openLightbox(this.dataset.imgUrl)">
-                                        <!-- Thumbnail: Optimized to 400px width (Retina ready for 80px container) -->
-                                        <img src="{{ resolve_file(item.image_url, 'menu', width=400) }}" loading="lazy"
-                                            class="w-full h-full object-cover md:transform md:group-hover:scale-110 transition-transform duration-700">
-                                    </div>
-                                    {% endif %}
-
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex justify-between items-baseline gap-2 mb-1">
-                                            <h3 class="text-base font-bold tracking-wide truncate"
-                                                style="color: var(--book-text-color);">
-                                                {{ item.name }}
-                                            </h3>
-                                            <div class="flex-shrink-0">
-                                                <span class="text-sm font-bold px-2 py-0.5 rounded bg-white/10"
-                                                    style="color: var(--book-text-color);">
-                                                    {{ currency }}{{ "{:,.0f}".format(item.price).replace(',', '.') }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <p class="text-[11px] leading-relaxed opacity-70 line-clamp-3"
-                                            style="color: var(--book-text-color);">
-                                            {{ item.description or 'Exquisite flavors crafted with precision.' }}
-                                        </p>
+                            {% for category in sorted_categories %}
+                            <div onclick="window.jumpToCategory('{{ category }}')"
+                                class="group relative cursor-pointer overflow-hidden rounded-xl bg-white/10 backdrop-blur-md border border-white/25 shadow-sm mb-3 transition-colors duration-300 hover:bg-white/20">
+                                <div class="relative z-10 p-4 flex items-center justify-between">
+                                    <span class="text-lg font-bold tracking-wide uppercase truncate pr-4"
+                                        style="color: var(--book-text-color);">
+                                        {{ category }}
+                                    </span>
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center transition-colors group-hover:bg-white/20">
+                                        <svg class="w-4 h-4 opacity-70 group-hover:opacity-100"
+                                            style="color: var(--book-text-color);" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7"></path>
+                                        </svg>
                                     </div>
                                 </div>
                             </div>
                             {% endfor %}
+
+                            <!-- Last Page Link -->
+                            <div data-target="{{ client.knowledge_base.last_page_title or 'Thank You' }}"
+                                onclick="window.jumpToCategory(this.getAttribute('data-target'))"
+                                class="group relative cursor-pointer overflow-hidden rounded-xl bg-white/10 backdrop-blur-md border border-white/25 shadow-sm transition-colors duration-300 hover:bg-white/20">
+                                <div class="relative z-10 p-4 flex items-center justify-between">
+                                    <span class="text-lg font-bold tracking-wide uppercase truncate pr-4"
+                                        style="color: var(--book-text-color);">
+                                        Order & Reservation
+                                    </span>
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center transition-colors group-hover:bg-white/20">
+                                        <svg class="w-4 h-4 opacity-70 group-hover:opacity-100"
+                                            style="color: var(--book-text-color);" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Scroll Indicator -->
-                        <!-- Scroll Indicator -->
-                        <div
-                            class="scroll-indicator w-full py-2 flex justify-center pointer-events-none animate-bounce opacity-50 z-20 transition-opacity duration-300">
-                            <div class="flex flex-col items-center">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        <!-- Footer -->
+                        <div class="mt-8 text-center animate-pulse">
+                            <p class="text-xs uppercase tracking-widest opacity-60 font-medium"
+                                style="color: var(--book-text-color);">
+                                {{ client.knowledge_base.toc_footer_text or 'Tap to browse menu' }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
+                </div>
+
+                <!-- Content Pages: 1 Category per Page -->
+                {% set ns = namespace(page_idx=2) %} <!-- Start at Page 2 (0=Cover, 1=TOC) -->
+
+                {% for cat in sorted_categories %}
+                {% set items = menu_by_cat[cat] %}
+                <div class="page z-[{{ 58 - (ns.page_idx - 2) }}]" id="page-{{ ns.page_idx }}"
+                    style="background-color: var(--book-theme-color) !important;">
+                    <div class="face front" style="background-color: var(--book-theme-color) !important;">
+                        <div class="absolute inset-0 flex flex-col overflow-hidden p-6">
+                            <!-- Premium Category Header -->
+                            <div class="mb-8 relative py-4 text-center">
+                                <!-- Back Button (Left) -->
+                                <button onclick="flipPrev()"
+                                    class="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
                                     style="color: var(--book-text-color);">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7"></path>
-                                </svg>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <h2 class="text-3xl font-bold tracking-tight uppercase px-8"
+                                    style="font-family: 'Playfair Display', serif; color: var(--book-text-color);">
+                                    {{ cat }}
+                                </h2>
+                                <div class="w-12 h-1 bg-current mx-auto mt-2 opacity-30 rounded-full"></div>
+
+                                <!-- Next Button (Right) -->
+                                <button onclick="flipNext()"
+                                    class="absolute right-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
+                                    style="color: var(--book-text-color);">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </button>
                             </div>
-                        </div>
 
-                        <!-- Page Footer -->
-                        <div class="mt-4 text-center">
-                            <p class="text-[10px] tracking-widest uppercase opacity-40">
-                                {{ client.restaurant_name }} • Page {{ ns.page_idx }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Empty Back Face -->
-                <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
-            </div>
-            {% set ns.page_idx = ns.page_idx + 1 %}
-            {% endfor %}
+                            <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
+                                style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translateZ(0); backface-visibility: hidden;">
+                                {% for item in items %}
+                                <div class="group mb-6 last:mb-0 transition-all duration-300">
+                                    <div class="flex gap-4 items-start pb-4 border-b border-current/10">
+                                        {% if item.image_url %}
+                                        <div class="w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-md menu-item-image ring-1 ring-white/10"
+                                            style="touch-action: pan-y;"
+                                            data-img-url="{{ resolve_file(item.image_url, 'menu', width=1200) }}"
+                                            onclick="event.stopPropagation(); openLightbox(this.dataset.imgUrl)">
+                                            <!-- Thumbnail: Optimized to 400px width (Retina ready for 80px container) -->
+                                            <img src="{{ resolve_file(item.image_url, 'menu', width=400) }}"
+                                                loading="lazy"
+                                                class="w-full h-full object-cover md:transform md:group-hover:scale-110 transition-transform duration-700">
+                                        </div>
+                                        {% endif %}
 
-            <!-- Last Page: Back Cover (Optional) -->
-            <div class="page z-[{{ 58 - (ns.page_idx - 2) - 1 }}]" id="page-{{ ns.page_idx }}">
-                <div class="face front pt-4 p-8" style="background-color: var(--book-theme-color) !important;">
-                    <div class="absolute inset-0 flex flex-col overflow-hidden p-8">
-
-                        <!-- 1. Header (Standard Category Style) -->
-                        <div class="mb-4 relative py-4 text-center">
-                            <h2 class="text-3xl font-bold tracking-tight uppercase"
-                                style="font-family: 'Playfair Display', serif; color: var(--book-text-color);">
-                                {{ client.knowledge_base.last_page_title or 'Thank You' }}
-                            </h2>
-                            <div class="w-12 h-1 bg-current mx-auto mt-2 opacity-30 rounded-full"></div>
-                        </div>
-
-                        <!-- Middle Content Wrapper (Full Width - Scrollable) -->
-                        <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
-                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translateZ(0); backface-visibility: hidden;">
-
-                            <!-- 2. Order Online Area -->
-                            <div
-                                class="group relative bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md p-5 rounded-3xl border border-white/30 shadow-lg shrink-0">
-                                <div class="relative z-10 flex flex-col items-center">
-                                    <div
-                                        class="w-10 h-10 mb-2 bg-white/20 rounded-full flex items-center justify-center shadow-inner">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                        </svg>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex justify-between items-baseline gap-2 mb-1">
+                                                <h3 class="text-base font-bold tracking-wide truncate"
+                                                    style="color: var(--book-text-color);">
+                                                    {{ item.name }}
+                                                </h3>
+                                                <div class="flex-shrink-0">
+                                                    <span class="text-sm font-bold px-2 py-0.5 rounded bg-white/10"
+                                                        style="color: var(--book-text-color);">
+                                                        {{ currency }}{{ "{:,.0f}".format(item.price).replace(',', '.')
+                                                        }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <p class="text-[11px] leading-relaxed opacity-70 line-clamp-3"
+                                                style="color: var(--book-text-color);">
+                                                {{ item.description or 'Exquisite flavors crafted with precision.' }}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <h3 class="text-xl font-bold mb-1 uppercase tracking-wider text-center"
-                                        style="color: var(--book-text-color);">Order Online</h3>
-                                    <p class="autolink-content text-sm font-medium mb-3 opacity-90 leading-relaxed text-center whitespace-pre-line break-words w-full"
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Scroll Indicator -->
+                            <!-- Scroll Indicator -->
+                            <div
+                                class="scroll-indicator w-full py-2 flex justify-center pointer-events-none animate-bounce opacity-50 z-20 transition-opacity duration-300">
+                                <div class="flex flex-col items-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                         style="color: var(--book-text-color);">
-                                        {{ client.knowledge_base.last_page_order_desc }}
-                                    </p>
-                                    {% if client.delivery_url or client.website_url %}
-                                    <a href="{{ client.delivery_url or client.website_url }}" target="_blank"
-                                        class="inline-flex items-center gap-2 px-6 py-2 bg-white text-gray-900 rounded-full font-bold text-sm shadow-md hover:bg-gray-50 transition-colors">
-                                        <span>Order Now</span>
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                        </svg>
-                                    </a>
-                                    {% endif %}
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
                                 </div>
                             </div>
 
-                            <!-- 3. Reservation Area -->
-                            <div
-                                class="group relative bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md p-5 rounded-3xl border border-white/30 shadow-lg shrink-0">
-                                <div class="relative z-10 flex flex-col items-center">
-                                    <div
-                                        class="w-10 h-10 mb-2 bg-white/20 rounded-full flex items-center justify-center shadow-inner">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M8 7V3m8 4V3m-9 8h10M5 9h14l1 12H4L5 9z"></path>
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-xl font-bold mb-1 uppercase tracking-wider text-center"
-                                        style="color: var(--book-text-color);">Reservations</h3>
-                                    <p class="autolink-content text-sm font-medium mb-3 opacity-90 leading-relaxed text-center whitespace-pre-line break-words w-full"
-                                        style="color: var(--book-text-color);">
-                                        {{ client.knowledge_base.last_page_res_desc }}
-                                    </p>
-                                    {% if client.booking_url or client.public_phone %}
-                                    <a href="{{ client.booking_url or 'tel:' + client.public_phone }}" target="_blank"
-                                        class="inline-flex items-center gap-2 px-6 py-2 bg-white text-gray-900 rounded-full font-bold text-sm shadow-md hover:bg-gray-50 transition-colors">
-                                        <span>Book a Table</span>
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                            </path>
-                                        </svg>
-                                    </a>
-                                    {% endif %}
-                                </div>
+                            <!-- Page Footer -->
+                            <div class="mt-4 text-center">
+                                <p class="text-[10px] tracking-widest uppercase opacity-40">
+                                    {{ client.restaurant_name }} • Page {{ ns.page_idx }}
+                                </p>
                             </div>
                         </div>
+                    </div>
+                    <!-- Empty Back Face -->
+                    <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
+                </div>
+                {% set ns.page_idx = ns.page_idx + 1 %}
+                {% endfor %}
 
-                        <!-- Standard Page Footer -->
-                        <div class="mt-4 text-center">
-                            <p class="text-[10px] tracking-widest uppercase opacity-40">
-                                {{ client.restaurant_name }} • Page End
-                            </p>
+                <!-- Last Page: Back Cover (Optional) -->
+                <div class="page z-[{{ 58 - (ns.page_idx - 2) - 1 }}]" id="page-{{ ns.page_idx }}">
+                    <div class="face front pt-4 p-8" style="background-color: var(--book-theme-color) !important;">
+                        <div class="absolute inset-0 flex flex-col overflow-hidden p-8">
+
+                            <!-- 1. Header (Standard Category Style) -->
+                            <div class="mb-4 relative py-4 text-center">
+                                <h2 class="text-3xl font-bold tracking-tight uppercase"
+                                    style="font-family: 'Playfair Display', serif; color: var(--book-text-color);">
+                                    {{ client.knowledge_base.last_page_title or 'Thank You' }}
+                                </h2>
+                                <div class="w-12 h-1 bg-current mx-auto mt-2 opacity-30 rounded-full"></div>
+                            </div>
+
+                            <!-- Middle Content Wrapper (Full Width - Scrollable) -->
+                            <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
+                                style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translateZ(0); backface-visibility: hidden;">
+
+                                <!-- 2. Order Online Area -->
+                                <div
+                                    class="group relative bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md p-5 rounded-3xl border border-white/30 shadow-lg shrink-0">
+                                    <div class="relative z-10 flex flex-col items-center">
+                                        <div
+                                            class="w-10 h-10 mb-2 bg-white/20 rounded-full flex items-center justify-center shadow-inner">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-xl font-bold mb-1 uppercase tracking-wider text-center"
+                                            style="color: var(--book-text-color);">Order Online</h3>
+                                        <p class="autolink-content text-sm font-medium mb-3 opacity-90 leading-relaxed text-center whitespace-pre-line break-words w-full"
+                                            style="color: var(--book-text-color);">
+                                            {{ client.knowledge_base.last_page_order_desc }}
+                                        </p>
+                                        {% if client.delivery_url or client.website_url %}
+                                        <a href="{{ client.delivery_url or client.website_url }}" target="_blank"
+                                            class="inline-flex items-center gap-2 px-6 py-2 bg-white text-gray-900 rounded-full font-bold text-sm shadow-md hover:bg-gray-50 transition-colors">
+                                            <span>Order Now</span>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- 3. Reservation Area -->
+                                <div
+                                    class="group relative bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md p-5 rounded-3xl border border-white/30 shadow-lg shrink-0">
+                                    <div class="relative z-10 flex flex-col items-center">
+                                        <div
+                                            class="w-10 h-10 mb-2 bg-white/20 rounded-full flex items-center justify-center shadow-inner">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 9h14l1 12H4L5 9z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-xl font-bold mb-1 uppercase tracking-wider text-center"
+                                            style="color: var(--book-text-color);">Reservations</h3>
+                                        <p class="autolink-content text-sm font-medium mb-3 opacity-90 leading-relaxed text-center whitespace-pre-line break-words w-full"
+                                            style="color: var(--book-text-color);">
+                                            {{ client.knowledge_base.last_page_res_desc }}
+                                        </p>
+                                        {% if client.booking_url or client.public_phone %}
+                                        <a href="{{ client.booking_url or 'tel:' + client.public_phone }}"
+                                            target="_blank"
+                                            class="inline-flex items-center gap-2 px-6 py-2 bg-white text-gray-900 rounded-full font-bold text-sm shadow-md hover:bg-gray-50 transition-colors">
+                                            <span>Book a Table</span>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                </path>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Standard Page Footer -->
+                            <div class="mt-4 text-center">
+                                <p class="text-[10px] tracking-widest uppercase opacity-40">
+                                    {{ client.restaurant_name }} • Page End
+                                </p>
+                            </div>
                         </div>
                     </div>
+                    <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
                 </div>
-                <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
+
+                {% set ns.page_idx = ns.page_idx + 1 %}
+
+                <!-- Store Total Pages for JS -->
+                <input type="hidden" id="totalPages" value="{{ ns.page_idx }}">
+
             </div>
-
-            {% set ns.page_idx = ns.page_idx + 1 %}
-
-            <!-- Store Total Pages for JS -->
-            <input type="hidden" id="totalPages" value="{{ ns.page_idx }}">
-
         </div>
-    </div>
 
-    <!-- Lightbox Modal -->
-    <div id="lightbox" onclick="closeLightbox()">
-        <button class="close-lightbox" aria-label="Close lightbox">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        <!-- Lightbox Modal -->
+        <div id="lightbox" onclick="closeLightbox()">
+            <button class="close-lightbox" aria-label="Close lightbox">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <img id="lightbox-img" src="" alt="Menu Item Large View" onclick="event.stopPropagation()">
+        </div>
+
+        <!-- Navigation Overlay Hints -->
+        <div class="nav-hint nav-right text-gray-600">
+            <svg class="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-        </button>
-        <img id="lightbox-img" src="" alt="Menu Item Large View" onclick="event.stopPropagation()">
-    </div>
+        </div>
 
-    <!-- Navigation Overlay Hints -->
-    <div class="nav-hint nav-right text-gray-600">
-        <svg class="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-    </div>
+        <script>
+            const book = document.getElementById('book');
+            const totalPagesRaw = document.getElementById('totalPages').value;
+            const totalPages = parseInt(totalPagesRaw);
 
-    <script>
-        const book = document.getElementById('book');
-        const totalPagesRaw = document.getElementById('totalPages').value;
-        const totalPages = parseInt(totalPagesRaw);
+            let currentPage = 0; // 0 = Cover
+            const pages = document.querySelectorAll('.page');
 
-        let currentPage = 0; // 0 = Cover
-        const pages = document.querySelectorAll('.page');
+            // Initial Z-Index is set by Jinja for the stack. 
+            // JS only needs to handle z-index for the FLIPPED pile (Left Stack).
+            // Since we are "Single Page Focus", the Left Stack is essentially "discarded".
+            // We just need to make sure the TOPmost Left Page is BEHIND the book spine visual if any?
+            // Actually simple logic: Flipped pages have z-index = index.
+            // Page 0 (Flip) -> z-0.
+            // Page 1 (Flip) -> z-1.
+            // So recently flipped page is ON TOP of the left stack. That is correct.
 
-        // Initial Z-Index is set by Jinja for the stack. 
-        // JS only needs to handle z-index for the FLIPPED pile (Left Stack).
-        // Since we are "Single Page Focus", the Left Stack is essentially "discarded".
-        // We just need to make sure the TOPmost Left Page is BEHIND the book spine visual if any?
-        // Actually simple logic: Flipped pages have z-index = index.
-        // Page 0 (Flip) -> z-0.
-        // Page 1 (Flip) -> z-1.
-        // So recently flipped page is ON TOP of the left stack. That is correct.
+            let isFlipping = false;
 
-        let isFlipping = false;
+            function updateVisibility() {
+                pages.forEach((page, index) => {
+                    // Reset basic properties
+                    page.style.display = 'block';
+                    page.style.visibility = 'visible';
 
-        function updateVisibility() {
-            pages.forEach((page, index) => {
-                // Reset basic properties
-                page.style.display = 'block';
-                page.style.visibility = 'visible';
-
-                if (index < currentPage) {
-                    // Left stack (already flipped)
-                    page.classList.add('flipped');
-                    page.style.zIndex = index;
-                    page.style.pointerEvents = 'none';
-                } else if (index === currentPage) {
-                    // Active page (centered)
-                    page.classList.remove('flipped');
-                    page.style.zIndex = 100;
-                    page.style.pointerEvents = isFlipping ? 'none' : 'auto';
-                } else if (index === currentPage + 1) {
-                    // Peek next
-                    page.classList.remove('flipped');
-                    page.style.zIndex = 50;
-                    page.style.pointerEvents = 'none';
-                } else {
-                    // Hidden
-                    page.style.display = 'none';
-                    page.style.pointerEvents = 'none';
-                }
-            });
-        }
-
-        function flipNext() {
-            if (currentPage < pages.length - 1 && !isFlipping) {
-                const currentEl = document.getElementById(`page-${currentPage}`);
-                if (currentEl) {
-                    isFlipping = true;
-                    // Start animation by adding class
-                    currentEl.classList.add('flipped');
-                    currentEl.style.zIndex = 150; // Ensure it's on top DURING flip
-
-                    setTimeout(() => {
-                        currentPage++;
-                        isFlipping = false;
-                        updateVisibility();
-                    }, 800); // Match CSS transition duration
-                }
+                    if (index < currentPage) {
+                        // Left stack (already flipped)
+                        page.classList.add('flipped');
+                        page.style.zIndex = index;
+                        page.style.pointerEvents = 'none';
+                    } else if (index === currentPage) {
+                        // Active page (centered)
+                        page.classList.remove('flipped');
+                        page.style.zIndex = 100;
+                        page.style.pointerEvents = isFlipping ? 'none' : 'auto';
+                    } else if (index === currentPage + 1) {
+                        // Peek next
+                        page.classList.remove('flipped');
+                        page.style.zIndex = 50;
+                        page.style.pointerEvents = 'none';
+                    } else {
+                        // Hidden
+                        page.style.display = 'none';
+                        page.style.pointerEvents = 'none';
+                    }
+                });
             }
-        }
 
-        function flipPrev() {
-            if (currentPage > 0 && !isFlipping) {
-                isFlipping = true;
-                currentPage--;
-                const prevEl = document.getElementById(`page-${currentPage}`);
-                if (prevEl) {
-                    prevEl.style.zIndex = 150; // Bring it back to top
-                    // Trigger animation by removing class
-                    setTimeout(() => {
-                        prevEl.classList.remove('flipped');
+            function flipNext() {
+                if (currentPage < pages.length - 1 && !isFlipping) {
+                    const currentEl = document.getElementById(`page-${currentPage}`);
+                    if (currentEl) {
+                        isFlipping = true;
+                        // Start animation by adding class
+                        currentEl.classList.add('flipped');
+                        currentEl.style.zIndex = 150; // Ensure it's on top DURING flip
+
                         setTimeout(() => {
+                            currentPage++;
                             isFlipping = false;
                             updateVisibility();
-                        }, 800);
-                    }, 10);
+                        }, 800); // Match CSS transition duration
+                    }
                 }
             }
-        }
 
-        // Initial setup
-        updateVisibility();
-
-        // Click Handling
-        pages.forEach((page, index) => {
-            page.addEventListener('click', (e) => {
-                e.stopPropagation();
-
-                // Only navigate on the current active centered page
-                if (index !== currentPage) return;
-
-                const rect = page.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const width = rect.width;
-
-                if (x > width / 2) {
-                    flipNext();
-                } else {
-                    flipPrev();
-                }
-            });
-        });
-
-        // Touch logic with Scroll Protection
-        let touchStartX = 0;
-        let touchEndX = 0;
-        let touchStartY = 0;
-
-        /*
-        document.addEventListener('touchstart', e => {
-            // CRITICAL: If touching menu grid, let browser handle native scroll. DO NOT INTERFERE.
-            if (e.target.closest('.menu-grid')) return;
-
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-        }, { passive: true });
-
-        document.addEventListener('touchend', e => {
-            // CRITICAL: Ignore interaction if it started/ended in grid
-            if (e.target.closest('.menu-grid')) return;
-            if (touchStartX === 0 && touchStartY === 0) return; // touches ignored by start
-
-            touchEndX = e.changedTouches[0].screenX;
-            let touchEndY = e.changedTouches[0].screenY;
-
-            // Calculate differences
-            let xDiff = touchEndX - touchStartX;
-            let yDiff = touchEndY - touchStartY;
-
-            // If vertical scroll is significant, IGNORE (it was a scroll, not a swap)
-            if (Math.abs(yDiff) > Math.abs(xDiff)) return;
-
-            if (xDiff < -50) flipNext();
-            if (xDiff > 50) flipPrev();
-
-            // Reset
-            touchStartX = 0;
-            touchStartY = 0;
-        }, { passive: true });
-        */
-
-        // Jump to Category
-        // Note: Logic needs to find which page the header is on.
-        // The structure is flat now, so it should be robust.
-        function jumpToCategory(categoryName) {
-            const headers = document.querySelectorAll('h2');
-            let targetHeader = null;
-            for (let h of headers) {
-                if (h.innerText.trim() === categoryName) {
-                    targetHeader = h;
-                    break;
+            function flipPrev() {
+                if (currentPage > 0 && !isFlipping) {
+                    isFlipping = true;
+                    currentPage--;
+                    const prevEl = document.getElementById(`page-${currentPage}`);
+                    if (prevEl) {
+                        prevEl.style.zIndex = 150; // Bring it back to top
+                        // Trigger animation by removing class
+                        setTimeout(() => {
+                            prevEl.classList.remove('flipped');
+                            setTimeout(() => {
+                                isFlipping = false;
+                                updateVisibility();
+                            }, 800);
+                        }, 10);
+                    }
                 }
             }
-            if (!targetHeader) return;
-            const parentPage = targetHeader.closest('.page');
-            if (!parentPage) return;
 
-            const pageId = parentPage.id;
-            const targetIndex = parseInt(pageId.split('-')[1]);
+            // Initial setup
+            updateVisibility();
 
-            if (targetIndex === currentPage) return;
+            // Click Handling
+            pages.forEach((page, index) => {
+                page.addEventListener('click', (e) => {
+                    e.stopPropagation();
 
-            // Fast Sequential Flip (No Blackout)
-            const direction = targetIndex > currentPage ? 1 : -1;
-            isFlipping = true; // Lock interaction
+                    // Only navigate on the current active centered page
+                    if (index !== currentPage) return;
 
-            function step() {
-                if (currentPage === targetIndex) {
-                    isFlipping = false;
-                    updateVisibility(); // Restore clicks
-                    return;
-                }
-                currentPage += direction;
-                updateVisibility();
+                    const rect = page.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const width = rect.width;
 
-                // Speed depends on distance? Fixed 150ms is good for "riffling" effect
-                setTimeout(step, 150);
-            }
-            step();
-        }
-
-        // Lightbox Functions
-        function openLightbox(src) {
-            const lb = document.getElementById('lightbox');
-            const img = document.getElementById('lightbox-img');
-            img.src = src;
-            lb.style.display = 'flex';
-            setTimeout(() => {
-                lb.classList.add('show');
-            }, 10);
-            // Hide parent's close button
-            if (window.parent) {
-                window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: false }, '*');
-            }
-        }
-
-        function closeLightbox() {
-            const lb = document.getElementById('lightbox');
-            lb.classList.remove('show');
-            setTimeout(() => {
-                lb.style.display = 'none';
-            }, 300);
-            // Show parent's close button
-            if (window.parent) {
-                window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: true }, '*');
-            }
-        }
-
-        // Initialize Auto-Link
-        document.addEventListener('DOMContentLoaded', () => {
-            // Linkify Function
-            const linkify = (text) => {
-                const urlRegex = /(https?:\/\/[^\s]+)/g;
-                return text.replace(urlRegex, (url) => {
-                    const cleanUrl = url.replace(/[.,;!]$/, '');
-                    return `<a href="${cleanUrl}" target="_blank" class="underline decoration-white/50 hover:decoration-white transition-colors break-all relative z-50 pointer-events-auto cursor-pointer" onclick="event.stopPropagation(); window.open('${cleanUrl}', '_blank'); return false;">${cleanUrl}</a>`;
+                    if (x > width / 2) {
+                        flipNext();
+                    } else {
+                        flipPrev();
+                    }
                 });
-            };
-
-            // Apply to specific content
-            document.querySelectorAll('.autolink-content').forEach(el => {
-                el.innerHTML = linkify(el.innerHTML);
             });
 
-            // Smart Scroll Indicator
-            const menuGrids = document.querySelectorAll('.menu-grid');
-            const checkScroll = (grid) => {
-                const indicator = grid.nextElementSibling;
-                if (!indicator || !indicator.classList.contains('scroll-indicator')) return;
+            // Touch logic with Scroll Protection
+            let touchStartX = 0;
+            let touchEndX = 0;
+            let touchStartY = 0;
 
-                // Threshold: only show if content is significantly larger (>20px) to avoid false positives
-                const isScrollable = (grid.scrollHeight - grid.clientHeight) > 10;
+            /*
+            document.addEventListener('touchstart', e => {
+                // CRITICAL: If touching menu grid, let browser handle native scroll. DO NOT INTERFERE.
+                if (e.target.closest('.menu-grid')) return;
+    
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+    
+            document.addEventListener('touchend', e => {
+                // CRITICAL: Ignore interaction if it started/ended in grid
+                if (e.target.closest('.menu-grid')) return;
+                if (touchStartX === 0 && touchStartY === 0) return; // touches ignored by start
+    
+                touchEndX = e.changedTouches[0].screenX;
+                let touchEndY = e.changedTouches[0].screenY;
+    
+                // Calculate differences
+                let xDiff = touchEndX - touchStartX;
+                let yDiff = touchEndY - touchStartY;
+    
+                // If vertical scroll is significant, IGNORE (it was a scroll, not a swap)
+                if (Math.abs(yDiff) > Math.abs(xDiff)) return;
+    
+                if (xDiff < -50) flipNext();
+                if (xDiff > 50) flipPrev();
+    
+                // Reset
+                touchStartX = 0;
+                touchStartY = 0;
+            }, { passive: true });
+            */
 
-                // Check if user is near bottom
-                const isAtBottom = Math.ceil(grid.scrollTop + grid.clientHeight) >= (grid.scrollHeight - 5);
-
-                if (!isScrollable) {
-                    indicator.style.display = 'none'; // Safe to hide if content is short
-                    indicator.style.opacity = '0';
-                } else if (isAtBottom) {
-                    indicator.style.opacity = '0'; // Only fade out, KEEP SPACE to prevent layout jump
-                } else {
-                    indicator.style.display = 'flex'; // Ensure visible
-                    // Force reflow
-                    void indicator.offsetWidth;
-                    indicator.style.opacity = '0.5'; // Fade in
+            // Jump to Category
+            // Note: Logic needs to find which page the header is on.
+            // The structure is flat now, so it should be robust.
+            function jumpToCategory(categoryName) {
+                const headers = document.querySelectorAll('h2');
+                let targetHeader = null;
+                for (let h of headers) {
+                    if (h.innerText.trim() === categoryName) {
+                        targetHeader = h;
+                        break;
+                    }
                 }
-            };
+                if (!targetHeader) return;
+                const parentPage = targetHeader.closest('.page');
+                if (!parentPage) return;
 
-            const initScrollMonitors = () => {
-                menuGrids.forEach(grid => {
-                    // 1. Initial Check
-                    checkScroll(grid);
+                const pageId = parentPage.id;
+                const targetIndex = parseInt(pageId.split('-')[1]);
 
-                    // 2. Scroll Listener
-                    grid.addEventListener('scroll', () => {
-                        const indicator = grid.nextElementSibling;
-                        if (indicator && indicator.classList.contains('scroll-indicator')) {
-                            indicator.style.display = 'flex'; // Ensure generic display before opacity transition
-                        }
-                        checkScroll(grid);
+                if (targetIndex === currentPage) return;
+
+                // Fast Sequential Flip (No Blackout)
+                const direction = targetIndex > currentPage ? 1 : -1;
+                isFlipping = true; // Lock interaction
+
+                function step() {
+                    if (currentPage === targetIndex) {
+                        isFlipping = false;
+                        updateVisibility(); // Restore clicks
+                        return;
+                    }
+                    currentPage += direction;
+                    updateVisibility();
+
+                    // Speed depends on distance? Fixed 150ms is good for "riffling" effect
+                    setTimeout(step, 150);
+                }
+                step();
+            }
+
+            // Lightbox Functions
+            function openLightbox(src) {
+                const lb = document.getElementById('lightbox');
+                const img = document.getElementById('lightbox-img');
+                img.src = src;
+                lb.style.display = 'flex';
+                setTimeout(() => {
+                    lb.classList.add('show');
+                }, 10);
+                // Hide parent's close button
+                if (window.parent) {
+                    window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: false }, '*');
+                }
+            }
+
+            function closeLightbox() {
+                const lb = document.getElementById('lightbox');
+                lb.classList.remove('show');
+                setTimeout(() => {
+                    lb.style.display = 'none';
+                }, 300);
+                // Show parent's close button
+                if (window.parent) {
+                    window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: true }, '*');
+                }
+            }
+
+            // Initialize Auto-Link
+            document.addEventListener('DOMContentLoaded', () => {
+                // Linkify Function
+                const linkify = (text) => {
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+                    return text.replace(urlRegex, (url) => {
+                        const cleanUrl = url.replace(/[.,;!]$/, '');
+                        return `<a href="${cleanUrl}" target="_blank" class="underline decoration-white/50 hover:decoration-white transition-colors break-all relative z-50 pointer-events-auto cursor-pointer" onclick="event.stopPropagation(); window.open('${cleanUrl}', '_blank'); return false;">${cleanUrl}</a>`;
                     });
+                };
 
-                    // 3. Resize Observer (Detects image loads / content changes)
-                    const resizeObserver = new ResizeObserver(() => checkScroll(grid));
-                    resizeObserver.observe(grid);
-                    Array.from(grid.children).forEach(child => resizeObserver.observe(child));
+                // Apply to specific content
+                document.querySelectorAll('.autolink-content').forEach(el => {
+                    el.innerHTML = linkify(el.innerHTML);
                 });
-            };
 
-            // Run on DOM Ready
-            initScrollMonitors();
+                // Smart Scroll Indicator
+                const menuGrids = document.querySelectorAll('.menu-grid');
+                const checkScroll = (grid) => {
+                    const indicator = grid.nextElementSibling;
+                    if (!indicator || !indicator.classList.contains('scroll-indicator')) return;
 
-            // Run again on Window Load (ensure all images loaded)
-            window.addEventListener('load', () => {
-                menuGrids.forEach(checkScroll);
+                    // Threshold: only show if content is significantly larger (>20px) to avoid false positives
+                    const isScrollable = (grid.scrollHeight - grid.clientHeight) > 10;
+
+                    // Check if user is near bottom
+                    const isAtBottom = Math.ceil(grid.scrollTop + grid.clientHeight) >= (grid.scrollHeight - 5);
+
+                    if (!isScrollable) {
+                        indicator.style.display = 'none'; // Safe to hide if content is short
+                        indicator.style.opacity = '0';
+                    } else if (isAtBottom) {
+                        indicator.style.opacity = '0'; // Only fade out, KEEP SPACE to prevent layout jump
+                    } else {
+                        indicator.style.display = 'flex'; // Ensure visible
+                        // Force reflow
+                        void indicator.offsetWidth;
+                        indicator.style.opacity = '0.5'; // Fade in
+                    }
+                };
+
+                const initScrollMonitors = () => {
+                    menuGrids.forEach(grid => {
+                        // 1. Initial Check
+                        checkScroll(grid);
+
+                        // 2. Scroll Listener
+                        grid.addEventListener('scroll', () => {
+                            const indicator = grid.nextElementSibling;
+                            if (indicator && indicator.classList.contains('scroll-indicator')) {
+                                indicator.style.display = 'flex'; // Ensure generic display before opacity transition
+                            }
+                            checkScroll(grid);
+                        });
+
+                        // 3. Resize Observer (Detects image loads / content changes)
+                        const resizeObserver = new ResizeObserver(() => checkScroll(grid));
+                        resizeObserver.observe(grid);
+                        Array.from(grid.children).forEach(child => resizeObserver.observe(child));
+                    });
+                };
+
+                // Run on DOM Ready
+                initScrollMonitors();
+
+                // Run again on Window Load (ensure all images loaded)
+                window.addEventListener('load', () => {
+                    menuGrids.forEach(checkScroll);
+                });
             });
-        });
-    </script>
+        </script>
 </body>
 
 </html>
