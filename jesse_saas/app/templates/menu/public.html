@@ -40,6 +40,26 @@
             perspective: 2000px;
         }
 
+        @media (max-width: 768px) {
+            .scene {
+                perspective: none;
+                /* Flatten scene on mobile */
+            }
+
+            /* Reset transform styles to prevent 3D scroll locking */
+            .book,
+            .page {
+                transform-style: flat !important;
+            }
+
+            .page.flipped {
+                /* On mobile, flip is just Z-index swap or hidden, handled largely by JS visibility, 
+                    but we keep transform to not break logic, just flatten the context */
+                transform: rotateY(0deg) !important;
+                /* Visual Reset */
+            }
+        }
+
         /* Mobile first book size - updated for Single Page Desktop */
         .book {
             position: relative;
