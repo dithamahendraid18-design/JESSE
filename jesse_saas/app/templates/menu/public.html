@@ -819,11 +819,18 @@
         let touchStartY = 0;
 
         document.addEventListener('touchstart', e => {
+            // CRITICAL: If touching menu grid, let browser handle native scroll. DO NOT INTERFERE.
+            if (e.target.closest('.menu-grid')) return;
+
             touchStartX = e.changedTouches[0].screenX;
             touchStartY = e.changedTouches[0].screenY;
         }, { passive: true });
 
         document.addEventListener('touchend', e => {
+            // CRITICAL: Ignore interaction if it started/ended in grid
+            if (e.target.closest('.menu-grid')) return;
+            if (touchStartX === 0 && touchStartY === 0) return; // touches ignored by start
+
             touchEndX = e.changedTouches[0].screenX;
             let touchEndY = e.changedTouches[0].screenY;
 
@@ -834,16 +841,12 @@
             // If vertical scroll is significant, IGNORE (it was a scroll, not a swap)
             if (Math.abs(yDiff) > Math.abs(xDiff)) return;
 
-            // Also ignore if touch started in a scrollable container
-            const target = e.target;
-            if (target.closest('.menu-grid') || target.closest('.overflow-y-auto')) {
-                // Double check if we are actually at the edge? 
-                // For simplicity, let's just be less aggressive with flips on grid
-                if (Math.abs(xDiff) < 80) return; // Require wider swipe inside grid
-            }
-
             if (xDiff < -50) flipNext();
             if (xDiff > 50) flipPrev();
+
+            // Reset
+            touchStartX = 0;
+            touchStartY = 0;
         }, { passive: true });
 
         // Jump to Category
