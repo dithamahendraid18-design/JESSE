@@ -528,12 +528,13 @@
                             <div class="group mb-6 last:mb-0 transition-all duration-300">
                                 <div class="flex gap-4 items-start pb-4 border-b border-current/10">
                                     {% if item.image_url %}
-                                    <div class="w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-md menu-item-image ring-1 ring-white/10 cursor-zoom-in"
+                                    <div class="w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-md menu-item-image ring-1 ring-white/10"
+                                        style="touch-action: pan-y;"
                                         data-img-url="{{ resolve_file(item.image_url, 'menu', width=1200) }}"
                                         onclick="event.stopPropagation(); openLightbox(this.dataset.imgUrl)">
                                         <!-- Thumbnail: Optimized to 400px width (Retina ready for 80px container) -->
                                         <img src="{{ resolve_file(item.image_url, 'menu', width=400) }}" loading="lazy"
-                                            class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                                            class="w-full h-full object-cover md:transform md:group-hover:scale-110 transition-transform duration-700">
                                     </div>
                                     {% endif %}
 
