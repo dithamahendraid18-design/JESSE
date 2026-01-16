@@ -200,6 +200,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (targetIndex === currentPage) return;
 
+        // CRITICAL FIX: Prevent Category Jump if book is already flipping (e.g. from Cover)
+        if (isFlipping) return;
+
         // Fast Sequential Flip (No Blackout)
         const direction = targetIndex > currentPage ? 1 : -1;
         isFlipping = true; // Lock interaction
