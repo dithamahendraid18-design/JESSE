@@ -40,26 +40,6 @@
             perspective: 2000px;
         }
 
-        @media (max-width: 768px) {
-            .scene {
-                perspective: none;
-                /* Flatten scene on mobile */
-            }
-
-            /* Reset transform styles to prevent 3D scroll locking */
-            .book,
-            .page {
-                transform-style: flat !important;
-            }
-
-            .page.flipped {
-                /* On mobile, flip is just Z-index swap or hidden, handled largely by JS visibility, 
-                    but we keep transform to not break logic, just flatten the context */
-                transform: rotateY(0deg) !important;
-                /* Visual Reset */
-            }
-        }
-
         /* Mobile first book size - updated for Single Page Desktop */
         .book {
             position: relative;
@@ -512,7 +492,7 @@
             <div class="page z-[{{ 58 - (ns.page_idx - 2) }}]" id="page-{{ ns.page_idx }}"
                 style="background-color: var(--book-theme-color) !important;">
                 <div class="face front" style="background-color: var(--book-theme-color) !important;">
-                    <div class="flex flex-col flex-1 h-full w-full min-h-0 overflow-hidden relative">
+                    <div class="absolute inset-0 flex flex-col overflow-hidden p-6">
                         <!-- Premium Category Header -->
                         <div class="mb-8 relative py-4 text-center">
                             <!-- Back Button (Left) -->
@@ -610,7 +590,7 @@
             <!-- Last Page: Back Cover (Optional) -->
             <div class="page z-[{{ 58 - (ns.page_idx - 2) - 1 }}]" id="page-{{ ns.page_idx }}">
                 <div class="face front pt-4 p-8" style="background-color: var(--book-theme-color) !important;">
-                    <div class="flex flex-col flex-1 h-full w-full min-h-0 overflow-hidden relative">
+                    <div class="absolute inset-0 flex flex-col overflow-hidden p-8">
 
                         <!-- 1. Header (Standard Category Style) -->
                         <div class="mb-4 relative py-4 text-center">
