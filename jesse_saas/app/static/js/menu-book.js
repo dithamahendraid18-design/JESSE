@@ -63,14 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Date.now() - lastFlipTime < 1200) return;
 
         if (currentPage < pages.length - 1 && !isFlipping) {
+            // IMMEDIATE LOCK
+            isFlipping = true;
+            lastFlipTime = Date.now();
+            book.classList.add('flipping-active');
+
             const currentEl = document.getElementById(`page-${currentPage}`);
             if (currentEl) {
-                isFlipping = true;
-                lastFlipTime = Date.now();
-
-                // Add global lock class to prevent any interaction on the book
-                book.classList.add('flipping-active');
-
                 currentEl.classList.add('flipped');
                 currentEl.style.zIndex = 150; // Ensure it's on top DURING flip
 
@@ -80,6 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     book.classList.remove('flipping-active');
                     updateVisibility();
                 }, 800); // 0.8s Match CSS transition duration
+            } else {
+                // Safety release if element missing
+                isFlipping = false;
+                book.classList.remove('flipping-active');
             }
         }
     };
