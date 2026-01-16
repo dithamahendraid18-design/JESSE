@@ -492,7 +492,7 @@
             <div class="page z-[{{ 58 - (ns.page_idx - 2) }}]" id="page-{{ ns.page_idx }}"
                 style="background-color: var(--book-theme-color) !important;">
                 <div class="face front" style="background-color: var(--book-theme-color) !important;">
-                    <div class="flex flex-col h-full w-full overflow-hidden relative">
+                    <div class="flex flex-col flex-1 h-full w-full min-h-0 overflow-hidden relative">
                         <!-- Premium Category Header -->
                         <div class="mb-8 relative py-4 text-center">
                             <!-- Back Button (Left) -->
@@ -522,8 +522,7 @@
                             </button>
                         </div>
 
-                        <div class="menu-grid flex-1 flex flex-col w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y"
-                            ontouchmove="event.stopPropagation()"
+                        <div class="menu-grid flex-1 flex flex-col w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
                             style="-webkit-overflow-scrolling: touch; position: relative; z-index: 50;">
                             {% for item in items %}
                             <div class="group mb-6 last:mb-0 transition-all duration-300">
@@ -591,7 +590,7 @@
             <!-- Last Page: Back Cover (Optional) -->
             <div class="page z-[{{ 58 - (ns.page_idx - 2) - 1 }}]" id="page-{{ ns.page_idx }}">
                 <div class="face front pt-4 p-8" style="background-color: var(--book-theme-color) !important;">
-                    <div class="flex flex-col h-full w-full overflow-hidden relative">
+                    <div class="flex flex-col flex-1 h-full w-full min-h-0 overflow-hidden relative">
 
                         <!-- 1. Header (Standard Category Style) -->
                         <div class="mb-4 relative py-4 text-center">
@@ -603,8 +602,7 @@
                         </div>
 
                         <!-- Middle Content Wrapper (Full Width - Scrollable) -->
-                        <div class="menu-grid flex-1 flex flex-col justify-start gap-4 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y"
-                            ontouchmove="event.stopPropagation()"
+                        <div class="menu-grid flex-1 flex flex-col justify-start gap-4 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
                             style="-webkit-overflow-scrolling: touch; position: relative; z-index: 50;">
 
                             <!-- 2. Order Online Area -->
