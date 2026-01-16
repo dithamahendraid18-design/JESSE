@@ -492,7 +492,7 @@
             <div class="page z-[{{ 58 - (ns.page_idx - 2) }}]" id="page-{{ ns.page_idx }}"
                 style="background-color: var(--book-theme-color) !important;">
                 <div class="face front" style="background-color: var(--book-theme-color) !important;">
-                    <div class="flex flex-col w-full h-full overflow-hidden">
+                    <div class="flex flex-col h-full">
                         <!-- Premium Category Header -->
                         <div class="mb-8 relative py-4 text-center">
                             <!-- Back Button (Left) -->
@@ -522,8 +522,9 @@
                             </button>
                         </div>
 
-                        <div class="menu-grid flex-1 w-full overflow-y-auto pr-2 custom-scrollbar touch-pan-y"
-                            style="height: 0; flex-grow: 1; position: relative; z-index: 50; -webkit-overflow-scrolling: touch;">
+                        <div class="menu-grid flex-1 flex flex-col w-full h-full overflow-y-auto pr-2 custom-scrollbar touch-pan-y"
+                            ontouchmove="event.stopPropagation()"
+                            style="-webkit-overflow-scrolling: touch; position: relative; z-index: 50;">
                             {% for item in items %}
                             <div class="group mb-6 last:mb-0 transition-all duration-300">
                                 <div class="flex gap-4 items-start pb-4 border-b border-current/10">
