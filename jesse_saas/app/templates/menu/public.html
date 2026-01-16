@@ -522,8 +522,8 @@
                             </button>
                         </div>
 
-                        <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y overscroll-contain"
-                            style="-webkit-overflow-scrolling: touch; transform: translate3d(0,0,0);">
+                        <div class="menu-grid flex-1 w-full overflow-y-auto pr-2 custom-scrollbar touch-pan-y"
+                            style="height: 0; flex-grow: 1; position: relative; z-index: 50; -webkit-overflow-scrolling: touch;">
                             {% for item in items %}
                             <div class="group mb-6 last:mb-0 transition-all duration-300">
                                 <div class="flex gap-4 items-start pb-4 border-b border-current/10">
