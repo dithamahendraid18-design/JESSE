@@ -47,25 +47,14 @@
             background-color: #121212;
         }
 
-        :root {
+        ;
 
-            /* Dynamic Theme Color */
-            --theme-color: {
-                    {
-                    theme_color
-                }
-            }
-
-            ;
-
-            ;
-
-            /* Light Mode */
-            --bg-app: #f3f4f6;
-            --bg-surface: #ffffff;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --border-color: #e5e7eb;
+        /* Light Mode */
+        --bg-app: #f3f4f6;
+        --bg-surface: #ffffff;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --border-color: #e5e7eb;
         }
 
         html.dark {
@@ -159,7 +148,7 @@
     </style>
 </head>
 
-<body class="bg-[var(--bg-app)] pb-20 transition-colors duration-300">
+<body class="bg-[var(--bg-app)] pb-20 transition-colors duration-300" style="--theme-color: {{ theme_color }};">
     <!-- DEBUG THEME VALUES (Hidden in production) -->
     <div style="display:none;">
         Client Theme: {{ client.theme_color }}
