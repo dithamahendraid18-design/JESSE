@@ -8,6 +8,11 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
@@ -23,13 +28,30 @@
             }
 
             ;
+
+            /* Light Mode (Default) match bot_builder */
+            --bg-app: #f3f4f6;
+            --bg-surface: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        .dark {
+            /* Dark Mode match bot_builder */
+            --bg-app: #121212;
+            --bg-surface: #1E1E1E;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
-            /* Light Gray Background */
-            color: #1f2937;
+            background-color: var(--bg-app) !important;
+            /* Force Opacity */
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
         }
 
         h1,
