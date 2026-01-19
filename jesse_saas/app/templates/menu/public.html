@@ -98,16 +98,27 @@
             font-family: 'Playfair Display', serif;
         }
 
-        /* Hide Scrollbar for Nav */
+        /* Hide Scrollbar Globally */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        html,
+        body {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        /* Hide Scrollbar for Nav (Legacy class support) */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
 
         .no-scrollbar {
             -ms-overflow-style: none;
-            /* IE and Edge */
             scrollbar-width: none;
-            /* Firefox */
         }
 
         /* Active Nav Pill */
