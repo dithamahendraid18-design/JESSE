@@ -103,12 +103,7 @@
     <!-- 2. MAIN CONTENT (Grid) -->
     <main class="max-w-7xl mx-auto px-4 pt-40 md:pt-44">
 
-        <!-- Welcome Banner (Optional) -->
-        <div class="mb-8 text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">{{ client.knowledge_base.toc_title or 'Our Menu' }}</h2>
-            <p class="text-gray-500 text-sm max-w-md mx-auto">{{ client.knowledge_base.welcome_message or 'Discover our
-                culinary delights.' }}</p>
-        </div>
+
 
         <!-- Categories Loop -->
         {% for category in sorted_categories %}
