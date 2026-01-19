@@ -147,8 +147,10 @@
                 </div>
                 {% endif %}
                 <div>
-                    <h1 class="text-lg font-bold leading-tight text-gray-900">{{ client.restaurant_name }}</h1>
-                    <p class="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Digital Menu</p>
+                    <h1 class="text-lg font-bold leading-tight text-[var(--text-primary)]">{{ client.restaurant_name }}
+                    </h1>
+                    <p class="text-[10px] uppercase tracking-widest text-[var(--text-secondary)] font-medium">Digital
+                        Menu</p>
                 </div>
             </div>
 
@@ -156,11 +158,12 @@
         </div>
 
         <!-- Category Nav (Horizontal Scroll) -->
-        <div class="category-nav-container overflow-x-auto no-scrollbar border-t border-gray-100 bg-white">
+        <div
+            class="category-nav-container overflow-x-auto no-scrollbar border-t border-[var(--border-color)] bg-[var(--bg-surface)]">
             <div class="flex whitespace-nowrap px-4 py-3 gap-2 min-w-max">
                 {% for category in sorted_categories %}
                 <a href="#cat-{{ loop.index }}"
-                    class="category-nav-link px-4 py-2 rounded-full text-sm font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-200 snap-center">
+                    class="category-nav-link px-4 py-2 rounded-full text-sm font-semibold border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-[var(--bg-app)] hover:text-[var(--text-primary)] transition-all duration-200 snap-center">
                     {{ category }}
                 </a>
                 {% endfor %}
@@ -179,15 +182,15 @@
 
             <!-- Category Title -->
             <div class="flex items-center gap-4 mb-6">
-                <h3 class="text-2xl font-bold text-gray-900">{{ category }}</h3>
-                <div class="h-px bg-gray-200 flex-1"></div>
+                <h3 class="text-2xl font-bold text-[var(--text-primary)]">{{ category }}</h3>
+                <div class="h-px bg-[var(--border-color)] flex-1"></div>
             </div>
 
             <!-- Grid Items (Strict 2 Columns, Square Images) -->
             <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
                 {% for item in menu_by_cat[category] %}
                 <div class="w-full">
-                    <div class="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 cursor-zoom-in h-full flex flex-col"
+                    <div class="group relative bg-[var(--bg-surface)] rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-[var(--border-color)] cursor-zoom-in h-full flex flex-col"
                         data-img="{{ resolve_file(item.image_url, 'menu') if item.image_url else '' }}"
                         data-title="{{ item.name }}" data-desc="{{ item.description or '' }}"
                         data-price="{{ currency }}{{ '{:,.0f}'.format(item.price).replace(',', '.') }}"
