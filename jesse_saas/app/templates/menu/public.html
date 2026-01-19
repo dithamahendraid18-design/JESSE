@@ -57,34 +57,7 @@
             border-color: var(--theme-color) !important;
         }
 
-        /* Masonry Grid via CSS Columns */
-        .masonry-grid {
-            column-count: 1;
-            column-gap: 1.5rem;
-        }
-
-        @media (min-width: 640px) {
-            .masonry-grid {
-                column-count: 2;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .masonry-grid {
-                column-count: 3;
-            }
-        }
-
-        @media (min-width: 1280px) {
-            .masonry-grid {
-                column-count: 4;
-            }
-        }
-
-        /* Avoid breaking cards inside columns */
-        .break-inside-avoid {
-            break-inside: avoid;
-        }
+        /* Grid Layout handled by Tailwind classes (grid-cols-2) */
     </style>
 </head>
 
@@ -127,7 +100,7 @@
         </div>
     </header>
 
-    <!-- 2. MAIN CONTENT (Masonry) -->
+    <!-- 2. MAIN CONTENT (Grid) -->
     <main class="max-w-7xl mx-auto px-4 pt-40 md:pt-44">
 
         <!-- Welcome Banner (Optional) -->
@@ -147,21 +120,21 @@
                 <div class="h-px bg-gray-200 flex-1"></div>
             </div>
 
-            <!-- Grid Items -->
-            <div class="masonry-grid">
+            <!-- Grid Items (Strict 2 Columns, Square Images) -->
+            <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
                 {% for item in menu_by_cat[category] %}
-                <div class="break-inside-avoid mb-6">
-                    <div class="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-zoom-in"
+                <div class="w-full">
+                    <div class="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 cursor-zoom-in h-full flex flex-col"
                         data-img="{{ resolve_file(item.image_url, 'menu') if item.image_url else '' }}"
                         data-title="{{ item.name }}" data-desc="{{ item.description or '' }}"
                         data-price="{{ currency }}{{ '{:,.0f}'.format(item.price).replace(',', '.') }}"
                         onclick="openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price)">
 
-                        <!-- Image -->
+                        <!-- Image (1:1 Square) -->
                         {% if item.image_url %}
-                        <div class="relative overflow-hidden w-full">
+                        <div class="relative w-full aspect-square overflow-hidden bg-gray-100">
                             <img src="{{ resolve_file(item.image_url, 'menu') }}"
-                                class="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
+                                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                 loading="lazy" alt="{{ item.name }}">
                             <div
                                 class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300">
@@ -169,21 +142,23 @@
                         </div>
                         {% endif %}
 
-                        <!-- Content -->
-                        <div class="p-5">
-                            <div class="flex justify-between items-start gap-2 mb-2">
+                        <!-- Content (Align Left, Full Width) -->
+                        <div class="p-4 flex flex-col flex-1 text-left">
+
+                            <!-- Header: Name & Price -->
+                            <div class="flex flex-col gap-1 mb-2">
                                 <h4
-                                    class="font-bold text-gray-900 text-lg leading-tight group-hover:text-[var(--theme-color)] transition-colors">
+                                    class="font-bold text-gray-900 text-base leading-tight group-hover:text-[var(--theme-color)] transition-colors line-clamp-2">
                                     {{ item.name }}
                                 </h4>
-                                <span
-                                    class="font-bold text-[var(--theme-color)] whitespace-nowrap bg-gray-50 px-2 py-1 rounded-lg text-sm">
+                                <span class="font-bold text-[var(--theme-color)] text-sm">
                                     {{ currency }}{{ "{:,.0f}".format(item.price).replace(',', '.') }}
                                 </span>
                             </div>
 
+                            <!-- Description (Visual Hierarchy: Smaller, Gray) -->
                             {% if item.description %}
-                            <p class="text-gray-500 text-sm leading-relaxed line-clamp-3">
+                            <p class="text-gray-500 text-xs leading-relaxed line-clamp-3 mt-auto">
                                 {{ item.description }}
                             </p>
                             {% endif %}
