@@ -22,7 +22,7 @@ if (!document.getElementById('webview-overlay')) {
     const webviewHtml = `
     <div id="webview-overlay" class="fixed inset-0 z-[10000] hidden flex flex-col animate-fade-in bg-black/90 backdrop-blur-md">
         <div class="absolute top-0 left-0 w-full p-4 flex justify-end z-[10002]">
-            <button id="webview-close-btn" onclick="closeWebview()" class="bg-white/20 hover:bg-white/40 text-white rounded-full p-2.5 transition-all duration-300 shadow-lg backdrop-blur-md opacity-100 transform scale-100">
+            <button id="webview-close-btn" onclick="closeWebview()" class="bg-black/50 hover:bg-black/70 text-white rounded-full p-2.5 transition-all duration-300 shadow-lg backdrop-blur-md opacity-100 transform scale-100">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
