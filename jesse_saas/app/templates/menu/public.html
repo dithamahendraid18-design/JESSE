@@ -200,7 +200,7 @@
             <div class="flex whitespace-nowrap px-4 py-3 gap-2 min-w-max">
                 {% for category in sorted_categories %}
                 <a href="#cat-{{ loop.index }}"
-                    class="category-nav-link px-4 py-2 rounded-full text-sm font-semibold border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-[var(--bg-app)] hover:text-[var(--text-primary)] transition-all duration-200 snap-center">
+                    class="category-nav-link px-4 py-2 rounded-full text-sm font-semibold border border-[var(--border-color)] text-[var(--text-secondary)] hover:border-theme hover:text-theme hover:bg-[var(--bg-app)] transition-all duration-200 snap-center">
                     {{ category }}
                 </a>
                 {% endfor %}
