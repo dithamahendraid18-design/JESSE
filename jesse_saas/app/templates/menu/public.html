@@ -139,6 +139,23 @@
             color: var(--theme-color) !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
         }
+
+        /* Safe Theme Classes (Bypassing Tailwind JIT) */
+        .text-theme {
+            color: var(--theme-color) !important;
+        }
+
+        .bg-theme {
+            background-color: var(--theme-color) !important;
+        }
+
+        .border-theme {
+            border-color: var(--theme-color) !important;
+        }
+
+        .ring-theme {
+            --tw-ring-color: var(--theme-color) !important;
+        }
     </style>
 </head>
 
@@ -234,10 +251,10 @@
                             <!-- Header: Name & Price -->
                             <div class="flex flex-col gap-1 mb-2">
                                 <h4
-                                    class="font-bold text-[var(--text-primary)] text-base leading-tight group-hover:text-[var(--theme-color)] transition-colors line-clamp-2">
+                                    class="font-bold text-[var(--text-primary)] text-base leading-tight group-hover:text-theme transition-colors line-clamp-2">
                                     {{ item.name }}
                                 </h4>
-                                <span class="font-bold text-[var(--theme-color)] text-sm">
+                                <span class="font-bold text-theme text-sm">
                                     {{ currency }}{{ "{:,.0f}".format(item.price).replace(',', '.') }}
                                 </span>
                             </div>
