@@ -49,10 +49,10 @@
 
         :root {
 
-            /* Dynamic Theme Color */
+            /* Dynamic Theme Color - Prefer Client Hub settings */
             --theme-color: {
                     {
-                    client.knowledge_base.book_theme_color or client.theme_color or '#000000'
+                    client.theme_color or client.knowledge_base.book_theme_color or '#000000'
                 }
             }
 
