@@ -9,7 +9,7 @@ def generate_smart_reply(user_message, client_model, kb):
     """
     Generates a response using Groq API (Llama 3.1) via raw HTTP requests.
     """
-    api_key = os.environ.get("GROQ_API_KEY")
+    api_key = os.environ.get("LLM_API_KEY") or os.environ.get("GROQ_API_KEY")
     if not api_key:
         return "System Error: AI Service not configured (Missing API Key)."
 
@@ -44,7 +44,7 @@ GUIDELINES:
     }
 
     payload = {
-        "model": os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant"),
+        "model": os.environ.get("LLM_MODEL", "llama-3.1-8b-instant"),
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message}

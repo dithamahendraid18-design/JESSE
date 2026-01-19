@@ -573,10 +573,34 @@ function handleUserSubmit(e) {
 
     appendMessage(text, 'user');
     input.value = '';
-    showTypingIndicator(); // UX: Show bot is "thinking"
+    showTypingIndicator();
 
-    setTimeout(() => {
-        hideTypingIndicator();
-        appendMessage("I'm sorry, I am currently configured to respond to button options only.", 'bot');
-    }, 800);
+    // Prepare Payload
+    const payload = {
+        public_id: typeof CLIENT_PUBLIC_ID !== 'undefined' ? CLIENT_PUBLIC_ID : '',
+        type: 'text_input',
+        message: text
+    };
+
+    fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+        .then(response => response.json())
+        .then(data => {
+            hideTypingIndicator();
+            if (data.error) {
+                appendMessage("⚠️ " + (data.message || "An error occurred."), 'bot'); // Show error gracefully
+            } else {
+                appendMessage(data.response, 'bot');
+            }
+        })
+        .catch(error => {
+            hideTypingIndicator();
+            console.error('Chat Error:', error);
+            appendMessage("I'm having trouble connecting to the server. Please try again.", 'bot');
+        });
 }

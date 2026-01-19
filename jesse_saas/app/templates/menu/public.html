@@ -1,21 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ client.restaurant_name }} - Menu</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/png"
-        href="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') if client.knowledge_base and client.knowledge_base.avatar_image else url_for('static', filename='img/favicon.png') }}">
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
+
     <style>
         :root {
-            --book-theme-color: {
+
+            /* Dynamic Theme Color */
+            --theme-color: {
                     {
-                    client.knowledge_base.book_theme_color or client.theme_color or '#8B4513'
+                    client.knowledge_base.book_theme_color or client.theme_color or '#000000'
                 }
             }
 
@@ -24,748 +27,239 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: transparent !important;
+            background-color: #f8f9fa;
+            /* Light Gray Background */
+            color: #1f2937;
         }
 
-        /* 3D Scene Setup */
-        .scene {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 2000px;
-        }
-
-        /* Mobile first book size - updated for Single Page Desktop */
-        .book {
-            position: relative;
-            width: 90vw;
-            max-width: 600px;
-            aspect-ratio: 3/5;
-            height: auto;
-            max-height: 85vh;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1);
-            will-change: transform;
-            /* Hardware Acceleration Hint */
-        }
-
-        .book.flipping-active,
-        .book.flipping-active * {
-            pointer-events: none !important;
-        }
-
-        /* GEOMETRY FIX: Smart Aspect Ratio Sizing */
-        .book {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            aspect-ratio: 3/5;
-            max-width: 450px;
-            margin: auto;
-        }
-
-        /* Case 1: Screen is TALLER/NARROWER than book (Portrait Mobile) -> Constrain by Width */
-        @media (max-aspect-ratio: 3/5) {
-            .book {
-                width: 85vw;
-                height: auto;
-            }
-        }
-
-        /* Case 2: Screen is SHORTER/WIDER than book (Landscape/Desktop) -> Constrain by Height */
-        @media (min-aspect-ratio: 3/5) {
-            .book {
-                height: 85vh;
-                width: auto;
-            }
-        }
-
-        /* ISOLATION SHIELD: Prevent browser gestures on containers */
-        .book,
-        .page,
-        .face {
-            touch-action: none;
-            cursor: default !important;
-            /* Prevent tap highlight/delay */
-        }
-
-        /* HOLE IN SHIELD: Explicitly allow vertical scroll on content */
-        .menu-grid {
-            touch-action: pan-y !important;
-            -webkit-user-select: auto !important;
-            /* Ensure content is interactable */
-            -moz-user-select: auto !important;
-            user-select: auto !important;
-        }
-
-
-        /* Page Styling */
-        .page {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            transform-origin: left center;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1), opacity 0.4s ease;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            will-change: transform;
-            /* Hardware Acceleration Hint */
-            /* background-color: var(--book-theme-color) !important; REMOVED to fix 3D Same Sheet issue */
-            border-radius: 4px 12px 12px 4px;
-            opacity: 1;
-            visibility: visible;
-            will-change: transform;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Force hardware acceleration for content */
-        .page .face {
-            transform: translateZ(0);
-            will-change: opacity;
-        }
-
-        .page.flipped {
-            transform: rotateY(-180deg);
-            box-shadow: 20px 0 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .page.discarded {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .flipped {
-            transform: rotateY(-180deg);
-        }
-
-        /* Front and Back of Pages */
-        .face {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            overflow: hidden;
-            background-color: #8B4513;
-            /* Physical Fallback */
-            background-color: var(--book-theme-color) !important;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            border-left: 4px solid rgba(0, 0, 0, 0.05);
-            isolation: isolate;
-        }
-
-        /* Back Page Logic: Blank/Texture for "Discarded" pages */
-        .face.back {
-            transform: rotateY(180deg);
-            border-left: none;
-            border-right: 4px solid rgba(0, 0, 0, 0.05);
-            background: var(--book-theme-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .face.back::after {
-            content: '';
-        }
-
-        /* ... rest of CSS ... */
-        .face {
-            color: var(--book-text-color);
-        }
-
+        h1,
         h2,
         h3 {
-            color: var(--book-text-color);
+            font-family: 'Playfair Display', serif;
         }
 
-        .text-gray-800,
-        .text-gray-900,
-        .text-gray-600,
-        .text-gray-500,
-        .text-gray-400 {
-            color: var(--book-text-color) !important;
-        }
-
-        /* Menu Grid Scroll Enhancement */
-        .menu-grid {
-            flex: 1;
-            overflow-y: auto !important;
-            overflow-x: hidden;
-            padding-right: 4px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Scrollbar Hiding (Global) */
-        ::-webkit-scrollbar {
-            width: 0px !important;
-            height: 0px !important;
-            display: none !important;
-            background: transparent;
-        }
-
-        /* Firefox */
-        * {
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
-        }
-
-        .menu-grid::-webkit-scrollbar {
+        /* Hide Scrollbar for Nav */
+        .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
 
-        /* Visual Spine Shadow */
-        .face::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 15px;
-            height: 100%;
-            background: linear-gradient(to right, rgba(0, 0, 0, 0.15), transparent);
-            z-index: 5;
-            pointer-events: none;
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
-        .face.back::before {
-            left: auto;
-            right: 0;
-            background: linear-gradient(to left, rgba(0, 0, 0, 0.15), transparent);
+        /* Active Nav Pill */
+        .active-pill {
+            background-color: var(--theme-color) !important;
+            color: white !important;
+            border-color: var(--theme-color) !important;
         }
 
-        /* Image Shine/Frame Effect */
-        .menu-item-image {
-            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* Masonry Grid via CSS Columns */
+        .masonry-grid {
+            column-count: 1;
+            column-gap: 1.5rem;
         }
 
-
-        /* TOC Shimmer */
-
-        /* TOC Shimmer */
-        .toc-item {
-            position: relative;
-            overflow: hidden;
+        @media (min-width: 640px) {
+            .masonry-grid {
+                column-count: 2;
+            }
         }
 
-        .toc-item::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                column-count: 3;
+            }
         }
 
-        .toc-item:hover::after {
-            left: 100%;
+        @media (min-width: 1280px) {
+            .masonry-grid {
+                column-count: 4;
+            }
         }
 
-        .border-gray-50,
-        .border-b {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        /* If dark theme, borders should be light */
-        /* Lightbox */
-        #lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 9999;
-            cursor: zoom-out;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        #lightbox.show {
-            display: flex;
-            opacity: 1;
-        }
-
-        #lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            margin: auto;
-            border-radius: 12px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        #lightbox.show img {
-            transform: scale(1);
-        }
-
-        .close-lightbox {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-            z-index: 10000;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .close-lightbox:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: rotate(90deg) scale(1.1);
-            border-color: rgba(255, 255, 255, 0.4);
+        /* Avoid breaking cards inside columns */
+        .break-inside-avoid {
+            break-inside: avoid;
         }
     </style>
 </head>
 
-<body class="flex flex-col items-center justify-center">
+<body class="bg-gray-50 pb-20">
 
-    <script>
-        // Set dynamic text color based on brightness of theme color
-        (function () {
-            let themeColor = "{{ client.knowledge_base.book_theme_color or client.theme_color or '#8B4513' }}";
-
-            // NUCLEAR FIX: Ensure color is 100% opaque. 
-            // If it's RGBA, convert to solid RGB.
-            if (themeColor.startsWith('rgba')) {
-                const parts = themeColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
-                if (parts) {
-                    themeColor = `rgb(${parts[1]}, ${parts[2]}, ${parts[3]})`;
-                }
-            } else if (themeColor.length > 7 && themeColor.startsWith('#')) {
-                // If #rrggbbaa, strip aa
-                themeColor = themeColor.substring(0, 7);
-            }
-
-            // Force the CSS variable to be the sanitized opaque color
-            document.documentElement.style.setProperty('--book-theme-color', themeColor);
-
-            function hexToRgb(hex) {
-                if (!hex || hex[0] !== '#') return { r: 139, g: 69, b: 19 }; // Default Brown
-                if (hex.length === 4) {
-                    hex = '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
-                }
-                const r = parseInt(hex.slice(1, 3), 16);
-                const g = parseInt(hex.slice(3, 5), 16);
-                const b = parseInt(hex.slice(5, 7), 16);
-                return { r, g, b };
-            }
-
-            const rgb = themeColor.startsWith('rgb') ?
-                { r: parseInt(themeColor.match(/\d+/g)[0]), g: parseInt(themeColor.match(/\d+/g)[1]), b: parseInt(themeColor.match(/\d+/g)[2]) } :
-                hexToRgb(themeColor);
-
-            const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-            const textColor = brightness > 128 ? '#1f2937' : '#ffffff';
-            const mutedText = brightness > 128 ? '#4b5563' : 'rgba(255,255,255,0.7)';
-
-            document.documentElement.style.setProperty('--book-theme-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
-            document.documentElement.style.setProperty('--book-text-color', textColor);
-            document.documentElement.style.setProperty('--book-text-muted', mutedText);
-
-            // Reinforce background color on all components directly
-            window.addEventListener('DOMContentLoaded', () => {
-                document.querySelectorAll('.face').forEach(el => {
-                    el.style.backgroundColor = themeColor;
-                    el.style.opacity = '1';
-                });
-            });
-        })();
-    </script>
-
-    <div class="scene">
-        <div class="book" id="book">
-            <!-- Page 0: Cover (Front), Blank (Back) -->
-            <div class="page z-[60]" id="page-0" style="background-color: var(--book-theme-color) !important;">
-                {% set welcome_bg = '' %}
-                {% if client.knowledge_base.book_cover_image %}
-                {% set welcome_bg = resolve_file(client.knowledge_base.book_cover_image, 'menu') %}
+    <!-- 1. HEADER (Sticky) -->
+    <header
+        class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300">
+        <!-- Brand Bar -->
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                {% if client.knowledge_base.avatar_image %}
+                <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
+                    class="w-10 h-10 rounded-full object-cover border border-gray-100 shadow-sm">
+                {% else %}
+                <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-sm"
+                    style="background-color: var(--theme-color);">
+                    {{ client.restaurant_name[0] }}
+                </div>
                 {% endif %}
-
-                <div id="cover-face-front"
-                    class="face front flex flex-col items-center justify-center text-center p-8 text-white relative"
-                    style="background-color: var(--book-theme-color) !important;">
-                    <script>
-                        const coverEl = document.getElementById('cover-face-front');
-                        if (coverEl) {
-                            const bookColor = "{{ client.knowledge_base.book_theme_color or client.theme_color or '#8B4513' }}";
-                            coverEl.style.backgroundColor = bookColor;
-                            const bgUrl = "{{ welcome_bg }}";
-                            if (bgUrl) {
-                                coverEl.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('" + bgUrl + "')";
-                                coverEl.style.backgroundSize = "{{ client.knowledge_base.book_cover_style or 'cover' }}";
-                                coverEl.style.backgroundRepeat = "no-repeat";
-                                coverEl.style.backgroundPosition = "center";
-                            }
-                        }
-                    </script>
-
-                    <div class="absolute inset-2 border border-white/30 rounded-lg pointer-events-none"></div>
-
-                    {% if client.knowledge_base.book_logo_image %}
-                    <img src="{{ resolve_file(client.knowledge_base.book_logo_image, 'menu') }}"
-                        class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-6 object-cover pointer-events-none">
-                    {% elif client.knowledge_base.avatar_image %}
-                    <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
-                        class="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-6 object-cover pointer-events-none">
-                    {% endif %}
-
-                    <h1 class="text-4xl font-bold mb-2 shadow-sm pointer-events-none">{{ client.restaurant_name }}</h1>
-                    <p class="text-lg opacity-90 italic pointer-events-none">Digital Menu</p>
-
-                    <div class="mt-12 animate-bounce">
-                        <span
-                            class="text-xs uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm pointer-events-none">Tap
-                            to Open</span>
-                    </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight text-gray-900">{{ client.restaurant_name }}</h1>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Digital Menu</p>
                 </div>
-                <!-- Back of Cover: Empty/Decorative -->
-                <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
             </div>
 
-            <!-- Page 1: Table of Contents (Front), Blank (Back) -->
-            <div class="page z-[59]" id="page-1" style="background-color: var(--book-theme-color) !important;">
-                <div class="face front pt-8 px-6 pb-6" style="background-color: var(--book-theme-color) !important;">
-                    <div class="absolute inset-0 flex flex-col items-center overflow-hidden p-6">
+            <!-- Optional: Search or Cart Button here -->
+        </div>
 
-                        <!-- Header -->
-                        <div class="mb-4 relative w-full text-center">
-                            <!-- Back Button (Left) -->
-                            <button
-                                class="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
-                                style="color: var(--book-text-color);">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7"></path>
-                                </svg>
-                            </button>
-
-                            <h2 class="text-3xl font-bold tracking-tight uppercase px-8"
-                                style="font-family: 'Playfair Display', serif; color: var(--book-text-color);">
-                                {{ client.knowledge_base.toc_title or 'Table of Contents' }}
-                            </h2>
-                            <div class="w-16 h-1 bg-current mx-auto mt-3 opacity-30 rounded-full"></div>
-
-                            <!-- Next Button (Right) -->
-                            <button
-                                class="absolute right-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
-                                style="color: var(--book-text-color);">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <!-- List Container (Scrollable if needed) -->
-                        <div class="menu-grid flex-1 w-full max-w-sm flex flex-col justify-center gap-3 min-h-0 overflow-y-auto pr-1 custom-scrollbar touch-pan-y pointer-events-auto"
-                            style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translateZ(0); backface-visibility: hidden;">
-                            {% for category in sorted_categories %}
-                            <div onclick="window.jumpToCategory('{{ category }}')"
-                                class="group relative cursor-pointer overflow-hidden rounded-xl bg-white/10 backdrop-blur-md border border-white/25 shadow-sm mb-3 transition-colors duration-300 hover:bg-white/20">
-                                <div class="relative z-10 p-4 flex items-center justify-between">
-                                    <span class="text-lg font-bold tracking-wide uppercase truncate pr-4"
-                                        style="color: var(--book-text-color);">
-                                        {{ category }}
-                                    </span>
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center transition-colors group-hover:bg-white/20">
-                                        <svg class="w-4 h-4 opacity-70 group-hover:opacity-100"
-                                            style="color: var(--book-text-color);" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-
-                            <!-- Last Page Link -->
-                            <div data-target="{{ client.knowledge_base.last_page_title or 'Thank You' }}"
-                                onclick="window.jumpToCategory(this.getAttribute('data-target'))"
-                                class="group relative cursor-pointer overflow-hidden rounded-xl bg-white/10 backdrop-blur-md border border-white/25 shadow-sm transition-colors duration-300 hover:bg-white/20">
-                                <div class="relative z-10 p-4 flex items-center justify-between">
-                                    <span class="text-lg font-bold tracking-wide uppercase truncate pr-4"
-                                        style="color: var(--book-text-color);">
-                                        Order & Reservation
-                                    </span>
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center transition-colors group-hover:bg-white/20">
-                                        <svg class="w-4 h-4 opacity-70 group-hover:opacity-100"
-                                            style="color: var(--book-text-color);" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Footer -->
-                        <div class="mt-8 text-center animate-pulse">
-                            <p class="text-xs uppercase tracking-widest opacity-60 font-medium"
-                                style="color: var(--book-text-color);">
-                                {{ client.knowledge_base.toc_footer_text or 'Tap to browse menu' }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
-                </div>
-
-                <!-- Content Pages: 1 Category per Page -->
-                {% set ns = namespace(page_idx=2) %} <!-- Start at Page 2 (0=Cover, 1=TOC) -->
-
-                {% for cat in sorted_categories %}
-                {% set items = menu_by_cat[cat] %}
-                <div class="page z-[{{ 58 - (ns.page_idx - 2) }}]" id="page-{{ ns.page_idx }}"
-                    style="background-color: var(--book-theme-color) !important;">
-                    <div class="face front" style="background-color: var(--book-theme-color) !important;">
-                        <div class="absolute inset-0 flex flex-col overflow-hidden p-6">
-                            <!-- Premium Category Header -->
-                            <div class="mb-8 relative py-4 text-center">
-                                <!-- Back Button (Left) -->
-                                <button
-                                    class="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
-                                    style="color: var(--book-text-color);">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 19l-7-7 7-7"></path>
-                                    </svg>
-                                </button>
-
-                                <h2 class="text-3xl font-bold tracking-tight uppercase px-8"
-                                    style="font-family: 'Playfair Display', serif; color: var(--book-text-color);">
-                                    {{ cat }}
-                                </h2>
-                                <div class="w-12 h-1 bg-current mx-auto mt-2 opacity-30 rounded-full"></div>
-
-                                <!-- Next Button (Right) -->
-                                <button
-                                    class="absolute right-0 top-1/2 -translate-y-1/2 p-2 opacity-50 hover:opacity-100 transition-opacity"
-                                    style="color: var(--book-text-color);">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
-                                style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translateZ(0); backface-visibility: hidden;">
-                                {% for item in items %}
-                                <div class="group mb-6 last:mb-0 transition-all duration-300">
-                                    <div class="flex gap-4 items-start pb-4 border-b border-current/10">
-                                        {% if item.image_url %}
-                                        <div class="w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-md menu-item-image ring-1 ring-white/10"
-                                            style="touch-action: pan-y;"
-                                            data-img-url="{{ resolve_file(item.image_url, 'menu', width=1200) }}"
-                                            onclick="event.stopPropagation(); openLightbox(this.dataset.imgUrl)">
-                                            <!-- Thumbnail: Optimized to 400px width (Retina ready for 80px container) -->
-                                            <img src="{{ resolve_file(item.image_url, 'menu', width=400) }}"
-                                                loading="lazy"
-                                                class="w-full h-full object-cover md:transform md:group-hover:scale-110 transition-transform duration-700">
-                                        </div>
-                                        {% endif %}
-
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex justify-between items-baseline gap-2 mb-1">
-                                                <h3 class="text-base font-bold tracking-wide truncate"
-                                                    style="color: var(--book-text-color);">
-                                                    {{ item.name }}
-                                                </h3>
-                                                <div class="flex-shrink-0">
-                                                    <span class="text-sm font-bold px-2 py-0.5 rounded bg-white/10"
-                                                        style="color: var(--book-text-color);">
-                                                        {{ currency }}{{ "{:,.0f}".format(item.price).replace(',', '.')
-                                                        }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <p class="text-[11px] leading-relaxed opacity-70 line-clamp-3"
-                                                style="color: var(--book-text-color);">
-                                                {{ item.description or 'Exquisite flavors crafted with precision.' }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Scroll Indicator -->
-                            <!-- Scroll Indicator -->
-                            <div
-                                class="scroll-indicator w-full py-2 flex justify-center pointer-events-none animate-bounce opacity-50 z-20 transition-opacity duration-300">
-                                <div class="flex flex-col items-center">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        style="color: var(--book-text-color);">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </div>
-                            </div>
-
-                            <!-- Page Footer -->
-                            <div class="mt-4 text-center">
-                                <p class="text-[10px] tracking-widest uppercase opacity-40">
-                                    {{ client.restaurant_name }} • Page {{ ns.page_idx }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Empty Back Face -->
-                    <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
-                </div>
-                {% set ns.page_idx = ns.page_idx + 1 %}
+        <!-- Category Nav (Horizontal Scroll) -->
+        <div class="category-nav-container overflow-x-auto no-scrollbar border-t border-gray-100 bg-white">
+            <div class="flex whitespace-nowrap px-4 py-3 gap-2 min-w-max">
+                {% for category in sorted_categories %}
+                <a href="#cat-{{ loop.index }}"
+                    class="category-nav-link px-4 py-2 rounded-full text-sm font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-200 snap-center">
+                    {{ category }}
+                </a>
                 {% endfor %}
+            </div>
+        </div>
+    </header>
 
-                <!-- Last Page: Back Cover (Optional) -->
-                <div class="page z-[{{ 58 - (ns.page_idx - 2) - 1 }}]" id="page-{{ ns.page_idx }}">
-                    <div class="face front pt-4 p-8" style="background-color: var(--book-theme-color) !important;">
-                        <div class="absolute inset-0 flex flex-col overflow-hidden p-8">
+    <!-- 2. MAIN CONTENT (Masonry) -->
+    <main class="max-w-7xl mx-auto px-4 pt-40 md:pt-44">
 
-                            <!-- 1. Header (Standard Category Style) -->
-                            <div class="mb-4 relative py-4 text-center">
-                                <h2 class="text-3xl font-bold tracking-tight uppercase"
-                                    style="font-family: 'Playfair Display', serif; color: var(--book-text-color);">
-                                    {{ client.knowledge_base.last_page_title or 'Thank You' }}
-                                </h2>
-                                <div class="w-12 h-1 bg-current mx-auto mt-2 opacity-30 rounded-full"></div>
+        <!-- Welcome Banner (Optional) -->
+        <div class="mb-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">{{ client.knowledge_base.toc_title or 'Our Menu' }}</h2>
+            <p class="text-gray-500 text-sm max-w-md mx-auto">{{ client.knowledge_base.welcome_message or 'Discover our
+                culinary delights.' }}</p>
+        </div>
+
+        <!-- Categories Loop -->
+        {% for category in sorted_categories %}
+        <div id="cat-{{ loop.index }}" class="menu-category-section mb-12 scroll-mt-48">
+
+            <!-- Category Title -->
+            <div class="flex items-center gap-4 mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">{{ category }}</h3>
+                <div class="h-px bg-gray-200 flex-1"></div>
+            </div>
+
+            <!-- Grid Items -->
+            <div class="masonry-grid">
+                {% for item in menu_by_cat[category] %}
+                <div class="break-inside-avoid mb-6">
+                    <div class="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-zoom-in"
+                        data-img="{{ resolve_file(item.image_url, 'menu') if item.image_url else '' }}"
+                        data-title="{{ item.name }}" data-desc="{{ item.description or '' }}"
+                        data-price="{{ currency }}{{ '{:,.0f}'.format(item.price).replace(',', '.') }}"
+                        onclick="openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price)">
+
+                        <!-- Image -->
+                        {% if item.image_url %}
+                        <div class="relative overflow-hidden w-full">
+                            <img src="{{ resolve_file(item.image_url, 'menu') }}"
+                                class="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
+                                loading="lazy" alt="{{ item.name }}">
+                            <div
+                                class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300">
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Content -->
+                        <div class="p-5">
+                            <div class="flex justify-between items-start gap-2 mb-2">
+                                <h4
+                                    class="font-bold text-gray-900 text-lg leading-tight group-hover:text-[var(--theme-color)] transition-colors">
+                                    {{ item.name }}
+                                </h4>
+                                <span
+                                    class="font-bold text-[var(--theme-color)] whitespace-nowrap bg-gray-50 px-2 py-1 rounded-lg text-sm">
+                                    {{ currency }}{{ "{:,.0f}".format(item.price).replace(',', '.') }}
+                                </span>
                             </div>
 
-                            <!-- Middle Content Wrapper (Full Width - Scrollable) -->
-                            <div class="menu-grid flex-1 w-full min-h-0 overflow-y-auto pr-2 custom-scrollbar touch-pan-y pointer-events-auto"
-                                style="overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; position: relative; z-index: 50; transform: translateZ(0); backface-visibility: hidden;">
+                            {% if item.description %}
+                            <p class="text-gray-500 text-sm leading-relaxed line-clamp-3">
+                                {{ item.description }}
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
 
-                                <!-- 2. Order Online Area -->
-                                <div
-                                    class="group relative bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md p-5 rounded-3xl border border-white/30 shadow-lg shrink-0">
-                                    <div class="relative z-10 flex flex-col items-center">
-                                        <div
-                                            class="w-10 h-10 mb-2 bg-white/20 rounded-full flex items-center justify-center shadow-inner">
-                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-xl font-bold mb-1 uppercase tracking-wider text-center"
-                                            style="color: var(--book-text-color);">Order Online</h3>
-                                        <p class="autolink-content text-sm font-medium mb-3 opacity-90 leading-relaxed text-center whitespace-pre-line break-words w-full"
-                                            style="color: var(--book-text-color);">
-                                            {{ client.knowledge_base.last_page_order_desc }}
-                                        </p>
-                                        {% if client.delivery_url or client.website_url %}
-                                        <a href="{{ client.delivery_url or client.website_url }}" target="_blank"
-                                            class="inline-flex items-center gap-2 px-6 py-2 bg-white text-gray-900 rounded-full font-bold text-sm shadow-md hover:bg-gray-50 transition-colors">
-                                            <span>Order Now</span>
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                            </svg>
-                                        </a>
-                                        {% endif %}
-                                    </div>
-                                </div>
+        </div>
+        {% endfor %}
 
-                                <!-- 3. Reservation Area -->
-                                <div
-                                    class="group relative bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md p-5 rounded-3xl border border-white/30 shadow-lg shrink-0">
-                                    <div class="relative z-10 flex flex-col items-center">
-                                        <div
-                                            class="w-10 h-10 mb-2 bg-white/20 rounded-full flex items-center justify-center shadow-inner">
-                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 7V3m8 4V3m-9 8h10M5 9h14l1 12H4L5 9z"></path>
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-xl font-bold mb-1 uppercase tracking-wider text-center"
-                                            style="color: var(--book-text-color);">Reservations</h3>
-                                        <p class="autolink-content text-sm font-medium mb-3 opacity-90 leading-relaxed text-center whitespace-pre-line break-words w-full"
-                                            style="color: var(--book-text-color);">
-                                            {{ client.knowledge_base.last_page_res_desc }}
-                                        </p>
-                                        {% if client.booking_url or client.public_phone %}
-                                        <a href="{{ client.booking_url or 'tel:' + client.public_phone }}"
-                                            target="_blank"
-                                            class="inline-flex items-center gap-2 px-6 py-2 bg-white text-gray-900 rounded-full font-bold text-sm shadow-md hover:bg-gray-50 transition-colors">
-                                            <span>Book a Table</span>
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                </path>
-                                            </svg>
-                                        </a>
-                                        {% endif %}
-                                    </div>
-                                </div>
+        <!-- Footer -->
+        <div class="text-center py-12 border-t border-gray-200 mt-8">
+            <p class="text-gray-400 text-sm">
+                &copy; {{ client.restaurant_name }}. All rights reserved.
+            </p>
+        </div>
+
+    </main>
+
+    <!-- 3. LIGHTBOX MODAL -->
+    <div id="lightbox" class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300"
+        aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/90 backdrop-blur-sm transition-opacity" onclick="closeLightbox()"></div>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+
+                <div
+                    class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg scale-95 duration-300">
+
+                    <!-- Close Button -->
+                    <div class="absolute right-0 top-0 pr-4 pt-4 z-20">
+                        <button type="button" onclick="closeLightbox()"
+                            class="rounded-full bg-white/20 p-2 text-gray-400 hover:text-gray-500 focus:outline-none backdrop-blur-md">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Modal Content -->
+                    <div class="bg-white">
+                        <img id="lightbox-img" src="" class="w-full h-64 sm:h-80 object-cover bg-gray-100" alt="Detail">
+                        <div class="p-6 sm:p-8">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-2xl font-bold leading-6 text-gray-900" id="lightbox-title">Dish Name
+                                </h3>
+                                <p class="text-xl font-bold text-[var(--theme-color)]" id="lightbox-price">$0</p>
                             </div>
-
-                            <!-- Standard Page Footer -->
-                            <div class="mt-4 text-center">
-                                <p class="text-[10px] tracking-widest uppercase opacity-40">
-                                    {{ client.restaurant_name }} • Page End
+                            <div class="mt-2">
+                                <p class="text-base text-gray-500 leading-relaxed" id="lightbox-desc">
+                                    Description goes here.
                                 </p>
+                            </div>
+
+                            <!-- Action Button (Optional) -->
+                            <div class="mt-8">
+                                <button type="button" onclick="closeLightbox()"
+                                    class="inline-flex w-full justify-center rounded-xl bg-[var(--theme-color)] px-3 py-3 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition-opacity">
+                                    Close
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="face back" style="background-color: var(--book-theme-color) !important;"></div>
                 </div>
-
-                {% set ns.page_idx = ns.page_idx + 1 %}
-
-                <!-- Store Total Pages for JS -->
-                <input type="hidden" id="totalPages" value="{{ ns.page_idx }}">
-
             </div>
         </div>
+    </div>
 
-        <!-- Lightbox Modal -->
-        <div id="lightbox" onclick="closeLightbox()">
-            <button class="close-lightbox" aria-label="Close lightbox">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                    </path>
-                </svg>
-            </button>
-            <img id="lightbox-img" src="" alt="Menu Item Large View" onclick="event.stopPropagation()">
-        </div>
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/menu-masonry.js') }}"></script>
 
-
-
-        <!-- Debug Version Indicator -->
-        <div
-            style="position:fixed; bottom:5px; left:5px; font-size:10px; color:rgba(0,0,0,0.3); z-index:9999; pointer-events:none;">
-            v5.2 (GeometryFixed)</div>
-        <script src="{{ url_for('static', filename='js/menu-book.js') }}?v=5.2"></script>
 </body>
 
 </html>

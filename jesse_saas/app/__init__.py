@@ -24,7 +24,7 @@ def create_app(config_class=Config):
     app.register_blueprint(api_bp)
 
     from .admin.routes import bp as admin_bp
-    from .admin.routes import bp as admin_bp
+
     app.register_blueprint(admin_bp)
 
     @app.route('/db-debug')
