@@ -64,11 +64,11 @@
     </style>
 </head>
 
-<body class="bg-gray-50 pb-20">
+<body class="bg-[var(--bg-app)] pb-20 transition-colors duration-300">
 
     <!-- 1. HEADER (Sticky) -->
     <header
-        class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300">
+        class="fixed top-0 inset-x-0 z-50 bg-[var(--bg-surface)]/90 backdrop-blur-md border-b border-[var(--border-color)] shadow-sm transition-all duration-300">
         <!-- Brand Bar -->
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -146,7 +146,7 @@
                             <!-- Header: Name & Price -->
                             <div class="flex flex-col gap-1 mb-2">
                                 <h4
-                                    class="font-bold text-gray-900 text-base leading-tight group-hover:text-[var(--theme-color)] transition-colors line-clamp-2">
+                                    class="font-bold text-[var(--text-primary)] text-base leading-tight group-hover:text-[var(--theme-color)] transition-colors line-clamp-2">
                                     {{ item.name }}
                                 </h4>
                                 <span class="font-bold text-[var(--theme-color)] text-sm">
@@ -156,7 +156,7 @@
 
                             <!-- Description (Visual Hierarchy: Smaller, Gray) -->
                             {% if item.description %}
-                            <p class="text-gray-500 text-xs leading-relaxed line-clamp-3 mt-auto">
+                            <p class="text-[var(--text-secondary)] text-xs leading-relaxed line-clamp-3 mt-auto">
                                 {{ item.description }}
                             </p>
                             {% endif %}
@@ -170,8 +170,8 @@
         {% endfor %}
 
         <!-- Footer -->
-        <div class="text-center py-12 border-t border-gray-200 mt-8">
-            <p class="text-gray-400 text-sm">
+        <div class="text-center py-12 border-t border-[var(--border-color)] mt-8">
+            <p class="text-[var(--text-secondary)] text-sm">
                 &copy; {{ client.restaurant_name }}. All rights reserved.
             </p>
         </div>
@@ -188,12 +188,12 @@
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
 
                 <div
-                    class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg scale-95 duration-300">
+                    class="relative transform overflow-hidden rounded-2xl bg-[var(--bg-surface)] text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg scale-95 duration-300">
 
                     <!-- Close Button -->
                     <div class="absolute right-0 top-0 pr-4 pt-4 z-20">
                         <button type="button" onclick="closeLightbox()"
-                            class="rounded-full bg-white/20 p-2 text-gray-400 hover:text-gray-500 focus:outline-none backdrop-blur-md">
+                            class="rounded-full bg-[var(--bg-surface)]/20 p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus:outline-none backdrop-blur-md">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -202,16 +202,18 @@
                     </div>
 
                     <!-- Modal Content -->
-                    <div class="bg-white">
-                        <img id="lightbox-img" src="" class="w-full h-64 sm:h-80 object-cover bg-gray-100" alt="Detail">
+                    <div class="bg-[var(--bg-surface)]">
+                        <img id="lightbox-img" src="" class="w-full h-64 sm:h-80 object-cover bg-[var(--bg-app)]"
+                            alt="Detail">
                         <div class="p-6 sm:p-8">
                             <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-2xl font-bold leading-6 text-gray-900" id="lightbox-title">Dish Name
+                                <h3 class="text-2xl font-bold leading-6 text-[var(--text-primary)]" id="lightbox-title">
+                                    Dish Name
                                 </h3>
                                 <p class="text-xl font-bold text-[var(--theme-color)]" id="lightbox-price">$0</p>
                             </div>
                             <div class="mt-2">
-                                <p class="text-base text-gray-500 leading-relaxed" id="lightbox-desc">
+                                <p class="text-base text-[var(--text-secondary)] leading-relaxed" id="lightbox-desc">
                                     Description goes here.
                                 </p>
                             </div>
