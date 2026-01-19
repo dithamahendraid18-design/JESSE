@@ -96,8 +96,15 @@ function toggleTheme() {
     html.classList.toggle('dark');
 
     const isDark = html.classList.contains('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    const theme = isDark ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
     updateThemeIcons(isDark);
+
+    // Sync with Webview Iframe
+    const iframe = document.getElementById('webview-iframe');
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'THEME_CHANGE', theme: theme }, '*');
+    }
 }
 
 function updateThemeIcons(isDark) {

@@ -225,6 +225,37 @@
                                     Close
                                 </button>
                             </div>
+                            <script>
+                                function applyTheme(isDark) {
+                                    if (isDark) {
+                                        document.documentElement.classList.add('dark');
+                                    } else {
+                                        document.documentElement.classList.remove('dark');
+                                    }
+                                }
+
+                                // 1. Check LocalStorage (for when opened in new tab or refreshed)
+                                const savedTheme = localStorage.getItem('theme');
+                                const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+                                if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                                    applyTheme(true);
+                                }
+
+                                // 2. Listen for 'postMessage' from parent Chat Widget (for live toggling)
+                                window.addEventListener('message', (event) => {
+                                    if (event.data && event.data.type === 'THEME_CHANGE') {
+                                        applyTheme(event.data.theme === 'dark');
+                                    }
+                                });
+
+                                // 3. System Preference Listener
+                                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                                    if (!localStorage.getItem('theme')) { // Only follow system if no manual override
+                                        applyTheme(event.matches);
+                                    }
+                                });
+                            </script>
                         </div>
                     </div>
                 </div>
@@ -234,7 +265,6 @@
 
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/menu-masonry.js') }}"></script>
-
 </body>
 
 </html>
