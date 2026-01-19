@@ -6,40 +6,60 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // -------------------------------------------------------------------------
-    // 1. Sticky Navigation & Scroll Spy
+    // 1. Sticky Navigation & Scroll Spy (Optimized)
     // -------------------------------------------------------------------------
     const navLinks = document.querySelectorAll('.category-nav-link');
     const sections = document.querySelectorAll('.menu-category-section');
     const navContainer = document.querySelector('.category-nav-container');
+    const header = document.querySelector('header');
 
-    // Scroll Spy
-    window.addEventListener('scroll', () => {
+    // Helper: Debounce function
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Dynamic Offset Calculation
+    const getHeaderOffset = () => header ? header.offsetHeight + 20 : 160;
+
+    // Scroll Spy Logic
+    const onScroll = () => {
         let current = '';
+        const offset = getHeaderOffset();
 
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            // Offset for sticky header (approx 150px)
-            if (scrollY >= (sectionTop - 180)) {
+            // Activate when section is slightly below the header line
+            if (scrollY >= (sectionTop - offset - 50)) {
                 current = section.getAttribute('id');
             }
         });
 
+        // Special check: if at bottom of page, activate last link
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+            current = sections[sections.length - 1].getAttribute('id');
+        }
+
         navLinks.forEach(link => {
             link.classList.remove('active-pill');
-            if (link.getAttribute('href').includes(current)) {
+            if (link.getAttribute('href').includes(`#${current}`)) {
                 link.classList.add('active-pill');
 
-                // Auto-scroll nav container to keep active pill in view
-                const linkRect = link.getBoundingClientRect();
-                const containerRect = navContainer.getBoundingClientRect();
-
-                if (linkRect.left < containerRect.left || linkRect.right > containerRect.right) {
-                    link.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-                }
+                // Smooth Center Active Pill
+                link.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
             }
         });
-    });
+    };
+
+    // Use debounced scroll listener (10ms is fast enough for visual but saves CPU)
+    window.addEventListener('scroll', debounce(onScroll, 10));
 
     // Smooth Scroll for Links
     navLinks.forEach(link => {
@@ -47,12 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const targetId = link.getAttribute('href').substring(1);
             const targetSection = document.getElementById(targetId);
+
             if (targetSection) {
-                const offset = 160; // Header height
-                const bodyRect = document.body.getBoundingClientRect().top;
-                const elementRect = targetSection.getBoundingClientRect().top;
-                const elementPosition = elementRect - bodyRect;
-                const offsetPosition = elementPosition - offset;
+                const headerOffset = getHeaderOffset();
+                const elementPosition = targetSection.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
                 window.scrollTo({
                     top: offsetPosition,
@@ -79,11 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (lbPrice) lbPrice.textContent = price || '';
 
             lb.classList.remove('hidden');
-            setTimeout(() => {
+            // Small delay to allow display flex to apply before opacity transition
+            requestAnimationFrame(() => {
                 lb.classList.add('opacity-100');
                 lb.querySelector('div[class*="transform"]').classList.remove('scale-95');
                 lb.querySelector('div[class*="transform"]').classList.add('scale-100');
-            }, 10);
+            });
         }
     };
 
