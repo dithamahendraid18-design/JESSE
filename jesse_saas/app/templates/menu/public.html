@@ -12,21 +12,37 @@
         tailwind.config = {
             darkMode: 'class',
         }
+
+        // Apply theme immediately to avoid FOUC/Flash
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        try {
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                applyTheme(true);
+            }
+        } catch (e) { console.log('Theme init error', e); }
     </script>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
     <style>
-        /* Force opaque background immediately to prevent transparency */
+        /* Force opaque background immediately */
         html {
             background-color: #f8f9fa;
-            /* Default Light */
+            height: 100%;
         }
 
         html.dark {
             background-color: #121212;
-            /* Default Dark */
         }
 
         :root {
@@ -40,7 +56,7 @@
 
             ;
 
-            /* Light Mode (Default) match bot_builder */
+            /* Light Mode */
             --bg-app: #f3f4f6;
             --bg-surface: #ffffff;
             --text-primary: #1f2937;
@@ -49,20 +65,26 @@
         }
 
         .dark {
-            /* Dark Mode match bot_builder */
+            /* Dark Mode */
             --bg-app: #121212;
             --bg-surface: #1E1E1E;
+            /* Solid Dark Grey, NOT transparent */
             --text-primary: #f3f4f6;
             --text-secondary: #9ca3af;
-            --border-color: rgba(255, 255, 255, 0.1);
+            --border-color: #333333;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-app) !important;
-            /* Force Opacity */
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
+
+        /* Dark Mode Body Override to ensure solidity */
+        .dark body {
+            background-color: #121212 !important;
         }
 
         h1,
@@ -84,24 +106,28 @@
         }
 
         /* Active Nav Pill */
-        /* Active Nav Pill */
         .active-pill {
-            background-color: #ffffff !important;
+            background-color: var(--bg-surface) !important;
             color: var(--theme-color) !important;
             border-color: var(--theme-color) !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transform: scale(1.05);
         }
 
-        /* Grid Layout handled by Tailwind classes (grid-cols-2) */
+        /* Dark Mode Adjustments */
+        .dark .active-pill {
+            background-color: #333 !important;
+            /* Visible on dark */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 
 <body class="bg-[var(--bg-app)] pb-20 transition-colors duration-300">
 
-    <!-- 1. HEADER (Sticky) -->
+    <!-- 1. HEADER (Solid, No Transparency) -->
     <header
-        class="fixed top-0 inset-x-0 z-50 bg-[var(--bg-surface)]/90 backdrop-blur-md border-b border-[var(--border-color)] shadow-sm transition-all duration-300">
+        class="fixed top-0 inset-x-0 z-50 bg-[var(--bg-surface)] border-b border-[var(--border-color)] shadow-sm transition-all duration-300">
         <!-- Brand Bar -->
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -259,33 +285,20 @@
                                 </button>
                             </div>
                             <script>
-                                function applyTheme(isDark) {
-                                    if (isDark) {
-                                        document.documentElement.classList.add('dark');
-                                    } else {
-                                        document.documentElement.classList.remove('dark');
-                                    }
-                                }
-
-                                // 1. Check LocalStorage (for when opened in new tab or refreshed)
-                                const savedTheme = localStorage.getItem('theme');
-                                const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-                                if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
-                                    applyTheme(true);
-                                }
-
-                                // 2. Listen for 'postMessage' from parent Chat Widget (for live toggling)
+                                // Listeners for Theme Changes (using global applyTheme from head)
                                 window.addEventListener('message', (event) => {
                                     if (event.data && event.data.type === 'THEME_CHANGE') {
-                                        applyTheme(event.data.theme === 'dark');
+                                        if (typeof applyTheme === 'function') {
+                                            applyTheme(event.data.theme === 'dark');
+                                        }
                                     }
                                 });
 
-                                // 3. System Preference Listener
                                 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-                                    if (!localStorage.getItem('theme')) { // Only follow system if no manual override
-                                        applyTheme(event.matches);
+                                    if (!localStorage.getItem('theme')) {
+                                        if (typeof applyTheme === 'function') {
+                                            applyTheme(event.matches);
+                                        }
                                     }
                                 });
                             </script>
