@@ -141,6 +141,13 @@
 </head>
 
 <body class="bg-[var(--bg-app)] pb-20 transition-colors duration-300">
+    <!-- DEBUG THEME VALUES (Hidden in production) -->
+    <div style="display:none;">
+        Client Theme: {{ client.theme_color }}
+        Book Theme: {{ client.knowledge_base.book_theme_color }}
+        Route Theme: {{ theme_color }}
+        Resolved: {{ client.theme_color or client.knowledge_base.book_theme_color or '#000000' }}
+    </div>
 
     <!-- 1. HEADER (Solid, No Transparency) -->
     <header
