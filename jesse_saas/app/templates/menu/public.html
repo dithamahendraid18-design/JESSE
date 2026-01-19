@@ -39,6 +39,8 @@
         html {
             background-color: #f8f9fa;
             height: 100%;
+            overscroll-behavior-y: none;
+            /* Prevent "bounce" / rubber-banding */
         }
 
         html.dark {
@@ -64,11 +66,11 @@
             --border-color: #e5e7eb;
         }
 
-        .dark {
+        html.dark {
             /* Dark Mode */
             --bg-app: #121212;
             --bg-surface: #1E1E1E;
-            /* Solid Dark Grey, NOT transparent */
+            /* Solid Dark Grey */
             --text-primary: #f3f4f6;
             --text-secondary: #9ca3af;
             --border-color: #333333;
@@ -80,11 +82,14 @@
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
+            overscroll-behavior-y: none;
+            /* Lock Scroll */
         }
 
         /* Dark Mode Body Override to ensure solidity */
-        .dark body {
+        html.dark body {
             background-color: #121212 !important;
+            color: #f3f4f6;
         }
 
         h1,
@@ -115,9 +120,10 @@
         }
 
         /* Dark Mode Adjustments */
-        .dark .active-pill {
-            background-color: #333 !important;
+        html.dark .active-pill {
+            background-color: #333333 !important;
             /* Visible on dark */
+            color: var(--theme-color) !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
         }
     </style>
