@@ -241,7 +241,7 @@
                         data-title="{{ item.name }}" data-desc="{{ item.description or '' }}"
                         data-allergy="{{ item.allergy_info or '' }}"
                         data-price="{{ client.currency_symbol or 'Rp ' }}{{ '{:,.2f}'.format(item.price) }}"
-                        onclick="openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price, this.dataset.allergy)">
+                        onclick="console.log('Click Dataset:', this.dataset); openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price, this.dataset.allergy)">
 
                         <!-- Image (1:1 Square) -->
                         {% if item.image_url %}
