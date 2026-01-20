@@ -473,8 +473,9 @@
                 modal.classList.remove('hidden');
                 requestAnimationFrame(() => {
                     modal.classList.add('opacity-100');
-                    // modal.querySelector('div[class*="transform"]').classList.remove('translate-y-full'); // Optional if we want slide up
                 });
+                // Hide Main Close Button
+                window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: false }, '*');
             }
         }
 
@@ -483,6 +484,8 @@
             if (modal) {
                 modal.classList.remove('opacity-100');
                 setTimeout(() => modal.classList.add('hidden'), 300);
+                // Show Main Close Button
+                window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: true }, '*');
             }
         }
 

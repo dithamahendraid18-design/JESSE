@@ -104,6 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 lb.querySelector('div[class*="transform"]').classList.remove('scale-95');
                 lb.querySelector('div[class*="transform"]').classList.add('scale-100');
             });
+            // Hide Main Close Button
+            window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: false }, '*');
         }
     };
 
@@ -116,6 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 lb.classList.add('hidden');
             }, 300);
+            // Show Main Close Button
+            window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: true }, '*');
         }
     };
 
