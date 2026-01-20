@@ -18,7 +18,8 @@ class MenuService:
 
         price = 0.0
         try:
-            price = float(form_data.get('price', 0))
+            raw_price = str(form_data.get('price', 0)).replace(',', '.')
+            price = float(raw_price)
         except ValueError:
             pass
             
@@ -59,7 +60,8 @@ class MenuService:
         
         if 'price' in form_data:
             try:
-                item.price = float(form_data['price'])
+                raw_price = str(form_data['price']).replace(',', '.')
+                item.price = float(raw_price)
             except ValueError:
                 pass
 
