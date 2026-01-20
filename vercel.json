@@ -1,5 +1,9 @@
 {
     "version": 2,
+    "input": [
+        "."
+    ],
+    "installCommand": "pip3 install --break-system-packages -r requirements.txt",
     "outputDirectory": "public",
     "rewrites": [
         {
