@@ -545,7 +545,10 @@
                 const allergyContainer = document.getElementById('lightbox-allergy-container');
                 const allergyText = document.getElementById('lightbox-allergy');
 
-                if (allergy && allergy !== 'undefined' && allergy !== '') {
+                console.log('OpenLightbox Debug:', { title, allergy }); // Debug Log
+
+                // Robust check for various "empty" states
+                if (allergy && allergy !== 'undefined' && allergy !== 'None' && allergy.trim() !== '') {
                     allergyText.textContent = allergy;
                     allergyContainer.classList.remove('hidden');
                 } else {
