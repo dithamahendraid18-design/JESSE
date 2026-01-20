@@ -1,5 +1,12 @@
 {
     "version": 2,
+    "builds": [
+        {
+            "src": "api/index.py",
+            "use": "@vercel/python"
+        }
+    ],
+    "installCommand": "pip3 install --break-system-packages -r requirements.txt",
     "outputDirectory": "public",
     "rewrites": [
         {
