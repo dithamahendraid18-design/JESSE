@@ -489,40 +489,7 @@
             }
         }
 
-        // --- Search Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('menuSearch');
-            // Cache items
-            const sections = document.querySelectorAll('.menu-category-section');
 
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-
-                sections.forEach(section => {
-                    let hasVisibleItems = false;
-                    const items = section.querySelectorAll('.group.relative'); // Select item cards
-
-                    items.forEach(item => {
-                        const title = (item.dataset.title || '').toLowerCase();
-                        const desc = (item.dataset.desc || '').toLowerCase();
-
-                        if (title.includes(term) || desc.includes(term)) {
-                            item.closest('.w-full').style.display = 'block'; // Show column wrapper
-                            hasVisibleItems = true;
-                        } else {
-                            item.closest('.w-full').style.display = 'none'; // Hide column wrapper
-                        }
-                    });
-
-                    // Toggle Section visibility
-                    if (hasVisibleItems) {
-                        section.style.display = 'block';
-                    } else {
-                        section.style.display = 'none';
-                    }
-                });
-            });
-        });
     </script>
 </body>
 

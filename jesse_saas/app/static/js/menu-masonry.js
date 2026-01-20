@@ -127,4 +127,52 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') window.closeLightbox();
     });
+
+    // -------------------------------------------------------------------------
+    // 3. Search Logic (Mobile & Desktop)
+    // -------------------------------------------------------------------------
+    const searchInput = document.getElementById('menuSearch');
+    if (searchInput) {
+        const sections = document.querySelectorAll('.menu-category-section');
+
+        const filterMenu = (e) => {
+            const term = e.target.value.toLowerCase().trim();
+
+            sections.forEach(section => {
+                let hasVisibleItems = false;
+                // Select item cards
+                const items = section.querySelectorAll('.group.relative');
+
+                items.forEach(item => {
+                    const title = (item.dataset.title || '').toLowerCase();
+                    const desc = (item.dataset.desc || '').toLowerCase();
+
+                    // Check match
+                    const isMatch = title.includes(term) || desc.includes(term);
+
+                    // Toggle visibility of the PARENT wrapper (grid column)
+                    const wrapper = item.closest('.w-full');
+                    if (wrapper) {
+                        if (isMatch) {
+                            wrapper.style.display = 'block';
+                            hasVisibleItems = true;
+                        } else {
+                            wrapper.style.display = 'none';
+                        }
+                    }
+                });
+
+                // Toggle Section visibility
+                if (hasVisibleItems) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        };
+
+        // Listen to 'input' (standard) and 'keyup' (fallback for some mobile keyboards)
+        searchInput.addEventListener('input', filterMenu);
+        searchInput.addEventListener('keyup', filterMenu);
+    }
 });
