@@ -135,8 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         const sections = document.querySelectorAll('.menu-category-section');
 
+        const noResultsMsg = document.getElementById('no-results');
+
         const filterMenu = (e) => {
             const term = e.target.value.toLowerCase().trim();
+            let anySectionVisible = false;
 
             sections.forEach(section => {
                 let hasVisibleItems = false;
@@ -165,10 +168,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Toggle Section visibility
                 if (hasVisibleItems) {
                     section.style.display = 'block';
+                    anySectionVisible = true;
                 } else {
                     section.style.display = 'none';
                 }
             });
+
+            // Toggle No Results Message
+            if (noResultsMsg) {
+                if (!anySectionVisible && term !== '') {
+                    noResultsMsg.classList.remove('hidden');
+                } else {
+                    noResultsMsg.classList.add('hidden');
+                }
+            }
         };
 
         // Listen to 'input' (standard) and 'keyup' (fallback for some mobile keyboards)
