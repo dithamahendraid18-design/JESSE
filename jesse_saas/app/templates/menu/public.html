@@ -531,8 +531,8 @@
     <script src="{{ url_for('static', filename='js/menu-masonry.js') }}"></script>
     <script>
         // --- Lightbox Logic ---
-        function openLightbox(card, img, title, price, desc) {
-            const modal = document.getElementById('lightbox-modal'); // Assuming an ID for the lightbox modal container
+        function openLightbox(img, title, desc, price, allergy) {
+            const modal = document.getElementById('lightbox');
             if (modal) {
                 document.getElementById('lightbox-img').src = img;
                 document.getElementById('lightbox-title').textContent = title;
@@ -540,34 +540,38 @@
                 document.getElementById('lightbox-desc').textContent = desc;
 
                 // Handle Allergy Info
-                const allergy = card.getAttribute('data-allergy');
                 const allergyContainer = document.getElementById('lightbox-allergy-container');
                 const allergyText = document.getElementById('lightbox-allergy');
 
-                if (allergy) {
+                if (allergy && allergy !== 'undefined' && allergy !== '') {
                     allergyText.textContent = allergy;
                     allergyContainer.classList.remove('hidden');
                 } else {
                     allergyContainer.classList.add('hidden');
                 }
 
-                // Image Handling
+                // Show Modal
                 modal.classList.remove('hidden');
                 requestAnimationFrame(() => {
-                    modal.classList.add('opacity-100');
+                    modal.classList.remove('opacity-0');
                 });
-                // Hide Main Close Button
-                window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: false }, '*');
+
+                // Hide Main Close Button (if applicable in parent context)
+                if (window.parent) {
+                    window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: false }, '*');
+                }
             }
         }
 
         function closeLightbox() {
-            const modal = document.getElementById('lightbox-modal'); // Assuming an ID for the lightbox modal container
+            const modal = document.getElementById('lightbox');
             if (modal) {
-                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0');
                 setTimeout(() => modal.classList.add('hidden'), 300);
                 // Show Main Close Button
-                window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: true }, '*');
+                if (window.parent) {
+                    window.parent.postMessage({ type: 'TOGGLE_CLOSE_BUTTON', show: true }, '*');
+                }
             }
         }
 
