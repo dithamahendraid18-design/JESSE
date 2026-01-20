@@ -180,8 +180,8 @@
             </div>
 
             <!-- Search Input -->
-            <div class="flex-1 max-w-xs ml-4">
-                <div class="relative">
+            <div class="flex-1 max-w-xs ml-4 flex items-center gap-3">
+                <div class="relative w-full">
                     <input type="text" id="menuSearch" placeholder="Search menu..."
                         class="w-full bg-[var(--bg-app)] border border-[var(--border-color)] text-[var(--text-primary)] text-base md:text-sm rounded-full pl-9 pr-4 py-2 focus:outline-none focus:ring-1 ring-theme transition-all placeholder-[var(--text-secondary)]">
                     <svg class="w-4 h-4 text-[var(--text-secondary)] absolute left-3 top-2.5" fill="none"
@@ -190,6 +190,16 @@
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
+
+                <!-- Desktop Info Button -->
+                <button onclick="openInfoModal()"
+                    class="hidden md:inline-flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-full border border-[var(--border-color)] text-sm font-bold text-[var(--text-primary)] hover:border-theme hover:text-theme transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    How to Order
+                </button>
             </div>
         </div>
 
