@@ -10,14 +10,8 @@ def inspect_db():
         cursor.execute("PRAGMA table_info(menu_items);")
         columns = cursor.fetchall()
         for col in columns:
-            if col[1] == 'price':
+            if col[1] in ['allergy_info', 'price']:
                 print(f"Verified Column: {col[1]} is type {col[2]}")
-
-        print("\n--- Recent Menu Items (Name, Price) ---")
-        cursor.execute("SELECT name, price FROM menu_items ORDER BY id DESC LIMIT 5")
-        rows = cursor.fetchall()
-        for row in rows:
-            print(f"Item: {row[0]}, Price: {row[1]}, Type: {type(row[1])}")
 
         conn.close()
     except Exception as e:
