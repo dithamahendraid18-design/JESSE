@@ -159,8 +159,8 @@
     <!-- 1. HEADER (Solid, No Transparency) -->
     <header
         class="fixed top-0 inset-x-0 z-50 bg-[var(--bg-surface)] border-b border-[var(--border-color)] shadow-sm transition-all duration-300">
-        <!-- Brand Bar -->
-        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <!-- Brand Bar with Padding for Close Button -->
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between pr-14 md:pr-4">
             <div class="flex items-center gap-3">
                 {% if client.knowledge_base.avatar_image %}
                 <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
