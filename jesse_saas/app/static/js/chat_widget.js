@@ -455,6 +455,17 @@ function handleAction(arg1, arg2, arg3) {
                         <h3 class="font-bold text-gray-800 text-lg">${item.name}</h3>
                         <p class="text-blue-600 font-semibold mb-1">${currency}${item.price}</p>
                         <p class="text-gray-600 text-xs mb-2">${item.description || 'No description available.'}</p>
+                        ${item.allergy_info ? `
+                        <div class="mt-2 bg-amber-50 border-l-4 border-amber-500 p-2 rounded-r flex items-start">
+                            <svg class="h-4 w-4 text-amber-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            <div>
+                                <p class="text-[10px] font-bold text-amber-800 uppercase tracking-wide">Allergy Warning</p>
+                                <p class="text-xs text-amber-700 leading-tight">${item.allergy_info}</p>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
                 <div class="generated-buttons flex flex-wrap gap-2 mt-2 ml-10 justify-start"></div>
