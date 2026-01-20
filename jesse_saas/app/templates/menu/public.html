@@ -410,7 +410,8 @@
                                 How to Order</h4>
                             <div
                                 class="prose prose-sm dark:prose-invert text-[var(--text-primary)] leading-relaxed whitespace-pre-line">
-                                {{ client.knowledge_base.last_page_order_desc or 'Please ask our staff for assistance.'
+                                {{ client.knowledge_base.last_page_order_desc | urlize(target="_blank") or 'Please ask
+                                our staff for assistance.'
                                 }}
                             </div>
                         </div>
@@ -423,7 +424,7 @@
                                 Additional Info</h4>
                             <div
                                 class="prose prose-sm dark:prose-invert text-[var(--text-primary)] leading-relaxed whitespace-pre-line">
-                                {{ client.knowledge_base.last_page_res_desc }}
+                                {{ client.knowledge_base.last_page_res_desc | urlize(target="_blank") }}
                             </div>
                         </div>
                         {% endif %}
@@ -431,9 +432,10 @@
                         <!-- Contacts -->
                         <div class="bg-[var(--bg-app)] rounded-xl p-4 flex flex-col gap-3">
                             {% if client.knowledge_base.contact_phone %}
-                            <div class="flex items-center gap-3">
+                            <a href="tel:{{ client.knowledge_base.contact_phone }}"
+                                class="flex items-center gap-3 group hover:bg-white dark:hover:bg-gray-800 p-2 -mx-2 rounded-lg transition-colors">
                                 <div
-                                    class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                                    class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
@@ -442,13 +444,15 @@
                                 </div>
                                 <span class="text-[var(--text-primary)] font-medium">{{
                                     client.knowledge_base.contact_phone }}</span>
-                            </div>
+                            </a>
                             {% endif %}
 
                             {% if client.knowledge_base.location_address %}
-                            <div class="flex items-center gap-3">
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ client.knowledge_base.location_address }}"
+                                target="_blank"
+                                class="flex items-center gap-3 group hover:bg-white dark:hover:bg-gray-800 p-2 -mx-2 rounded-lg transition-colors">
                                 <div
-                                    class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                                    class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
@@ -459,7 +463,7 @@
                                 </div>
                                 <span class="text-[var(--text-primary)] font-medium text-sm">{{
                                     client.knowledge_base.location_address }}</span>
-                            </div>
+                            </a>
                             {% endif %}
                         </div>
 
