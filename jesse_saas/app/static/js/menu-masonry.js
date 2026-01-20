@@ -84,18 +84,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // 2. Lightbox Logic
     // -------------------------------------------------------------------------
-    window.openLightbox = function (imgUrl, title, desc, price) {
+    window.openLightbox = function (imgUrl, title, desc, price, allergy) {
         const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
         const lbTitle = document.getElementById('lightbox-title');
         const lbDesc = document.getElementById('lightbox-desc');
         const lbPrice = document.getElementById('lightbox-price');
 
+        // Allergen Checks
+        const allergyContainer = document.getElementById('lightbox-allergy-container');
+        const allergyText = document.getElementById('lightbox-allergy');
+
+        console.log('OpenLightbox (Masonry) Debug:', { title, allergy });
+
         if (lb && lbImg) {
             lbImg.src = imgUrl;
             if (lbTitle) lbTitle.textContent = title || '';
             if (lbDesc) lbDesc.textContent = desc || '';
             if (lbPrice) lbPrice.textContent = price || '';
+
+            // Handle Allergy Info (Robust Check)
+            if (allergyContainer && allergyText) {
+                if (allergy && allergy !== 'undefined' && allergy !== 'None' && allergy.trim() !== '') {
+                    allergyText.textContent = allergy;
+                    allergyContainer.classList.remove('hidden');
+                } else {
+                    allergyContainer.classList.add('hidden');
+                }
+            }
 
             lb.classList.remove('hidden');
             // Small delay to allow display flex to apply before opacity transition
