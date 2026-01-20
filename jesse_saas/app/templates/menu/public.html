@@ -239,8 +239,9 @@
                     <div class="group relative bg-[var(--bg-surface)] rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-[var(--border-color)] cursor-zoom-in h-full flex flex-col"
                         data-img="{{ resolve_file(item.image_url, 'menu') if item.image_url else '' }}"
                         data-title="{{ item.name }}" data-desc="{{ item.description or '' }}"
+                        data-allergy="{{ item.allergy_info or '' }}"
                         data-price="{{ client.currency_symbol or 'Rp ' }}{{ '{:,.2f}'.format(item.price) }}"
-                        onclick="openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price)">
+                        onclick="openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price, this.dataset.allergy)">
 
                         <!-- Image (1:1 Square) -->
                         {% if item.image_url %}
@@ -337,6 +338,26 @@
                                 <p class="text-base text-[var(--text-secondary)] leading-relaxed" id="lightbox-desc">
                                     Description goes here.
                                 </p>
+                            </div>
+
+                            <!-- Allergen Warning (New) -->
+                            <div id="lightbox-allergy-container"
+                                class="hidden mt-4 bg-amber-50 dark:bg-amber-900/30 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-amber-800 dark:text-amber-200">Allergen
+                                            Information</p>
+                                        <p id="lightbox-allergy"
+                                            class="text-sm text-amber-700 dark:text-amber-300 mt-1"></p>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mt-8">
