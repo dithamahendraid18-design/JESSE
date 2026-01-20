@@ -85,7 +85,7 @@
                         </div>
                     </td>
                     <td class="px-3 py-4 text-sm text-gray-900 font-medium whitespace-nowrap">
-                        {{ client.currency_symbol or 'Rp' }} {{ "{:,.0f}".format(item.price).replace(',', '.') }}
+                        {{ client.currency_symbol or 'Rp' }} {{ "{:,.2f}".format(item.price) }}
                     </td>
                     <td class="px-3 py-4 text-sm">
                         <!-- Toggle Switch -->
@@ -173,9 +173,9 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <span class="text-gray-500 sm:text-sm">{{ client.currency_symbol or 'Rp' }}</span>
                         </div>
-                        <input type="number" name="price" id="input-price" step="100" required
+                        <input type="number" name="price" id="input-price" step="0.01" required
                             class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-12 sm:text-sm border-gray-300 rounded-md py-2"
-                            placeholder="25000">
+                            placeholder="0.00">
                     </div>
                 </div>
                 <!-- Category -->

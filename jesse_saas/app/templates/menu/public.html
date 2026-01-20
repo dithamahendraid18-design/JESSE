@@ -239,7 +239,7 @@
                     <div class="group relative bg-[var(--bg-surface)] rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-[var(--border-color)] cursor-zoom-in h-full flex flex-col"
                         data-img="{{ resolve_file(item.image_url, 'menu') if item.image_url else '' }}"
                         data-title="{{ item.name }}" data-desc="{{ item.description or '' }}"
-                        data-price="{{ client.currency_symbol or 'Rp ' }}{{ '{:,.0f}'.format(item.price).replace(',', '.') }}"
+                        data-price="{{ client.currency_symbol or 'Rp ' }}{{ '{:,.2f}'.format(item.price) }}"
                         onclick="openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price)">
 
                         <!-- Image (1:1 Square) -->
