@@ -154,6 +154,7 @@ class MenuItem(db.Model):
     description = db.Column(db.Text, nullable=True)
     is_available = db.Column(db.Boolean, default=True)
     image_url = db.Column(db.String(255), nullable=True)
+    allergy_info = db.Column(db.String(255), nullable=True)
 
     def to_dict(self):
         return {
@@ -163,6 +164,7 @@ class MenuItem(db.Model):
             'price': self.price,
             'description': self.description,
             'image_url': self.image_url,
+            'allergy_info': self.allergy_info,
             'is_available': self.is_available
         }
 

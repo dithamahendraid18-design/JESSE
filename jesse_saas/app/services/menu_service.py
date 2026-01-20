@@ -24,7 +24,9 @@ class MenuService:
             pass
             
         category = form_data.get('category', 'Other')
+        category = form_data.get('category', 'Other')
         description = form_data.get('description')
+        allergy_info = form_data.get('allergy_info')
         
         image_url = None
         if files and 'image' in files:
@@ -38,6 +40,7 @@ class MenuService:
             category=category,
             description=description,
             image_url=image_url,
+            allergy_info=allergy_info,
             is_available=True
         )
         db.session.add(item)
@@ -70,6 +73,9 @@ class MenuService:
             
         if 'description' in form_data:
             item.description = form_data['description']
+
+        if 'allergy_info' in form_data:
+            item.allergy_info = form_data['allergy_info']
         
         if files and 'image' in files:
             file = files['image']
