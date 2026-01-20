@@ -264,7 +264,7 @@
                                     {{ item.name }}
                                 </h4>
                                 <span class="font-bold text-theme text-sm">
-                                    {{ currency }}{{ "{:,.0f}".format(item.price).replace(',', '.') }}
+                                    {{ client.currency_symbol or 'Rp ' }}{{ "{:,.2f}".format(item.price) }}
                                 </span>
                             </div>
 
