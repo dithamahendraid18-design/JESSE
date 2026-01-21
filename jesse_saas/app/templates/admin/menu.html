@@ -29,122 +29,141 @@
     </div>
 
     <!-- Menu Items Table -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-14">
-                        Image</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item
-                        Details</th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
-                        Price
-                    </th>
-                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
-                        Status</th>
-                    <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                        Edit
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                {% for item in menu_items %}
-                <tr class="transition-colors hover:bg-gray-50 {% if not item.is_available %}bg-gray-50 opacity-75{% endif %}"
-                    id="row-{{ item.id }}">
-                    <td class="px-3 py-4 whitespace-nowrap">
-                        <div
-                            class="h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-200">
-                            {% if item.image_url %}
-                            <img src="{{ resolve_file(item.image_url, 'menu') }}" class="h-full w-full object-cover">
-                            {% else %}
-                            <span class="text-gray-400 text-[8px] font-bold">IMG</span>
-                            {% endif %}
-                        </div>
-                    </td>
-                    <td class="px-3 py-4 w-full">
-                        <div class="flex flex-wrap items-center gap-2 mb-1">
-                            <span class="text-sm font-bold text-gray-900">{{ item.name }}</span>
-                            <!-- Category Badge -->
-                            {% if item.category == 'Food' %}
-                            <span
-                                class="category-badge px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">Food</span>
-                            {% elif item.category == 'Drink' %}
-                            <span
-                                class="category-badge px-1.5 py-0.5 rounded text-[10px] font-semibold bg-green-100 text-green-800">Drink</span>
-                            {% elif item.category == 'Dessert' %}
-                            <span
-                                class="category-badge px-1.5 py-0.5 rounded text-[10px] font-semibold bg-pink-100 text-pink-800">Dessert</span>
-                            {% else %}
-                            <span
-                                class="category-badge px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-800">{{
-                                item.category }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="text-xs text-gray-500 max-w-xs line-clamp-2">{{ item.description or 'No description'
-                            }}
-                        </div>
-                        {% if item.allergy_info %}
-                        <div class="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full inline-block border border-amber-200 mt-1 max-w-[150px] truncate"
-                            title="{{ item.allergy_info }}">
-                            ⚠️ {{ item.allergy_info }}
-                        </div>
-                        {% endif %}
-                    </td>
-                    <td class="px-3 py-4 text-sm text-gray-900 font-medium whitespace-nowrap">
-                        {{ client.currency_symbol or 'Rp' }} {{ "{:,.2f}".format(item.price) }}
-                    </td>
-                    <td class="px-3 py-4 text-sm">
-                        <!-- Toggle Switch -->
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer" data-id="{{ item.id }}"
-                                onchange="toggleAvailability(this)" {% if item.is_available %}checked{% endif %}>
+    <!-- Menu Items Grouped by Category -->
+    <div class="space-y-8">
+        {% for category in sorted_categories %}
+        {% if menu_by_cat[category] %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">{{ category }}</h3>
+                <span class="text-xs font-medium text-gray-500 bg-white border border-gray-200 px-2 py-1 rounded-full">
+                    {{ menu_by_cat[category]|length }} Items
+                </span>
+            </div>
+            <!-- Table for this category -->
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-14">
+                            Image</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item
+                            Details</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                            Price
+                        </th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                            Status</th>
+                        <th
+                            class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                            Edit
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for item in menu_by_cat[category] %}
+                    <tr class="transition-colors hover:bg-gray-50 {% if not item.is_available %}bg-gray-50 opacity-75{% endif %}"
+                        id="row-{{ item.id }}">
+                        <td class="px-3 py-4 whitespace-nowrap">
                             <div
-                                class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600">
+                                class="h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-200">
+                                {% if item.image_url %}
+                                <img src="{{ resolve_file(item.image_url, 'menu') }}"
+                                    class="h-full w-full object-cover">
+                                {% else %}
+                                <span class="text-gray-400 text-[8px] font-bold">IMG</span>
+                                {% endif %}
                             </div>
-                            <span class="ml-2 text-xs font-medium text-gray-600 hidden sm:inline-block"
-                                id="status-text-{{ item.id }}">
-                                {% if item.is_available %}Active{% else %}Off{% endif %}
-                            </span>
-                        </label>
-                    </td>
-                    <td class="px-3 py-4 text-right text-sm font-medium whitespace-nowrap space-x-1">
-                        <button onclick="handleEdit(this)" data-item='{{ item.to_dict() | tojson | safe }}'
-                            class="text-blue-600 hover:text-blue-900 p-1">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                </path>
-                            </svg>
-                        </button>
-                        <form action="{{ url_for('admin.client_menu_delete', client_id=client.id, item_id=item.id) }}"
-                            method="POST" onsubmit="return confirm('Delete this item?');" class="inline">
-                            <button type="submit" class="text-red-400 hover:text-red-600 p-1">
+                        </td>
+                        <td class="px-3 py-4 w-full">
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <span class="text-sm font-bold text-gray-900">{{ item.name }}</span>
+                            </div>
+                            <div class="text-xs text-gray-500 max-w-xs line-clamp-2">{{ item.description or 'No
+                                description'
+                                }}
+                            </div>
+                            {% if item.allergy_info %}
+                            <div class="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full inline-block border border-amber-200 mt-1 max-w-[150px] truncate"
+                                title="{{ item.allergy_info }}">
+                                ⚠️ {{ item.allergy_info }}
+                            </div>
+                            {% endif %}
+                            {% if item.labels %}
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                {% for label_raw in item.labels.split(',') %}
+                                <span
+                                    class="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200">
+                                    {{ label_raw.strip() }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-3 py-4 text-sm text-gray-900 font-medium whitespace-nowrap">
+                            {{ client.currency_symbol or 'Rp' }} {{ "{:,.2f}".format(item.price) }}
+                            {% if item.original_price and item.original_price > item.price %}
+                            <div class="text-xs text-gray-400 line-through">
+                                {{ client.currency_symbol or 'Rp' }} {{ "{:,.2f}".format(item.original_price) }}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-3 py-4 text-sm">
+                            <!-- Toggle Switch -->
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer" data-id="{{ item.id }}"
+                                    onchange="toggleAvailability(this)" {% if item.is_available %}checked{% endif %}>
+                                <div
+                                    class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600">
+                                </div>
+                                <span class="ml-2 text-xs font-medium text-gray-600 hidden sm:inline-block"
+                                    id="status-text-{{ item.id }}">
+                                    {% if item.is_available %}Active{% else %}Off{% endif %}
+                                </span>
+                            </label>
+                        </td>
+                        <td class="px-3 py-4 text-right text-sm font-medium whitespace-nowrap space-x-1">
+                            <button onclick="handleEdit(this)" data-item='{{ item.to_dict() | tojson | safe }}'
+                                class="text-blue-600 hover:text-blue-900 p-1">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                     </path>
                                 </svg>
                             </button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                        <div class="mx-auto h-12 w-12 text-gray-300 mb-3">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                        </div>
-                        <p>No menu items found.</p>
-                        <button onclick="openModal()" class="text-blue-600 font-medium hover:underline mt-1">Add your
-                            first item</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            <form
+                                action="{{ url_for('admin.client_menu_delete', client_id=client.id, item_id=item.id) }}"
+                                method="POST" onsubmit="return confirm('Delete this item?');" class="inline">
+                                <button type="submit" class="text-red-400 hover:text-red-600 p-1">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% else %}
+        <!-- Empty State if NO categories at all or loop empty -->
+        {% if not menu_items %}
+        <div class="text-center py-12 bg-white rounded-lg border border-gray-200">
+            <div class="mx-auto h-12 w-12 text-gray-300 mb-3">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+            </div>
+            <p class="text-gray-500">No menu items found. Add your first item!</p>
+            <button onclick="openModal()" class="text-blue-600 font-medium hover:underline mt-1">Add your
+                first item</button>
+        </div>
+        {% endif %}
+        {% endfor %}
     </div>
 </div>
 

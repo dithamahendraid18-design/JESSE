@@ -190,7 +190,35 @@ def client_menu(client_id):
         return redirect(url_for('admin.client_menu', client_id=client.id))
 
     menu_items = MenuService.get_items(client.id)
-    return render_template('admin/menu.html', client=client, menu_items=menu_items, active_page='menu')
+    
+    # Refactor: Group by Category for Admin View
+    menu_by_cat = {}
+    for item in menu_items:
+        cat = item.category or 'Other'
+        if cat not in menu_by_cat:
+            menu_by_cat[cat] = []
+        menu_by_cat[cat].append(item)
+
+    # Sort Categories
+    sorted_categories = []
+    if client.knowledge_base and client.knowledge_base.category_order:
+        try:
+            saved_order = json.loads(client.knowledge_base.category_order)
+            for cat in saved_order:
+                if cat in menu_by_cat:
+                    sorted_categories.append(cat)
+        except:
+            pass
+    
+    # Append remaining categories
+    remaining = sorted([k for k in menu_by_cat.keys() if k not in sorted_categories])
+    sorted_categories.extend(remaining)
+
+    return render_template('admin/menu.html', client=client, 
+                         menu_items=menu_items, # Keep raw list just in case (optional, but harmless)
+                         menu_by_cat=menu_by_cat,
+                         sorted_categories=sorted_categories,
+                         active_page='menu')
 
 @bp.route('/client/<int:client_id>/menu/<int:item_id>/edit', methods=['POST'])
 @bp.route('/client/<int:client_id>/menu/<int:item_id>/edit', methods=['POST'])
