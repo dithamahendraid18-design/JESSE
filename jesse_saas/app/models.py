@@ -156,6 +156,7 @@ class MenuItem(db.Model):
     image_url = db.Column(db.String(255), nullable=True)
     allergy_info = db.Column(db.String(255), nullable=True)
     original_price = db.Column(db.Float, nullable=True) # New field for Promo/Strikethrough
+    labels = db.Column(db.String(255), nullable=True) # New field for Badges (comma-separated)
 
     def to_dict(self):
         return {
@@ -164,6 +165,7 @@ class MenuItem(db.Model):
             'category': self.category,
             'price': self.price,
             'original_price': self.original_price,
+            'labels': self.labels,
             'description': self.description,
             'image_url': self.image_url,
             'allergy_info': self.allergy_info,

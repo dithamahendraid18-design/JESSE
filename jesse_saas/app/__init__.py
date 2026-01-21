@@ -42,6 +42,14 @@ def create_app(config_class=Config):
                         conn.execute(text("ALTER TABLE menu_items ADD COLUMN original_price FLOAT"))
                         conn.commit()
                     print("✅ Migration: 'original_price' added.")
+
+                # Migrate labels
+                if 'labels' not in cols:
+                    print("⚠️ Migration: Adding missing 'labels' column...")
+                    with db.engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE menu_items ADD COLUMN labels VARCHAR(255)"))
+                        conn.commit()
+                    print("✅ Migration: 'labels' added.")
                     
         except Exception as e:
             print(f"❌ Migration Error: {e}")

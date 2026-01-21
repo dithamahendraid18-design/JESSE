@@ -253,6 +253,29 @@
                             <div
                                 class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300">
                             </div>
+
+                            <!-- Labels / Badges -->
+                            {% if item.labels %}
+                            <div class="absolute top-2 left-2 flex flex-col items-start gap-1">
+                                {% for label_raw in item.labels.split(',') %}
+                                {% set label = label_raw.strip() %}
+                                {% if label %}
+                                {% set badge_color = 'bg-gray-800 text-white' %}
+                                {% if label|lower == 'new' %}{% set badge_color = 'bg-blue-600 text-white' %}
+                                {% elif label|lower == 'promo' %}{% set badge_color = 'bg-red-600 text-white' %}
+                                {% elif 'best' in label|lower %}{% set badge_color = 'bg-yellow-500 text-white' %}
+                                {% elif 'spicy' in label|lower %}{% set badge_color = 'bg-orange-600 text-white' %}
+                                {% elif 'vegan' in label|lower %}{% set badge_color = 'bg-green-600 text-white' %}
+                                {% endif %}
+
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide shadow-sm {{ badge_color }}">
+                                    {{ label }}
+                                </span>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
                         {% endif %}
 

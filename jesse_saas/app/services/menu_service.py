@@ -35,6 +35,7 @@ class MenuService:
         category = form_data.get('category', 'Other')
         description = form_data.get('description')
         allergy_info = form_data.get('allergy_info')
+        labels = form_data.get('labels') # Comma-separated string
         
         image_url = None
         if files and 'image' in files:
@@ -46,6 +47,7 @@ class MenuService:
             name=name,
             price=price,
             original_price=original_price,
+            labels=labels,
             category=category,
             description=description,
             image_url=image_url,
@@ -88,6 +90,9 @@ class MenuService:
             else:
                 item.original_price = None
 
+        if 'labels' in form_data:
+            item.labels = form_data['labels']
+        
         if 'category' in form_data:
             item.category = form_data['category']
             
