@@ -19,20 +19,30 @@ def create_app(config_class=Config):
         db.create_all()
         
         # ---------------------------------------------------------
-        # HOTFIX: Auto-Migrate 'allergy_info' column if missing
+        # HOTFIX: Auto-Migrate columns if missing
         # ---------------------------------------------------------
         try:
             from sqlalchemy import text, inspect
             inspector = inspect(db.engine)
             if 'menu_items' in inspector.get_table_names():
                 cols = [c['name'] for c in inspector.get_columns('menu_items')]
+                
+                # Migrate allergy_info
                 if 'allergy_info' not in cols:
                     print("⚠️ Migration: Adding missing 'allergy_info' column...")
                     with db.engine.connect() as conn:
-                        # SQLite / Postgres compatible (mostly)
                         conn.execute(text("ALTER TABLE menu_items ADD COLUMN allergy_info VARCHAR(255)"))
                         conn.commit()
-                    print("✅ Migration: Column added successfully.")
+                    print("✅ Migration: 'allergy_info' added.")
+
+                # Migrate original_price
+                if 'original_price' not in cols:
+                    print("⚠️ Migration: Adding missing 'original_price' column...")
+                    with db.engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE menu_items ADD COLUMN original_price FLOAT"))
+                        conn.commit()
+                    print("✅ Migration: 'original_price' added.")
+                    
         except Exception as e:
             print(f"❌ Migration Error: {e}")
         # ---------------------------------------------------------

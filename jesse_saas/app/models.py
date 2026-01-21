@@ -155,6 +155,7 @@ class MenuItem(db.Model):
     is_available = db.Column(db.Boolean, default=True)
     image_url = db.Column(db.String(255), nullable=True)
     allergy_info = db.Column(db.String(255), nullable=True)
+    original_price = db.Column(db.Float, nullable=True) # New field for Promo/Strikethrough
 
     def to_dict(self):
         return {
@@ -162,6 +163,7 @@ class MenuItem(db.Model):
             'name': self.name,
             'category': self.category,
             'price': self.price,
+            'original_price': self.original_price,
             'description': self.description,
             'image_url': self.image_url,
             'allergy_info': self.allergy_info,

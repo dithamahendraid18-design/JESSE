@@ -22,6 +22,14 @@ class MenuService:
             price = float(raw_price)
         except ValueError:
             pass
+
+        original_price = None
+        if form_data.get('original_price'):
+            try:
+                raw_op = str(form_data['original_price']).replace(',', '.')
+                original_price = float(raw_op)
+            except ValueError:
+                pass
             
         category = form_data.get('category', 'Other')
         category = form_data.get('category', 'Other')
@@ -37,6 +45,7 @@ class MenuService:
             client_id=client.id,
             name=name,
             price=price,
+            original_price=original_price,
             category=category,
             description=description,
             image_url=image_url,
@@ -67,6 +76,17 @@ class MenuService:
                 item.price = float(raw_price)
             except ValueError:
                 pass
+
+        if 'original_price' in form_data:
+            val = form_data['original_price']
+            if val and str(val).strip() != '':
+                try:
+                    raw_op = str(val).replace(',', '.')
+                    item.original_price = float(raw_op)
+                except ValueError:
+                    item.original_price = None
+            else:
+                item.original_price = None
 
         if 'category' in form_data:
             item.category = form_data['category']

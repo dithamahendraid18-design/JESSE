@@ -241,7 +241,8 @@
                         data-title="{{ item.name }}" data-desc="{{ item.description or '' }}"
                         data-allergy="{{ item.allergy_info or '' }}"
                         data-price="{{ client.currency_symbol or 'Rp ' }}{{ '{:,.2f}'.format(item.price) }}"
-                        onclick="console.log('Click Dataset:', this.dataset); openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price, this.dataset.allergy)">
+                        data-original-price="{{ (client.currency_symbol or 'Rp ') + '{:,.2f}'.format(item.original_price) if item.original_price else '' }}"
+                        onclick="openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price, this.dataset.allergy, this.dataset['original-price'] || this.dataset.originalPrice)">
 
                         <!-- Image (1:1 Square) -->
                         {% if item.image_url %}
@@ -260,13 +261,28 @@
 
                             <!-- Header: Name & Price -->
                             <div class="flex flex-col gap-1 mb-2">
+                                <!-- Validation: Ensure original_price is valid number -->
+                                {% set show_promo = item.original_price and item.original_price > item.price %}
+
                                 <h4
                                     class="font-bold text-[var(--text-primary)] text-base leading-tight group-hover:text-theme transition-colors line-clamp-2">
                                     {{ item.name }}
                                 </h4>
-                                <span class="font-bold text-theme text-sm">
-                                    {{ client.currency_symbol or 'Rp ' }}{{ "{:,.2f}".format(item.price) }}
-                                </span>
+                                <div class="flex items-center gap-2">
+                                    {% if show_promo %}
+                                    <span class="text-xs text-gray-400 line-through decoration-gray-400">
+                                        {{ client.currency_symbol or 'Rp ' }}{{ "{:,.2f}".format(item.original_price) }}
+                                    </span>
+                                    <span class="font-bold text-red-500 text-sm">
+                                        {{ client.currency_symbol or 'Rp ' }}{{ "{:,.2f}".format(item.price) }}
+                                    </span>
+                                    <!-- Badge is absolute positioned usually, but let's keep it simple here or add to top left -->
+                                    {% else %}
+                                    <span class="font-bold text-theme text-sm">
+                                        {{ client.currency_symbol or 'Rp ' }}{{ "{:,.2f}".format(item.price) }}
+                                    </span>
+                                    {% endif %}
+                                </div>
                             </div>
 
                             <!-- Description (Visual Hierarchy: Smaller, Gray) -->

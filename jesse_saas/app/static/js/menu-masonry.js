@@ -84,24 +84,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // 2. Lightbox Logic
     // -------------------------------------------------------------------------
-    window.openLightbox = function (imgUrl, title, desc, price, allergy) {
+    window.openLightbox = function (imgUrl, title, desc, price, allergy, originalPrice) {
         const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
         const lbTitle = document.getElementById('lightbox-title');
         const lbDesc = document.getElementById('lightbox-desc');
         const lbPrice = document.getElementById('lightbox-price');
+        // We need a separate element for original price in lightbox? 
+        // Or we construct the price display.
+        // Let's assume lbPrice can handle complex display if we clear it first?
+        // Wait, lbPrice is h5 or p? It's usually textContent.
+        // Let's modify the HTML of lbPrice.
 
         // Allergen Checks
         const allergyContainer = document.getElementById('lightbox-allergy-container');
         const allergyText = document.getElementById('lightbox-allergy');
 
-        console.log('OpenLightbox (Masonry) Debug:', { title, allergy });
+        console.log('OpenLightbox (Masonry) Debug:', { title, allergy, originalPrice });
 
         if (lb && lbImg) {
             lbImg.src = imgUrl;
             if (lbTitle) lbTitle.textContent = title || '';
             if (lbDesc) lbDesc.textContent = desc || '';
-            if (lbPrice) lbPrice.textContent = price || '';
+
+            // Price Logic
+            if (lbPrice) {
+                if (originalPrice && originalPrice !== 'undefined' && originalPrice !== 'None' && originalPrice !== '') {
+                    // Promo Mode
+                    lbPrice.innerHTML = `<span class="line-through text-gray-400 text-sm mr-2">${originalPrice}</span> <span class="text-red-500">${price}</span>`;
+                } else {
+                    // Normal Mode
+                    lbPrice.textContent = price || '';
+                    // Ensure no leftover HTML if we switch back
+                    lbPrice.className = "text-xl font-bold text-[var(--theme-color)]"; // Reset class if needed?
+                }
+            }
 
             // Handle Allergy Info (Robust Check)
             if (allergyContainer && allergyText) {

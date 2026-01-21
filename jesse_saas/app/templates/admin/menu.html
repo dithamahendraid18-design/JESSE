@@ -184,7 +184,7 @@
 
                         <!-- Price & Category Row -->
                         <div class="grid grid-cols-2 gap-4">
-                            <!-- Price -->
+                            <!-- Price Group -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Price ({{
                                     client.currency_code or 'IDR' }})</label>
@@ -196,6 +196,22 @@
                                     <input type="number" name="price" id="input-price" step="0.01" required
                                         placeholder="0.00"
                                         class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-12 border-gray-300 rounded-lg py-3">
+                                </div>
+
+                                <!-- Original Price (Promo) -->
+                                <div class="mt-3">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Normal Price
+                                        (Coret)</label>
+                                    <div class="relative rounded-lg shadow-sm">
+                                        <div
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-400 font-medium text-xs">{{ client.currency_symbol or
+                                                'Rp' }}</span>
+                                        </div>
+                                        <input type="number" name="original_price" id="input-original-price" step="0.01"
+                                            placeholder="Optional"
+                                            class="focus:ring-amber-500 focus:border-amber-500 block w-full pl-10 border-gray-200 rounded-lg py-2 text-sm">
+                                    </div>
                                 </div>
                             </div>
 
@@ -329,6 +345,9 @@
         // Populate Allergy (New)
         // Check if data has allergy_info (might be missing in older items)
         document.getElementById('input-allergy-info').value = data.allergy_info || '';
+
+        // Populate Original Price (New)
+        document.getElementById('input-original-price').value = data.original_price || '';
 
         // Handle Image Preview
         const preview = document.getElementById('img-preview');
