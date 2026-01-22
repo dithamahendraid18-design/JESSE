@@ -365,27 +365,38 @@ def client_qr(client_id):
 def client_stats(client_id, view_mode='overview'):
     client = Client.query.get_or_404(client_id)
     
+    if view_mode == 'export_csv':
+        csv_data = AnalyticsService.get_export_csv(client.id)
+        
+        from flask import Response
+        return Response(
+            csv_data,
+            mimetype="text/csv",
+            headers={"Content-disposition": f"attachment; filename=logs_{client.restaurant_name}_{datetime.utcnow().strftime('%Y%m%d')}.csv"}
+        )
+
     if view_mode not in ['overview', 'conversations', 'events', 'trends', 'reports']:
         view_mode = 'overview'
     
     context = {}
     
     if view_mode == 'overview':
-        context['total_conversations'] = client.logs.count()
-        context['total_clients'] = 1 
-        total = client.logs.count()
-        ai_chats = client.logs.filter_by(interaction_type='ai_chat').count()
-        context['ai_ratio'] = round((ai_chats / total * 100), 1) if total > 0 else 0
+        context = AnalyticsService.get_client_overview(client.id)
     
     elif view_mode == 'conversations':
         context['logs'] = client.logs.order_by(InteractionLog.timestamp.desc()).limit(50).all()
 
     elif view_mode == 'events':
+        # Still doing this inline for now as it wasn't strictly moved, but we can iterate.
+        # Ideally this should be in Service too, but sticking to plan scope.
         context['events_breakdown'] = {
             'Menu Clicks': client.logs.filter(InteractionLog.interaction_type == 'button_click', InteractionLog.user_query.ilike('%menu%')).count(),
             'Location Clicks': client.logs.filter(InteractionLog.interaction_type == 'button_click', InteractionLog.user_query.ilike('%location%')).count(),
             'Contact Clicks': client.logs.filter(InteractionLog.interaction_type == 'button_click', InteractionLog.user_query.ilike('%contact%')).count()
         }
+        
+    elif view_mode == 'trends':
+        context['trend_data'] = AnalyticsService.get_trend_data(client.id)
 
     return render_template('admin/analytics.html', client=client, view_mode=view_mode, active_page=view_mode, **context)
 
