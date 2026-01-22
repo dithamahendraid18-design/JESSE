@@ -41,18 +41,45 @@ class AIService:
 Your job is to answer guest questions strictly based on the provided context.
 Be polite, concise, and helpful. Keep responses under 50 words."""
 
+        # Helper: Try to parse JSON starters if flow fields are missing
+        c_starters = []
+        try:
+            if kb.conversation_starters:
+                c_starters = json.loads(kb.conversation_starters)
+        except:
+            c_starters = []
+
+        # Map actions to field names for fallback
+        # action_name -> (kb_field_value, context_label)
+        # We only need to extract text if the explicit field is empty
+        
+        def get_flow_text(field_val, action_target):
+            if field_val: return field_val
+            # Find in starters
+            for btn in c_starters:
+                if btn.get('action') == action_target:
+                    return btn.get('response_text') or btn.get('payload') or ''
+            return ''
+
+        about_txt = get_flow_text(kb.flow_about, 'about')
+        hours_txt = get_flow_text(kb.flow_hours, 'hours')
+        loc_txt = get_flow_text(kb.flow_location, 'location')
+        contact_txt = get_flow_text(kb.flow_contact, 'contact')
+        # Menu intro often in 'menu' action or just explicit
+        menu_intro = get_flow_text(kb.flow_menu, 'menu') or get_flow_text(None, 'main_menu')
+
         # B. Data Context (Auto-injected from Client Hub)
         context_data = f"""
 CONTEXT (Read-Only):
-- About Us: {kb.about_us or kb.flow_about or 'Not specified'}
-- Opening Hours: {kb.opening_hours or kb.flow_hours or 'Not specified'}
+- About Us: {kb.about_us or about_txt or 'Not specified'}
+- Opening Hours: {kb.opening_hours or hours_txt or 'Not specified'}
 - Address/Location: {kb.location_address or 'Not specified'}
-- Location Details: {kb.flow_location or ''}
+- Location Details: {loc_txt or ''}
 - WiFi Password: {kb.wifi_password or 'Ask staff'}
 - Contact Phone: {kb.contact_phone or 'Not specified'}
-- Contact Details: {kb.flow_contact or ''}
+- Contact Details: {contact_txt or ''}
 - Reservation Link: {kb.reservation_url or 'Walk-ins welcome'}
-- Menu Introduction: {kb.flow_menu or ''}
+- Menu Introduction: {menu_intro or ''}
 - Payment Methods: {kb.payment_methods or 'Not specified'}
 - Parking Info: {kb.parking_info or 'Not specified'}
 - Dietary Options: {kb.dietary_info or 'Not specified'}
