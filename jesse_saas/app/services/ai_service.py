@@ -53,32 +53,62 @@ Be polite, concise, and helpful. Keep responses under 50 words."""
         # action_name -> (kb_field_value, context_label)
         # We only need to extract text if the explicit field is empty
         
-        def get_flow_text(field_val, action_target):
+        def get_flow_text(field_val, action_target, keywords=None):
             if field_val: return field_val
-            # Find in starters
+            
+            # Helper: Check exact action match first
             for btn in c_starters:
                 if btn.get('action') == action_target:
                     return btn.get('response_text') or btn.get('payload') or ''
+            
+            # Helper: Fuzzy match by Label if action match fails
+            if keywords:
+                for btn in c_starters:
+                    label = (btn.get('label') or '').lower()
+                    if any(k in label for k in keywords):
+                        return btn.get('response_text') or btn.get('payload') or ''
+            
             return ''
 
-        about_txt = get_flow_text(kb.flow_about, 'about')
-        hours_txt = get_flow_text(kb.flow_hours, 'hours')
-        loc_txt = get_flow_text(kb.flow_location, 'location')
-        contact_txt = get_flow_text(kb.flow_contact, 'contact')
+        about_txt = get_flow_text(kb.flow_about, 'about', ['about', 'story'])
+        hours_txt = get_flow_text(kb.flow_hours, 'hours', ['hour', 'open', 'time'])
+        loc_txt = get_flow_text(kb.flow_location, 'location', ['location', 'address', 'map', 'where is'])
+        contact_txt = get_flow_text(kb.flow_contact, 'contact', ['contact', 'call', 'phone'])
         # Menu intro often in 'menu' action or just explicit
-        menu_intro = get_flow_text(kb.flow_menu, 'menu') or get_flow_text(None, 'main_menu')
+        menu_intro = get_flow_text(kb.flow_menu, 'menu', ['menu', 'food']) or get_flow_text(None, 'main_menu')
 
         # B. Data Context (Auto-injected from Client Hub)
+        # Helper: Parse Delivery Partners JSON
+        delivery_partners_txt = ""
+        try:
+            if client_model.delivery_partners:
+                partners = json.loads(client_model.delivery_partners)
+                if isinstance(partners, list):
+                    delivery_partners_txt = ", ".join([f"{p.get('platform', 'Partner')}: {p.get('url', '')}" for p in partners])
+                else:
+                    delivery_partners_txt = str(client_model.delivery_partners)
+        except:
+             delivery_partners_txt = client_model.delivery_partners or ''
+
         context_data = f"""
 CONTEXT (Read-Only):
 - About Us: {kb.about_us or about_txt or 'Not specified'}
 - Opening Hours: {kb.opening_hours or hours_txt or 'Not specified'}
 - Address/Location: {kb.location_address or 'Not specified'}
 - Location Details: {loc_txt or ''}
-- WiFi Password: {kb.wifi_password or 'Ask staff'}
-- Contact Phone: {kb.contact_phone or 'Not specified'}
+- Google Maps: {client_model.maps_url or 'Not specified'}
+- WiFi SSID: {client_model.wifi_ssid or 'Not specified'}
+- WiFi Password: {client_model.wifi_password or kb.wifi_password or 'Ask staff'}
+- Contact Phone: {client_model.public_phone or kb.contact_phone or 'Not specified'}
+- Contact Email: {client_model.public_email or 'Not specified'}
 - Contact Details: {contact_txt or ''}
-- Reservation Link: {kb.reservation_url or 'Walk-ins welcome'}
+- Reservation Link: {client_model.booking_url or kb.reservation_url or 'Walk-ins welcome'}
+- Delivery/Order Link: {client_model.delivery_url or 'Not specified'}
+- Delivery Partners: {delivery_partners_txt or 'Not specified'}
+- Review Us: {client_model.review_url or 'Not specified'}
+- Instagram: {client_model.instagram_url or 'Not specified'}
+- Website: {client_model.website_url or 'Not specified'}
+- Currency: {client_model.currency_code} ({client_model.currency_symbol})
 - Menu Introduction: {menu_intro or ''}
 - Payment Methods: {kb.payment_methods or 'Not specified'}
 - Parking Info: {kb.parking_info or 'Not specified'}

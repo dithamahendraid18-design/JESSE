@@ -18,6 +18,21 @@ def test_menu_injection():
     mock_client = DummyObj()
     mock_client.id = 999
     mock_client.restaurant_name = "Burger Kingdom"
+    mock_client.public_phone = "555-1234"
+    mock_client.maps_url = "http://maps.google.com/burger"
+    mock_client.delivery_partners = '[{"platform": "Uber", "url": "http://uber.com/burger"}]'
+    mock_client.wifi_ssid = "BurgerFreeWiFi"
+    mock_client.wifi_password = "burgerpass123"
+    mock_client.review_url = "http://review.me/burger"
+    mock_client.booking_url = "http://book.me/burger"
+    mock_client.currency_code = "USD"
+    mock_client.currency_symbol = "$"
+    # Existing fields needed for context
+    mock_client.public_email = "info@burger.com"
+    mock_client.instagram_url = "http://inst.com/burger"
+    mock_client.website_url = "http://burger.com"
+    mock_client.delivery_url = "http://deliver.com"
+
     
     mock_kb = DummyObj()
     mock_kb.ai_provider = 'mock' # Mock provider to avoid actual API call if possible, or we mock the request
@@ -95,6 +110,26 @@ def test_menu_injection():
                     print("✅ Smart Button Instruction Found")
                 else:
                     print("❌ Smart Button Instruction Missing")
+
+                # Check Client Hub Data Injection
+                checks = {
+                    "Phone": "555-1234",
+                    "Maps": "http://maps.google.com/burger",
+                    "DeliveryPartner": "Uber: http://uber.com/burger",
+                    "WiFi SSID": "BurgerFreeWiFi",
+                    "WiFi Pass": "burgerpass123",
+                    "Review": "http://review.me/burger",
+                    "Booking": "http://book.me/burger",
+                    "Currency": "USD ($)"
+                }
+                
+                print("\nChecking New Client Hub Fields:")
+                for name, value in checks.items():
+                    if value in system_msg:
+                        print(f"✅ {name} Found")
+                    else:
+                        print(f"❌ {name} Missing (Expected '{value}')")
+                        print(f"   Context snippet: {system_msg[system_msg.find('CONTEXT'):system_msg.find('MENU ITEMS')]}")
 
 if __name__ == "__main__":
     from app import create_app
