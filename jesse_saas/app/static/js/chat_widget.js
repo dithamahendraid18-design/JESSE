@@ -217,10 +217,13 @@ function appendMessage(text, sender) {
 
         // 1. Extract Buttons
         while ((match = buttonRegex.exec(text)) !== null) {
+            const rawLabel = match[1].trim();
+            const rawAction = match[2].trim();
+
             smartButtons.push({
-                label: match[1],
-                action: match[2].startsWith('link:') ? 'link' : match[2],
-                payload: match[2].startsWith('link:') ? match[2].replace('link:', '') : match[2]
+                label: rawLabel,
+                action: rawAction.startsWith('link:') ? 'link' : rawAction,
+                payload: rawAction.startsWith('link:') ? rawAction.replace('link:', '').trim() : rawAction
             });
         }
 
