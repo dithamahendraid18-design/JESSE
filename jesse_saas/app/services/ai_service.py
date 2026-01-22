@@ -44,12 +44,18 @@ Be polite, concise, and helpful. Keep responses under 50 words."""
         # B. Data Context (Auto-injected from Client Hub)
         context_data = f"""
 CONTEXT (Read-Only):
-- About Us: {kb.about_us or 'Not specified'}
-- Opening Hours: {kb.opening_hours or 'Not specified'}
-- Address: {kb.location_address or 'Not specified'}
+- About Us: {kb.about_us or kb.flow_about or 'Not specified'}
+- Opening Hours: {kb.opening_hours or kb.flow_hours or 'Not specified'}
+- Address/Location: {kb.location_address or 'Not specified'}
+- Location Details: {kb.flow_location or ''}
 - WiFi Password: {kb.wifi_password or 'Ask staff'}
 - Contact Phone: {kb.contact_phone or 'Not specified'}
+- Contact Details: {kb.flow_contact or ''}
 - Reservation Link: {kb.reservation_url or 'Walk-ins welcome'}
+- Menu Introduction: {kb.flow_menu or ''}
+- Payment Methods: {kb.payment_methods or 'Not specified'}
+- Parking Info: {kb.parking_info or 'Not specified'}
+- Dietary Options: {kb.dietary_info or 'Not specified'}
 - Policy: {kb.policy_info or 'Standard rules'}
 """
 
