@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 from unittest.mock import MagicMock, patch
 
 # Add project root to path
@@ -36,8 +37,12 @@ def test_menu_injection():
     
     mock_kb = DummyObj()
     mock_kb.ai_provider = 'mock' # Mock provider to avoid actual API call if possible, or we mock the request
-    mock_kb.ai_api_key = 'test'
-    
+    # Mock Conversation Starters with Custom Button
+    mock_kb.conversation_starters = json.dumps([
+        {"label": "Party Info", "action": "party", "response_text": "We handle events for up to 50 people."},
+        {"label": "Chef Special", "action": "chef", "response_text": "Today's special is Lobster Risotto."}
+    ])
+
     # 2. Mock Menu Items
     mock_items = []
     item1 = DummyObj()
@@ -120,16 +125,18 @@ def test_menu_injection():
                     "WiFi Pass": "burgerpass123",
                     "Review": "http://review.me/burger",
                     "Booking": "http://book.me/burger",
-                    "Currency": "USD ($)"
+                    "Currency": "USD ($)",
+                    "Custom Topic 1": "Topic 'Party Info': We handle events",
+                    "Custom Topic 2": "Topic 'Chef Special': Today's special is Lobster Risotto"
                 }
                 
-                print("\nChecking New Client Hub Fields:")
+                print("\nChecking New Client Hub & Custom Fields:")
                 for name, value in checks.items():
                     if value in system_msg:
                         print(f"✅ {name} Found")
                     else:
                         print(f"❌ {name} Missing (Expected '{value}')")
-                        print(f"   Context snippet: {system_msg[system_msg.find('CONTEXT'):system_msg.find('MENU ITEMS')]}")
+                        # print(f"   Context snippet: {system_msg}") # Debug only
 
 if __name__ == "__main__":
     from app import create_app

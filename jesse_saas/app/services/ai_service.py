@@ -90,6 +90,16 @@ Be polite, concise, and helpful. Keep responses under 50 words."""
         except:
              delivery_partners_txt = client_model.delivery_partners or ''
 
+        # Helper: Create a readable list of ALL conversation starters for the AI
+        starters_context = ""
+        if c_starters:
+            starters_text_list = []
+            for btn in c_starters:
+                label = btn.get('label', 'Unknown')
+                content = btn.get('response_text') or btn.get('payload') or 'No content'
+                starters_text_list.append(f"- Topic '{label}': {content}")
+            starters_context = "\nADDITIONAL TOPICS (Custom Knowledge):\n" + "\n".join(starters_text_list)
+
         context_data = f"""
 CONTEXT (Read-Only):
 - About Us: {kb.about_us or about_txt or 'Not specified'}
@@ -114,6 +124,7 @@ CONTEXT (Read-Only):
 - Parking Info: {kb.parking_info or 'Not specified'}
 - Dietary Options: {kb.dietary_info or 'Not specified'}
 - Policy: {kb.policy_info or 'Standard rules'}
+{starters_context}
 """
 
         # C. Menu Context (Already fetched above)
