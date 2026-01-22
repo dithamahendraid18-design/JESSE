@@ -86,9 +86,14 @@ def test_menu_injection():
                 mock_post.return_value = mock_response
                 
                 # EXECUTE
-                AIService.generate_smart_reply("Hi", mock_client, mock_kb)
-                
+                result = AIService.generate_smart_reply("Hi", mock_client, mock_kb)
+                print(f"Result: {result}")
+
                 # VERIFY
+                if not mock_post.called:
+                    print("❌ Requests.post was NOT called!")
+                    return
+
                 args, kwargs = mock_post.call_args
                 payload = kwargs['json']
                 messages = payload['messages']
