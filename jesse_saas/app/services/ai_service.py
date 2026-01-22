@@ -31,16 +31,19 @@ class AIService:
                 items_list.append(f"- {item.name} ({price}){desc}")
             menu_text = "\n".join(items_list)
         
-        # 2b. Construction System Prompt
-        system_prompt = kb.system_prompt
-        # If no custom prompt, use the enhanced default
-        if not system_prompt:
-             system_prompt = f"""
-You are the AI Concierge for {client_model.restaurant_name}.
+        # 2b. Construct Final System Prompt
+        # Strategy: Combine User Persona (or Default) + Data Context + Menu + Guidelines
+        
+        # A. Persona (Role & Tone)
+        persona = kb.system_prompt
+        if not persona:
+             persona = f"""You are the AI Concierge for {client_model.restaurant_name}.
 Your job is to answer guest questions strictly based on the provided context.
-Be polite, concise, and helpful. Keep responses under 50 words.
+Be polite, concise, and helpful. Keep responses under 50 words."""
 
-CONTEXT:
+        # B. Data Context (Auto-injected from Client Hub)
+        context_data = f"""
+CONTEXT (Read-Only):
 - About Us: {kb.about_us or 'Not specified'}
 - Opening Hours: {kb.opening_hours or 'Not specified'}
 - Address: {kb.location_address or 'Not specified'}
@@ -48,16 +51,24 @@ CONTEXT:
 - Contact Phone: {kb.contact_phone or 'Not specified'}
 - Reservation Link: {kb.reservation_url or 'Walk-ins welcome'}
 - Policy: {kb.policy_info or 'Standard rules'}
+"""
 
-MENU ITEMS:
-{menu_text}
+        # C. Menu Context (Already fetched above)
+        menu_context = f"\nMENU ITEMS (Live Database):\n{menu_text}\n"
 
+        # D. Functional Guidelines
+        guidelines = f"""
 GUIDELINES:
-- If asked about the menu, describe the items from the list above.
-- If specific ingredients are not listed, do not make them up.
-- If the user asks to see the menu, answer politely AND append the following tag to the end of your message: [BUTTON:View Menu|open_menu]
+- You represent {client_model.restaurant_name}. Use the tone defined in the persona above.
+- Use the CONTEXT and MENU ITEMS to answer questions.
+- If specific ingredients are not listed in the menu, do not make them up.
+- If the answer is NOT in the context, apologize and suggest calling {kb.contact_phone or 'the restaurant'}.
+- If the user asks to see the menu, answer politely AND append: [BUTTON:View Menu|open_menu]
 - If the user asks for a reservation, answer polite AND append: [BUTTON:Book a Table|link:{kb.reservation_url or '#'}]
 """
+
+        # Combine All
+        system_prompt = f"{persona}\n{context_data}\n{menu_context}\n{guidelines}"
 
         # 3. Determine API Key (DB first, then Env)
         api_key = kb.ai_api_key
