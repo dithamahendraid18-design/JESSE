@@ -208,6 +208,39 @@ function appendMessage(text, sender) {
 
     conversationArea.appendChild(div);
     scrollToBottom();
+
+    // === SMART BUTTON PARSING ===
+    if (sender === 'bot' && typeof text === 'string') {
+        const buttonRegex = /\[BUTTON:(.*?)\|(.*?)\]/g;
+        let match;
+        const smartButtons = [];
+
+        // 1. Extract Buttons
+        while ((match = buttonRegex.exec(text)) !== null) {
+            smartButtons.push({
+                label: match[1],
+                action: match[2].startsWith('link:') ? 'link' : match[2],
+                payload: match[2].startsWith('link:') ? match[2].replace('link:', '') : match[2]
+            });
+        }
+
+        // 2. Remove Tags from Display
+        if (smartButtons.length > 0) {
+            const cleanText = text.replace(buttonRegex, '').trim();
+            // Update the bubble text content directly
+            const bubbleContent = div.querySelector('.whitespace-pre-line');
+            if (bubbleContent) {
+                // Re-apply linkify to the clean text
+                bubbleContent.innerHTML = linkify(cleanText);
+            }
+
+            // 3. Render Buttons
+            const btnContainer = div.querySelector('.generated-buttons');
+            renderInlineButtons(smartButtons, btnContainer);
+            scrollToBottom();
+        }
+    }
+
     return div;
 }
 
