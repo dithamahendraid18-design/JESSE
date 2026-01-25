@@ -244,8 +244,9 @@ header .container {
 
 /* Photorealistic Phone Mockup */
 .phone-mockup {
-    width: 380px;
-    /* Adjusted for typical frame width */
+    width: 100%;
+    max-width: 380px;
+    /* Adjusted for typical frame width, responsive */
     height: auto;
     background: transparent;
     border: none;
@@ -1111,5 +1112,52 @@ footer {
 
     .hero-cta {
         justify-content: center;
+    }
+
+    /* Mobile: Reduce section padding */
+    .features,
+    .how-it-works,
+    .live-demo,
+    .problem-solution,
+    .pricing,
+    .faq {
+        padding: 60px 0;
+    }
+
+    /* Mobile: Features Showcase Stacking */
+    .features-showcase {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .feature-showcase-item {
+        min-width: 0;
+        /* Allow shrinking */
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    /* Mobile: Adjust Phone Sizes */
+    .phone-mockup {
+        max-width: 300px;
+        /* Smaller on mobile */
+    }
+
+    .feature-showcase-item .phone-mockup-feature {
+        width: 100%;
+        max-width: 280px;
+        /* Even smaller for feature cards */
+    }
+
+    /* Mobile: Problem Grid */
+    .problem-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Mobile: Footer */
+    .footer-main {
+        flex-direction: column;
+        gap: 30px;
+        text-align: center;
     }
 }
