@@ -1314,6 +1314,79 @@ footer {
         grid-template-columns: 1fr;
     }
 
+    /* Mobile: Pricing Horizontal */
+    .pricing-grid {
+        flex-wrap: nowrap;
+        gap: 8px;
+        align-items: stretch;
+        overflow-x: visible;
+        /* Ensure they fit side-by-side */
+    }
+
+    .pricing-card {
+        width: 48%;
+        min-width: 160px;
+        flex: 1;
+        padding: 15px 10px;
+        /* Reduced padding */
+        margin: 0;
+    }
+
+    /* Scale down pricing internals for mobile */
+    .pricing-header {
+        min-height: 60px;
+    }
+
+    .pricing-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .pricing-header p {
+        font-size: 0.8rem;
+    }
+
+    .price {
+        font-size: 1.8rem;
+    }
+
+    .price span {
+        font-size: 0.8rem;
+    }
+
+    .setup-fee {
+        font-size: 0.7rem;
+        margin-bottom: 5px;
+    }
+
+    .features-list {
+        min-height: auto;
+        margin: 10px 0;
+    }
+
+    .features-list li {
+        font-size: 0.75rem;
+        gap: 5px;
+        margin-bottom: 8px;
+        line-height: 1.3;
+    }
+
+    .feature-list-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .pricing-card .btn {
+        padding: 10px 0;
+        font-size: 0.85rem;
+        width: 100%;
+    }
+
+    .badge-popular {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        top: -12px;
+    }
+
     /* Mobile: Footer */
     .footer-main {
         flex-direction: column;
