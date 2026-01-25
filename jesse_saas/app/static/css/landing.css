@@ -1189,8 +1189,8 @@ footer {
 
     /* Mobile: Adjust Phone Sizes */
     .phone-mockup {
-        max-width: 300px;
-        /* Smaller on mobile */
+        max-width: 220px;
+        /* Much smaller to fit dual layout side-by-sideish */
     }
 
     .feature-showcase-item .phone-mockup-feature {
