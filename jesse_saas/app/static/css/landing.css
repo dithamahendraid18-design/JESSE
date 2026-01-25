@@ -854,7 +854,8 @@ header .container {
     position: absolute;
     left: 10%;
     /* Adjust as needed */
-    z-index: 5;
+    z-index: 20;
+    /* Brought to front */
     transform: rotate(-3deg);
     /* Jaunty angle */
 }
@@ -881,12 +882,13 @@ header .container {
 }
 
 .phone-mockup-demo {
-    width: 260px;
-    /* Slightly smaller */
+    width: 250px;
+    /* Matched to QR card */
     position: absolute;
     right: 5%;
     top: 50px;
     z-index: 10;
+    /* Sent to back */
     transform: rotate(5deg) !important;
     box-shadow: -10px 20px 50px rgba(0, 0, 0, 0.3);
     /* Strong shadow */
@@ -933,17 +935,21 @@ header .container {
 .pricing-card {
     background: white;
     border-radius: 16px;
-    padding: 40px;
+    border-radius: 16px;
+    padding: 30px;
+    /* Reduced from 40px */
     width: 100%;
-    max-width: 400px;
+    max-width: 480px;
+    /* Increased from 400px to make it wider */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     border: 1px solid #E5E7EB;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
-.pricing-card.popular {
-    border: 2px solid var(--primary-color);
-    transform: scale(1.05);
+.pricing-card .btn {
+    margin-top: auto !important;
 }
 
 .badge-popular {
@@ -968,6 +974,13 @@ header .container {
     margin-right: auto;
 }
 
+.pricing-header {
+    min-height: 80px;
+    /* Force alignment of Price row */
+    display: flex;
+    flex-direction: column;
+}
+
 .pricing-header h3 {
     font-size: 1.5rem;
     font-weight: 700;
@@ -976,7 +989,8 @@ header .container {
 .price {
     font-size: 3rem;
     font-weight: 800;
-    margin: 20px 0;
+    margin: 0;
+    /* Reduced to zero */
     color: var(--secondary-color);
 }
 
@@ -989,11 +1003,17 @@ header .container {
 .setup-fee {
     font-size: 0.875rem;
     color: #6B7280;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
+    /* Reduced from 20px */
 }
 
 .features-list {
-    margin: 30px 0;
+    margin: 10px 0;
+    /* Reduced from 20px */
+    flex-grow: 1;
+    /* Allow it to fill space if needed, though button pushes it up */
+    min-height: 250px;
+    /* Force alignment of Button row */
 }
 
 .features-list li {
@@ -1065,6 +1085,74 @@ footer {
     background-color: #111827;
     color: #D1D5DB;
     padding: 80px 0 40px;
+}
+
+.footer-cta-block {
+    text-align: center;
+    margin-bottom: 60px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 60px;
+}
+
+.footer-cta-block h3 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.footer-cta-block p {
+    font-size: 1.125rem;
+    margin-bottom: 30px;
+    color: #9CA3AF;
+}
+
+.footer-cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-cta-buttons .btn {
+    border: 2px solid #000000 !important;
+    /* User requested black border */
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+}
+
+.btn-outline-white {
+    border: 2px solid white;
+    color: white;
+    background: transparent;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-white:hover {
+    background: white;
+    color: #111827;
+}
+
+.btn-whatsapp {
+    background-color: #25D366;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+    background-color: #128C7E;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
 }
 
 .footer-main {
