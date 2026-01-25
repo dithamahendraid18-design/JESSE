@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JESSE Digital Concierge - Turn Your Menu into a 24/7 AI Concierge</title>
+    <meta name="description"
+        content="Turn your menu into a 24/7 Multilingual Digital Concierge. Give international guests instant answers and a stunning visual menu experience.">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+
+    <!-- 1. HEADER -->
+    <header>
+        <div class="container">
+            <a href="#" class="logo">
+                <img src="{{ url_for('static', filename='img/landing/JESSE_LOGO.png') }}" alt="Logo"
+                    style="height: 40px; width: auto; margin-right: 10px;">
+                JESSE
+            </a>
+
+            <div class="mobile-menu-btn">☰</div>
+
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#" class="client-portal-link">Client Status Portal</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- 2. HERO SECTION -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-text">
+                <h1>
+                    <span style="color: var(--primary-color);">JESSE</span>: 24/7 Digital Concierge for Your Restaurant.
+                    <img src="{{ url_for('static', filename='img/landing/JESSE_LOGO.png') }}" alt="JESSE Logo"
+                        style="height: 50px; width: auto; display: inline-block; vertical-align: middle; margin-left: 10px;">
+                </h1>
+                <p>Instant answers. Visual menus. Zero friction. Guests just scan a QR code to start chatting with your
+                    digital assistant. No app installation required.</p>
+                <div class="hero-cta">
+                    <a href="#demo" class="btn btn-primary">View Live Demo</a>
+                    <a href="#pricing" class="btn btn-orange">See Pricing Plans</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="phone-mockup">
+                    <img src="{{ url_for('static', filename='img/landing/MOCKUP.png') }}" alt="Phone Frame"
+                        class="phone-frame">
+                    <div class="phone-screen">
+                        <img src="{{ url_for('static', filename='img/landing/DEMO_IMAGE.jpeg') }}"
+                            alt="JESSE App Screen" class="phone-screen-bg">
+                    </div>
+                </div>
+                <!-- Secondary Mockup (Behind) -->
+                <div class="phone-mockup phone-mockup-secondary">
+                    <img src="{{ url_for('static', filename='img/landing/MOCKUP.png') }}" alt="Phone Frame"
+                        class="phone-frame">
+                    <div class="phone-screen">
+                        <img src="{{ url_for('static', filename='img/landing/DEMO_IMAGE_2.jpeg') }}"
+                            alt="JESSE App Screen 2" class="phone-screen-bg">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-platform"></div>
+    </section>
+
+    <!-- 3. SOCIAL PROOF -->
+    <div class="social-proof">
+        <div class="container">
+            <p>POWERING INNOVATIVE HOSPITALITY EXPERIENCES WORLDWIDE.</p>
+        </div>
+    </div>
+
+    <!-- 4. THE PROBLEM & SOLUTION -->
+    <!-- 4. PROBLEM & SOLUTION -->
+    <section class="problem-solution">
+        <!-- Decorative Blobs -->
+        <div class="blob-decoration blob-1"></div>
+        <div class="blob-decoration blob-2"></div>
+
+        <!-- Background Chat Bubbles -->
+        <!-- Simple filled chat bubble icon SVG -->
+        <svg class="chat-bubble-bg cb-1" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+        <svg class="chat-bubble-bg cb-2" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+        <svg class="chat-bubble-bg cb-3" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+        <svg class="chat-bubble-bg cb-4" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+        <svg class="chat-bubble-bg cb-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+        <svg class="chat-bubble-bg cb-6" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+        <svg class="chat-bubble-bg cb-7" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+
+        <div class="container">
+            <div class="section-title">
+                <h2>Your Staff Should Focus on Hospitality, Not Repetitive Questions.</h2>
+                <p>Stop burying your team in routine inquiries. Let JESSE handle them instantly.</p>
+            </div>
+
+            <div class="problem-grid">
+                <!-- Card 1: Location -->
+                <div class="problem-card">
+                    <div class="card-icon">
+                        <img src="{{ url_for('static', filename='img/landing/location.png') }}" alt="Location Icon"
+                            style="width: 64px; height: auto;">
+                    </div>
+                    <h3>Location & Directions</h3>
+                    <div class="card-quote">"Where is the restaurant located?"</div>
+                    <p>Staff spend time explaining directions instead of serving guests.</p>
+                </div>
+
+                <!-- Card 2: Hours -->
+                <div class="problem-card">
+                    <div class="card-icon">
+                        <img src="{{ url_for('static', filename='img/landing/clock.png') }}" alt="Hours Icon"
+                            style="width: 64px; height: auto;">
+                    </div>
+                    <h3>Opening Hours</h3>
+                    <div class="card-quote">"What are your opening hours?"</div>
+                    <p>Daily calls about hours disrupt operations and staff focus.</p>
+                </div>
+
+                <!-- Card 3: Menu -->
+                <div class="problem-card">
+                    <div class="card-icon">
+                        <img src="{{ url_for('static', filename='img/landing/menu.png') }}" alt="Menu Icon"
+                            style="width: 64px; height: auto;">
+                    </div>
+                    <h3>Menu & Offerings</h3>
+                    <div class="card-quote">"Can I see the menu?"</div>
+                    <p>Waiters manually fetch menus, slowing down table turnover.</p>
+                </div>
+            </div>
+
+            <div class="section-footer"
+                style="text-align: center; margin-top: 40px; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <p style="font-size: 1.125rem; color: var(--text-color);">JESSE automates these answers 24/7, freeing
+                    your staff to create memorable dining experiences.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. KEY FEATURES -->
+    <!-- 5. KEY FEATURES -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>The Brain of an AI. The Beauty of a Visual Menu.</h2>
+                <p>A seamless combination of intelligent concierge and high-conversion digital menu.</p>
+            </div>
+
+            <div class="features-showcase">
+                <!-- Feature 1: AI Chat -->
+                <div class="feature-showcase-item">
+                    <div class="feature-text-top">
+                        <h3>AI Concierge & Smart Buttons</h3>
+                        <p>Don't just chat—convert. JESSE answers questions instantly and uses smart buttons to guide
+                            guests directly to your menu or booking page.</p>
+                    </div>
+                    <div class="phone-mockup phone-mockup-feature">
+                        <img src="{{ url_for('static', filename='img/landing/MOCKUP.png') }}" alt="Phone Frame"
+                            class="phone-frame">
+                        <div class="phone-screen">
+                            <!-- Using DEMO_IMAGE for Chat View -->
+                            <img src="{{ url_for('static', filename='img/landing/DEMO_IMAGE.jpeg') }}"
+                                alt="AI Chat Interface" class="phone-screen-bg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Visual Menu -->
+                <div class="feature-showcase-item">
+                    <div class="feature-text-top">
+                        <h3>High-Conversion Visual Menu</h3>
+                        <p>Eat with your eyes. Replace boring PDF lists with HD photos, smart labels (Promo/Bestseller),
+                            and strikethrough pricing that drives more orders.</p>
+                    </div>
+                    <div class="phone-mockup phone-mockup-feature">
+                        <img src="{{ url_for('static', filename='img/landing/MOCKUP.png') }}" alt="Phone Frame"
+                            class="phone-frame">
+                        <div class="phone-screen">
+                            <!-- Using DEMO_IMAGE_2 for Menu View -->
+                            <img src="{{ url_for('static', filename='img/landing/DEMO_IMAGE_2.jpeg') }}"
+                                alt="Visual Menu Interface" class="phone-screen-bg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. HOW IT WORKS -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>Go Live in 24 Hours. No Tech Skills Required.</h2>
+                <p>Forget complex dashboards. Just send us your menu, and our team will build your custom digital
+                    concierge from scratch.</p>
+            </div>
+
+            <div class="steps-container">
+                <!-- Step 1 -->
+                <div class="step">
+                    <div class="step-number-bg">01</div>
+                    <div class="step-icon">
+                        <img src="{{ url_for('static', filename='img/landing/file.png') }}" alt="File Icon"
+                            style="width: 100px; height: auto;">
+                    </div>
+                    <h3>Send Your Menu</h3>
+                    <p>Simply upload your PDF menu, food photos, and basic info (WiFi, hours, location).</p>
+                    <div class="step-arrow">➜</div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step">
+                    <div class="step-number-bg">02</div>
+                    <div class="step-icon">
+                        <img src="{{ url_for('static', filename='img/landing/JESSE_LOGO.png') }}" alt="JESSE Logo"
+                            style="width: 100px; height: auto;">
+                    </div>
+                    <h3>We Build Everything</h3>
+                    <p>We input your data, configure the AI responses, and set up your digital branding.</p>
+                    <div class="step-arrow">➜</div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step">
+                    <div class="step-number-bg">03</div>
+                    <div class="step-icon">
+                        <img src="{{ url_for('static', filename='img/landing/QR.png') }}" alt="QR Icon"
+                            style="width: 100px; height: auto;">
+                    </div>
+                    <h3>Start Serving Guests</h3>
+                    <p>Receive your unique QR Code and Weblink. Print it, share it, and watch the orders come in.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. LIVE DEMO -->
+    <!-- 7. LIVE DEMO -->
+    <section id="demo" class="live-demo">
+        <!-- Background Pattern (Transparent Icons) -->
+        <div class="demo-bg-pattern">
+            <img src="{{ url_for('static', filename='img/landing/file.png') }}" class="demo-bg-icon icon-1" alt="">
+            <img src="{{ url_for('static', filename='img/landing/clock.png') }}" class="demo-bg-icon icon-2" alt="">
+            <img src="{{ url_for('static', filename='img/landing/location.png') }}" class="demo-bg-icon icon-3" alt="">
+            <img src="{{ url_for('static', filename='img/landing/menu.png') }}" class="demo-bg-icon icon-4" alt="">
+        </div>
+
+        <div class="container">
+            <div class="demo-content-wrapper">
+                <!-- Text Side -->
+                <div class="demo-text">
+                    <h2>Don't Just Read About It. Experience It.</h2>
+                    <p>Scan this code to enter our live demo restaurant. See how JESSE handles orders, answers
+                        questions, and upsells in real-time.</p>
+
+                    <!-- Button (Desktop & Mobile) -->
+                    <div class="demo-cta-wrapper">
+                        <a href="https://jesse-lac.vercel.app/chat/luna-restaurant" class="btn btn-white"
+                            target="_blank" rel="noopener noreferrer">Try Live Demo
+                            Now</a>
+                    </div>
+                </div>
+
+                <!-- Visuals Side (QR Card + Phone) -->
+                <div class="demo-visuals">
+                    <!-- QR Card -->
+                    <div class="qr-card">
+                        <div class="qr-header">
+                            <img src="{{ url_for('static', filename='img/landing/JESSE_LOGO.png') }}" alt="JESSE Logo">
+                        </div>
+                        <div class="qr-body">
+                            <img src="{{ url_for('static', filename='img/landing/QR_DEMO.png') }}" alt="Scan for Demo">
+                        </div>
+                        <div class="qr-footer">
+                            <span>Scan for Demo</span>
+                        </div>
+                    </div>
+
+                    <!-- Phone Mockup (3/4 View) -->
+                    <div class="phone-mockup phone-mockup-demo">
+                        <img src="{{ url_for('static', filename='img/landing/MOCKUP.png') }}" alt="Phone Frame"
+                            class="phone-frame">
+                        <div class="phone-screen">
+                            <!-- Using DEMO_IMAGE as existing placeholder or maybe DEMO_IMAGE_2 -->
+                            <img src="{{ url_for('static', filename='img/landing/DEMO_IMAGE.jpeg') }}"
+                                alt="JESSE Welcome" class="phone-screen-bg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. PRICING -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>Simple Plans. Premium Service. No Hidden Fees.</h2>
+                <p>Choose the level of service that fits your venue's pace.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Basic Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>JESSE BASIC</h3>
+                        <p>The Digital Menu</p>
+                        <p style="font-size: 0.875rem; color: #6B7280; margin-top: 5px;">Best for Coffee Shops & Food
+                            Trucks</p>
+                    </div>
+                    <div class="price">
+                        $29 <span>/ month</span>
+                    </div>
+                    <div class="setup-fee">+ $149 One-time Full Setup Fee</div>
+                    <ul class="features-list">
+                        <li>✅ Visual Grid Menu (High-Quality Photos)</li>
+                        <li>✅ 5-Tap Navigation (Menu, Hours, Location)</li>
+                        <li>✅ Click-Only Interface (Simple & Fast)</li>
+                        <li>✅ Auto-Greeting Message</li>
+                        <li>✅ Single Language (English)</li>
+                        <li>✅ Monthly Menu Update (Done for you)</li>
+                    </ul>
+                    <a href="#" class="btn btn-secondary" style="width: 100%; margin: 0;">Start Basic Setup</a>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="pricing-card popular">
+                    <div class="badge-popular">MOST POPULAR for Restaurants</div>
+                    <div class="pricing-header">
+                        <h3>JESSE PRO</h3>
+                        <p>The Smart Concierge</p>
+                        <p style="font-size: 0.875rem; color: #6B7280; margin-top: 5px;">Best for Busy Tourist Spots &
+                            Fine Dining</p>
+                    </div>
+                    <div class="price">
+                        $69 <span>/ month</span>
+                    </div>
+                    <div class="setup-fee">+ $299 One-time Full Setup Fee</div>
+                    <ul class="features-list">
+                        <li>✨ Everything in Basic, plus:</li>
+                        <li>💬 Full AI Conversation (Guests type questions)</li>
+                        <li>🌏 Multi-Language Support (Auto-detects language)</li>
+                        <li>🤖 Smart Upselling Recommendations</li>
+                        <li>📊 Monthly Guest Insights Report</li>
+                        <li>⚡ Unlimited Priority Updates (Done for you)</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary" style="width: 100%; margin: 0;">Start Pro Setup</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. FAQ -->
+    <section class="faq">
+        <div class="container">
+            <div class="section-title">
+                <h2>Frequently Asked Questions.</h2>
+            </div>
+
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Does JESSE take orders or process payments?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        No. JESSE is designed as a digital concierge to enhance service and aid decision-making, not to
+                        replace your waiters or POS system for final transactions.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        How do I update my menu or prices later?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        This is a 100% "Done For You" service. You don't need to log in anywhere. Just send our support
+                        team a message on WhatsApp or Email with your changes, and we update it for you within 24 hours.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Why is there a setup fee?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        Unlike DIY platforms, we manually build your instance, optimize your images, and train your
+                        specific AI model. This covers the initial hours of dedicated work by our team.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can I upgrade from Basic to Pro later?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        Absolutely. As your traffic grows or tourist season begins, you can upgrade anytime to activate
+                        the AI and multi-language features.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-col">
+                    <h4>JESSE CONCIERGE</h4>
+                    <p style="max-width: 300px; color: #9CA3AF;">Turn your menu into a 24/7 Multilingual Digital
+                        Concierge.</p>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#demo">Live Demo</a></li>
+                        <li><a href="#">Client Portal</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">About</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 JESSE Digital Concierge. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+</body>
+
+</html>

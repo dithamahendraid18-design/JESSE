@@ -120,7 +120,8 @@ def create_app(config_class=Config):
 
     @app.route('/')
     def index():
-        return "JESSE SaaS Backend Active. Go to /admin/login."
+        from flask import render_template
+        return render_template('landing/index.html')
 
 
 
