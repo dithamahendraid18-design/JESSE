@@ -239,7 +239,10 @@ header .container {
     min-width: 300px;
     position: relative;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    /* Moved left */
+    padding-left: 20px;
+    /* Slight buffer */
 }
 
 /* Photorealistic Phone Mockup */
@@ -253,7 +256,8 @@ header .container {
     border-radius: 0;
     box-shadow: none;
     overflow: visible;
-    margin: 0 auto;
+    margin: 0;
+    /* Align left */
     position: relative;
     /* Hard Crop Effect: Push down into platform area */
     /* transform: translateY(180px); */
@@ -272,7 +276,8 @@ header .container {
 .phone-mockup-secondary {
     position: absolute;
     top: 0;
-    left: 50%;
+    left: 30%;
+    /* Reverted as requested */
 
     /* Initial State: Behind main phone */
     transform: translateY(180px) translateX(0) scale(0.9);
