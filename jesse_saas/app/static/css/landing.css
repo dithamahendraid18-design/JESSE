@@ -1104,14 +1104,37 @@ footer {
     .hero .container {
         flex-direction: column;
         text-align: center;
+        gap: 30px;
+        /* Reduced from 60px default / implicit */
+        padding-bottom: 40px;
+        /* Add some bottom padding */
+    }
+
+    .hero-text {
+        padding-top: 40px;
+        /* Add top padding */
     }
 
     .hero-text h1 {
-        font-size: 2.5rem;
+        font-size: 2rem;
+        /* Smaller font for mobile */
+    }
+
+    .hero-text p {
+        font-size: 1rem;
     }
 
     .hero-cta {
         justify-content: center;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .hero-cta .btn {
+        width: 100%;
+        /* Full width buttons on mobile */
+        margin: 5px 0;
+        /* Stack spacing */
     }
 
     /* Mobile: Reduce section padding */
