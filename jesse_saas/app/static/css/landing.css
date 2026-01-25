@@ -1003,6 +1003,14 @@ header .container {
     gap: 10px;
 }
 
+.feature-list-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
 /* 9. FAQ */
 .faq {
     padding: 100px 0;
