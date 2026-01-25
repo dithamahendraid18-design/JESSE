@@ -1104,15 +1104,14 @@ footer {
     .hero .container {
         flex-direction: column;
         text-align: center;
-        gap: 30px;
-        /* Reduced from 60px default / implicit */
+        gap: 15px;
+        /* Reduced to bring phone closer */
         padding-bottom: 40px;
-        /* Add some bottom padding */
     }
 
     .hero-text {
-        padding-top: 40px;
-        /* Add top padding */
+        padding-top: 100px;
+        /* Increased to clear fixed header safely */
     }
 
     .hero-text h1 {
