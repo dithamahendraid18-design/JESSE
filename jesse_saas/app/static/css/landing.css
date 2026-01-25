@@ -1124,16 +1124,44 @@ footer {
     }
 
     .hero-cta {
-        justify-content: center;
-        flex-direction: column;
+        flex-direction: row;
+        /* Side by side */
+        gap: 10px;
         width: 100%;
+        padding: 0 5px;
+        /* Safety padding */
     }
 
     .hero-cta .btn {
-        width: 100%;
-        /* Full width buttons on mobile */
-        margin: 5px 0;
-        /* Stack spacing */
+        width: auto;
+        flex: 1;
+        /* Equal width */
+        margin: 0;
+        padding: 12px 5px;
+        /* Fit text */
+        font-size: 0.85rem;
+        /* Prevent wrapping */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Animation Fix for Mobile Secondary Phone */
+    .phone-mockup-secondary {
+        animation: slideOutRightMobile 0.8s ease-out 0.5s forwards;
+    }
+
+    @keyframes slideOutRightMobile {
+        from {
+            opacity: 0;
+            transform: translateY(180px) translateX(0) scale(0.9);
+        }
+
+        to {
+            opacity: 0.9;
+            /* Move less to the right (40px) to prevent cropping */
+            transform: translateY(160px) translateX(40px) scale(0.85);
+        }
     }
 
     /* Mobile: Reduce section padding */
