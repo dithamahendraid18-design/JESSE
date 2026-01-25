@@ -119,6 +119,7 @@ def create_app(config_class=Config):
                                    'favicon.png', mimetype='image/png')
 
     @app.route('/')
+    @app.route('/landing_page')
     def index():
         from flask import render_template
         return render_template('landing/index.html')
