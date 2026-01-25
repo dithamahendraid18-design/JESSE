@@ -1160,4 +1160,32 @@ footer {
         gap: 30px;
         text-align: center;
     }
+
+    /* GLOBAL MOBILE FIXES FOR CROPPING */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .container {
+        padding: 0 15px;
+        /* Ensure slight padding on edges */
+        overflow-x: visible;
+        /* But allow dropdowns/popups if any */
+    }
+
+    .phone-mockup {
+        width: 100%;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .feature-showcase-item {
+        padding: 0;
+        /* Remove side padding if causing overflow */
+        max-width: 100%;
+        overflow: hidden;
+        /* Contain inner floats/elements */
+    }
 }
