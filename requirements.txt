@@ -14,3 +14,4 @@ markupsafe
 colorama
 qrcode
 cloudinary
+Pillow
