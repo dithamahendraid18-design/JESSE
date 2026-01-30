@@ -6,6 +6,7 @@ from app.services.client_manager import ClientManager
 from app.services.upload_service import UploadService
 from app.services.menu_service import MenuService
 from config import Config
+from sqlalchemy import text
 import qrcode
 import qrcode.image.svg
 import io
@@ -464,3 +465,45 @@ def upload_bot_image():
         return jsonify({'error': f"Server Error: {str(e)}"}), 500
 
     return jsonify({'error': 'Upload failed unknown'}), 500
+
+@bp.route('/fix-db-schema')
+def fix_db_schema():
+    if not is_logged_in():
+        return redirect(url_for('admin.login'))
+        
+    try:
+        results = []
+        with db.engine.connect() as conn:
+            # List of columns to check and add
+            migrations = [
+                ('clients', 'parking_info', 'TEXT', None),
+                ('clients', 'direction_note', 'TEXT', None),
+                ('clients', 'whatsapp_url', 'VARCHAR(255)', None),
+                ('clients', 'tiktok_url', 'VARCHAR(255)', None),
+                ('clients', 'youtube_url', 'VARCHAR(255)', None),
+                ('clients', 'font_style', "VARCHAR(50)", "DEFAULT 'Modern Sans'"),
+                ('clients', 'operating_hours', 'TEXT', None),
+            ]
+
+            for table, col, col_type, default in migrations:
+                try:
+                    # Postgres specific: ADD IF NOT EXISTS is only available in newer versions or via block
+                    # Simpler approach: Try ADD, catch DuplicateColumn error
+                    sql = f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"
+                    if default:
+                        sql += f" {default}"
+                    
+                    conn.execute(text(sql))
+                    conn.commit()
+                    results.append(f"✅ Added {col}")
+                except Exception as e:
+                    conn.rollback() # Important for Postgres transaction stability
+                    err = str(e).lower()
+                    if "duplicate" in err or "exists" in err:
+                        results.append(f"ℹ️  {col} already exists")
+                    else:
+                         results.append(f"⚠️  Error {col}: {str(e)}")
+                         
+        return "<br>".join(results)
+    except Exception as e:
+        return f"CRITICAL ERROR: {str(e)}", 500
