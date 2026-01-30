@@ -7,6 +7,7 @@ from app.services.upload_service import UploadService
 from app.services.menu_service import MenuService
 from config import Config
 import qrcode
+import qrcode.image.svg
 import io
 import os
 import json
@@ -347,18 +348,41 @@ def client_publish(client_id):
 @bp.route('/client/<int:client_id>/qr')
 def client_qr(client_id):
     client = Client.query.get_or_404(client_id)
-    target_url = f"{request.host_url}chat/{client.public_id}"
+    target_url = f"{request.host_url}chat/{client.slug or client.public_id}"
     
-    # Use SVG factory to avoid Pillow dependency (saves ~50MB)
-    import qrcode.image.svg
-    factory = qrcode.image.svg.SvgPathImage
-    img = qrcode.make(target_url, image_factory=factory)
+    fmt = request.args.get('format', 'svg')
     
-    buf = io.BytesIO()
-    img.save(buf)
-    buf.seek(0)
-    
-    return send_file(buf, mimetype='image/svg+xml')
+    try:
+        buf = io.BytesIO()
+        
+        if fmt == 'svg':
+            # Ensure submodule is loaded (globally)
+            factory = qrcode.image.svg.SvgPathImage
+            img = qrcode.make(target_url, image_factory=factory)
+            img.save(buf)
+            mimetype = 'image/svg+xml'
+            
+        else:
+            # Standard QR (PIL) for PNG/JPG
+            img = qrcode.make(target_url)
+            
+            if fmt == 'jpeg':
+                # Convert RGBA to RGB for JPEG
+                img = img.convert("RGB") 
+                img.save(buf, format='JPEG')
+                mimetype = 'image/jpeg'
+            else:
+                # Default to PNG
+                img.save(buf, format='PNG')
+                mimetype = 'image/png'
+        
+        buf.seek(0)
+        return send_file(buf, mimetype=mimetype)
+        
+    except Exception as e:
+        print(f"QR GENERATION ERROR: {str(e)}")
+        # Return a text error visible in browser if visited directly
+        return f"Error generating QR: {str(e)}", 500
 
 @bp.route('/client/<int:client_id>/stats')
 @bp.route('/client/<int:client_id>/stats/<view_mode>')

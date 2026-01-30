@@ -85,11 +85,78 @@
                 </div>
             </div>
 
+            <!-- Billing Card -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Billing & Notes</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Plan Type</label>
+                        <select name="plan_type"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="basic" {% if client.plan_type=='basic' %}selected{% endif %}>Basic</option>
+                            <option value="pro" {% if client.plan_type=='pro' %}selected{% endif %}>Pro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Started</label>
+                        <input type="date" name="subscription_start" value="{{ client.subscription_start }}"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Ends / Renewal
+                            Due</label>
+                        <input type="date" name="subscription_end" value="{{ client.subscription_end }}"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- New Billing Fields -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Payment Method</label>
+                        <select name="payment_method"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="">Select...</option>
+                            <option value="Stripe" {% if client.payment_method=='Stripe' %}selected{% endif %}>Stripe
+                            </option>
+                            <option value="PayPal" {% if client.payment_method=='PayPal' %}selected{% endif %}>PayPal
+                            </option>
+                            <option value="Wise" {% if client.payment_method=='Wise' %}selected{% endif %}>Wise</option>
+                            <option value="Bank Transfer" {% if client.payment_method=='Bank Transfer' %}selected{%
+                                endif %}>Bank Transfer</option>
+                            <option value="Cash" {% if client.payment_method=='Cash' %}selected{% endif %}>Cash</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center mt-6">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" name="price_includes_tax"
+                                class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" {% if
+                                client.price_includes_tax %}checked{% endif %}>
+                            <div class="ml-2">
+                                <span class="block text-sm font-medium text-gray-700">Prices include Tax?</span>
+                                <span class="block text-xs text-gray-400">Default: True for EU/Asia</span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Internal Admin Notes</label>
+                        <textarea name="billing_note" rows="3"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">{{ client.billing_note or '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
             <!-- Regional & Socials Card (NEW) -->
             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Regional & Contact Details</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Row 1: Timezone -->
+                    <!-- Row 1: Operating Hours & Timezone -->
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Operating Hours (Schedule)</label>
+                        <textarea name="operating_hours" rows="2"
+                            placeholder="Mon-Fri: 09:00 - 22:00&#10;Sat-Sun: 10:00 - 23:00"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.operating_hours or '' }}</textarea>
+                        <p class="text-xs text-gray-500 mt-1">Format: Day: Start - End. The Bot uses this to answer "Are
+                            you open?".</p>
+                    </div>
                     <div class="col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
                         <select name="timezone"
@@ -118,6 +185,21 @@
                             class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.address or '' }}</textarea>
                     </div>
 
+                    <!-- New: Parking & Directions -->
+                    <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Parking Information</label>
+                            <textarea name="parking_info" rows="2" placeholder="e.g. Free valet parking available..."
+                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.parking_info or '' }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Landmark / Direction
+                                Note</label>
+                            <textarea name="direction_note" rows="2" placeholder="e.g. Near the big red postbox..."
+                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.direction_note or '' }}</textarea>
+                        </div>
+                    </div>
+
                     <!-- Row 3: Maps & Official Site -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps URL</label>
@@ -133,11 +215,39 @@
                     </div>
 
                     <!-- Row 4: Instagram & Delivery Section -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
-                        <input type="url" name="instagram_url" value="{{ client.instagram_url or '' }}"
-                            placeholder="https://instagram.com/..."
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <!-- Social Media Links -->
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-800 mb-2">Social Media & Contacts</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs uppercase text-gray-500 font-semibold mb-1">Instagram
+                                    URL</label>
+                                <input type="url" name="instagram_url" value="{{ client.instagram_url or '' }}"
+                                    placeholder="https://instagram.com/..."
+                                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase text-gray-500 font-semibold mb-1">WhatsApp
+                                    URL</label>
+                                <input type="url" name="whatsapp_url" value="{{ client.whatsapp_url or '' }}"
+                                    placeholder="https://wa.me/..."
+                                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase text-gray-500 font-semibold mb-1">TikTok
+                                    URL</label>
+                                <input type="url" name="tiktok_url" value="{{ client.tiktok_url or '' }}"
+                                    placeholder="https://tiktok.com/@..."
+                                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase text-gray-500 font-semibold mb-1">YouTube
+                                    URL</label>
+                                <input type="url" name="youtube_url" value="{{ client.youtube_url or '' }}"
+                                    placeholder="https://youtube.com/..."
+                                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Dynamic Delivery Partners List -->
@@ -250,6 +360,63 @@
                 }
             </script>
 
+            <!-- Guest Experience (New Card) -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Guest Experience (In-Store)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- WiFi -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Network (SSID)</label>
+                        <input type="text" name="wifi_ssid" value="{{ client.wifi_ssid or '' }}"
+                            placeholder="Restaurant_Guest"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Password</label>
+                        <input type="text" name="wifi_password" value="{{ client.wifi_password or '' }}"
+                            placeholder="SecretPass123"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <!-- Accepted Payment Methods -->
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Accepted Payment Methods</label>
+                        <input type="text" name="accepted_payment_methods"
+                            value="{{ client.knowledge_base.payment_methods or '' }}"
+                            placeholder="Visa, Mastercard, Cash, Apple Pay..."
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <p class="text-xs text-gray-500 mt-1">Comma separated list of payment options.</p>
+                    </div>
+
+                    <!-- URLs -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Review URL
+                            (TripAdvisor/Google)</label>
+                        <input type="url" name="review_url" value="{{ client.review_url or '' }}"
+                            placeholder="https://..."
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <p class="text-xs text-gray-500 mt-1">Bot sends this link when guests ask to leave a review.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Table Booking URL</label>
+                        <input type="url" name="booking_url" value="{{ client.booking_url or '' }}"
+                            placeholder="https://opentable.com/..."
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <p class="text-xs text-gray-500 mt-1">If empty, Bot handles reservations manually.</p>
+                    </div>
+
+                    <!-- House Rules & AI Context -->
+                    <div class="col-span-2 mt-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">House Rules & AI Context</label>
+                        <textarea name="house_rules" rows="4"
+                            placeholder="No smoking indoors. Last order at 9:30 PM. We are a pet-friendly cafe..."
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.knowledge_base.policy_info or '' }}</textarea>
+                        <p class="text-xs text-gray-500 mt-1">These details help the AI answer policy-related
+                            questions.</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Branding Card -->
             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Branding</h3>
@@ -262,6 +429,21 @@
                             <input type="text" value="{{ client.theme_color }}"
                                 class="w-24 border rounded-lg px-3 py-2 text-sm uppercase" readonly>
                         </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Typography / Font Style</label>
+                        <select name="font_style"
+                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="Modern Sans" {% if client.font_style=='Modern Sans' %}selected{% endif %}>
+                                Modern Sans (Inter)</option>
+                            <option value="Classic Serif" {% if client.font_style=='Classic Serif' %}selected{% endif
+                                %}>
+                                Classic Serif (Merriweather)</option>
+                            <option value="Playful" {% if client.font_style=='Playful' %}selected{% endif %}>Playful
+                                (Comic Neue)</option>
+                            <option value="Monospace" {% if client.font_style=='Monospace' %}selected{% endif %}>
+                                Monospace (Roboto Mono)</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Widget Position</label>
@@ -303,101 +485,9 @@
                 </div>
             </div>
 
-            <!-- Guest Experience (New Card) -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Guest Experience (In-Store)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- WiFi -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Network (SSID)</label>
-                        <input type="text" name="wifi_ssid" value="{{ client.wifi_ssid or '' }}"
-                            placeholder="Restaurant_Guest"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Password</label>
-                        <input type="text" name="wifi_password" value="{{ client.wifi_password or '' }}"
-                            placeholder="SecretPass123"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
 
-                    <!-- URLs -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Review URL
-                            (TripAdvisor/Google)</label>
-                        <input type="url" name="review_url" value="{{ client.review_url or '' }}"
-                            placeholder="https://..."
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">Bot sends this link when guests ask to leave a review.</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Table Booking URL</label>
-                        <input type="url" name="booking_url" value="{{ client.booking_url or '' }}"
-                            placeholder="https://opentable.com/..."
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">If empty, Bot handles reservations manually.</p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Billing Card -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Billing & Notes</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Plan Type</label>
-                        <select name="plan_type"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="basic" {% if client.plan_type=='basic' %}selected{% endif %}>Basic</option>
-                            <option value="pro" {% if client.plan_type=='pro' %}selected{% endif %}>Pro</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Started</label>
-                        <input type="date" name="subscription_start" value="{{ client.subscription_start }}"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Ends / Renewal
-                            Due</label>
-                        <input type="date" name="subscription_end" value="{{ client.subscription_end }}"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
 
-                    <!-- New Billing Fields -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Payment Method</label>
-                        <select name="payment_method"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="">Select...</option>
-                            <option value="Stripe" {% if client.payment_method=='Stripe' %}selected{% endif %}>Stripe
-                            </option>
-                            <option value="PayPal" {% if client.payment_method=='PayPal' %}selected{% endif %}>PayPal
-                            </option>
-                            <option value="Wise" {% if client.payment_method=='Wise' %}selected{% endif %}>Wise</option>
-                            <option value="Bank Transfer" {% if client.payment_method=='Bank Transfer' %}selected{%
-                                endif %}>Bank Transfer</option>
-                            <option value="Cash" {% if client.payment_method=='Cash' %}selected{% endif %}>Cash</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center mt-6">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="price_includes_tax"
-                                class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" {% if
-                                client.price_includes_tax %}checked{% endif %}>
-                            <div class="ml-2">
-                                <span class="block text-sm font-medium text-gray-700">Prices include Tax?</span>
-                                <span class="block text-xs text-gray-400">Default: True for EU/Asia</span>
-                            </div>
-                        </label>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Internal Admin Notes</label>
-                        <textarea name="billing_note" rows="3"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">{{ client.billing_note or '' }}</textarea>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Right Column: Deployment Station -->
@@ -408,10 +498,28 @@
                 <p class="text-gray-400 text-sm mb-6">Asset generation station</p>
 
                 <!-- QR Code Fallback/Generator -->
+                <!-- QR Code Display & Download -->
                 <div class="bg-white p-4 rounded-xl inline-block mb-4 shadow-inner">
-                    <div id="qrcode"
-                        class="w-32 h-32 flex items-center justify-center bg-gray-50 text-gray-300 text-xs">
-                        Generating...</div>
+                    <!-- Backend SVG QR -->
+                    <img src="{{ url_for('admin.client_qr', client_id=client.id) }}" class="w-32 h-32 mx-auto"
+                        alt="QR Code">
+                </div>
+
+                <div class="mb-6 flex flex-wrap justify-center gap-2">
+                    <a href="{{ url_for('admin.client_qr', client_id=client.id) }}" download="qr-{{ client.slug }}.svg"
+                        class="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-2 px-3 rounded-full transition-colors">
+                        SVG
+                    </a>
+                    <a href="{{ url_for('admin.client_qr', client_id=client.id, format='png') }}"
+                        download="qr-{{ client.slug }}.png"
+                        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded-full transition-colors">
+                        PNG
+                    </a>
+                    <a href="{{ url_for('admin.client_qr', client_id=client.id, format='jpeg') }}"
+                        download="qr-{{ client.slug }}.jpg"
+                        class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white text-xs font-bold py-2 px-3 rounded-full transition-colors">
+                        JPG
+                    </a>
                 </div>
 
                 <div class="space-y-3">

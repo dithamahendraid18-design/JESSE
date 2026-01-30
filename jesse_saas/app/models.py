@@ -49,13 +49,19 @@ class Client(db.Model):
     public_email = db.Column(db.String(100), nullable=True) # Public Enquiry
     
     address = db.Column(db.Text, nullable=True)
+    parking_info = db.Column(db.Text, nullable=True)
+    direction_note = db.Column(db.Text, nullable=True)
     maps_url = db.Column(db.String(255), nullable=True)
     delivery_url = db.Column(db.String(255), nullable=True) # Deprecated by delivery_partners
     delivery_partners = db.Column(db.Text, nullable=True) # JSON structure: [{platform, url}]
     instagram_url = db.Column(db.String(255), nullable=True)
+    tiktok_url = db.Column(db.String(255), nullable=True)
+    youtube_url = db.Column(db.String(255), nullable=True)
+    whatsapp_url = db.Column(db.String(255), nullable=True)
     website_url = db.Column(db.String(255), nullable=True)
 
     # Phase 30: Branding & Billing (International Upgrade)
+    font_style = db.Column(db.String(50), default='Modern Sans') # New Field
     widget_position = db.Column(db.String(20), default='right') # right/left
     is_white_labeled = db.Column(db.Boolean, default=False)
     price_includes_tax = db.Column(db.Boolean, default=True)
