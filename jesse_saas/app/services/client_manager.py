@@ -68,6 +68,17 @@ class ClientManager:
         client.wifi_password = form_data.get('wifi_password')
         client.review_url = form_data.get('review_url')
         client.booking_url = form_data.get('booking_url')
+        client.deposit_policy = form_data.get('deposit_policy')
+        client.late_arrival_policy = form_data.get('late_arrival_policy')
+        
+        # Facilities & Capacity
+        client.total_seating = form_data.get('total_seating')
+        client.max_group_size = form_data.get('max_group_size')
+        client.seating_configuration = form_data.get('seating_configuration')
+        client.has_private_room = form_data.get('has_private_room') == 'on'
+        client.private_room_capacity = form_data.get('private_room_capacity')
+        client.facilities_list = form_data.get('facilities_list')
+        client.family_facilities_list = form_data.get('family_facilities_list')
         
         # Regional & Contact
         client.language = form_data.get('language')

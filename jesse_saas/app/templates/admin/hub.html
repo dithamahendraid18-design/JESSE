@@ -405,6 +405,21 @@
                         <p class="text-xs text-gray-500 mt-1">If empty, Bot handles reservations manually.</p>
                     </div>
 
+                    <!-- Deposit & Late Arrival (New) -->
+                    <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deposit Requirement</label>
+                            <textarea name="deposit_policy" rows="2" placeholder="e.g. $20 deposit for groups > 6..."
+                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.deposit_policy or '' }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Late Arrival Policy</label>
+                            <textarea name="late_arrival_policy" rows="2"
+                                placeholder="e.g. Table held for 15 mins max..."
+                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.late_arrival_policy or '' }}</textarea>
+                        </div>
+                    </div>
+
                     <!-- House Rules & AI Context -->
                     <div class="col-span-2 mt-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">House Rules & AI Context</label>
@@ -413,6 +428,101 @@
                             class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.knowledge_base.policy_info or '' }}</textarea>
                         <p class="text-xs text-gray-500 mt-1">These details help the AI answer policy-related
                             questions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facilities & Capacity (New Card) -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Facilities & Capacity</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Seating & Room -->
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Seating &
+                            Privacy</h4>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Total Seating</label>
+                                <input type="number" name="total_seating" value="{{ client.total_seating or '' }}"
+                                    placeholder="e.g. 50"
+                                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Max Group Size</label>
+                                <input type="number" name="max_group_size" value="{{ client.max_group_size or '' }}"
+                                    placeholder="e.g. 20"
+                                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <!-- Seating Configuration -->
+                            <div class="col-span-2">
+                                <label class="block text-xs text-gray-500 mb-1">Seating Configuration / Table
+                                    Types</label>
+                                <textarea name="seating_configuration" rows="2"
+                                    placeholder="e.g. Round tables (4pax), Long table (12pax), Booths..."
+                                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.seating_configuration or '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Private Room Toggle -->
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm font-medium text-gray-700">Has Private Room?</label>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="has_private_room" id="toggle-private-room"
+                                        class="sr-only peer" {% if client.has_private_room %}checked{% endif %}>
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Hidden Capacity Field -->
+                            <div id="private-room-capacity-container" class="mt-3 hidden transition-all">
+                                <label class="block text-xs text-gray-500 mb-1">Room Capacity</label>
+                                <input type="number" name="private_room_capacity" id="private-room-capacity"
+                                    value="{{ client.private_room_capacity or '' }}" placeholder="Max pax..."
+                                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amenities Checkboxes -->
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Physical Amenities
+                        </h4>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            {% for amenity in ['Outdoor', 'AC', 'Toilet', 'Mushola', 'Wheelchair', 'Power Outlets',
+                            'Live Music', 'Pet Friendly'] %}
+                            <label
+                                class="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox"
+                                    class="facility-checkbox rounded text-blue-600 focus:ring-blue-500"
+                                    value="{{ amenity }}" {% if amenity in (client.facilities_list or '' ) %}checked{%
+                                    endif %}>
+                                <span class="text-sm text-gray-700">{{ amenity }}</span>
+                            </label>
+                            {% endfor %}
+                            <!-- Hidden input store CSV -->
+                            <input type="hidden" name="facilities_list" id="facilities-list-input"
+                                value="{{ client.facilities_list or '' }}">
+                        </div>
+
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Family & Kids</h4>
+                        <div class="flex gap-3">
+                            {% for family in ['Baby Chair', 'Kids Menu'] %}
+                            <label
+                                class="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox"
+                                    class="family-checkbox rounded text-green-600 focus:ring-green-500"
+                                    value="{{ family }}" {% if family in (client.family_facilities_list or '' )
+                                    %}checked{% endif %}>
+                                <span class="text-sm text-gray-700">{{ family }}</span>
+                            </label>
+                            {% endfor %}
+                            <input type="hidden" name="family_facilities_list" id="family-list-input"
+                                value="{{ client.family_facilities_list or '' }}">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -576,6 +686,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // --- Facilities & Capacity Logic ---
+        const privateToggle = document.getElementById('toggle-private-room');
+        const privateContainer = document.getElementById('private-room-capacity-container');
+
+        if (privateToggle && privateContainer) {
+            function togglePrivateRoom() {
+                if (privateToggle.checked) {
+                    privateContainer.classList.remove('hidden');
+                } else {
+                    privateContainer.classList.add('hidden');
+                }
+            }
+            privateToggle.addEventListener('change', togglePrivateRoom);
+            togglePrivateRoom(); // Run on init
+        }
+
+        function updateCSV(className, hiddenInputId) {
+            const checkboxes = document.querySelectorAll('.' + className + ':checked');
+            const values = Array.from(checkboxes).map(cb => cb.value);
+            document.getElementById(hiddenInputId).value = values.join(',');
+        }
+
+        document.querySelectorAll('.facility-checkbox').forEach(cb => {
+            cb.addEventListener('change', () => updateCSV('facility-checkbox', 'facilities-list-input'));
+        });
+
+        document.querySelectorAll('.family-checkbox').forEach(cb => {
+            cb.addEventListener('change', () => updateCSV('family-checkbox', 'family-list-input'));
+        });
+        // --- End Facilities Logic ---
         const slug = "{{ client.slug or '' }}";
         const hostUrl = "{{ request.host_url }}";
 

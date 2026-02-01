@@ -72,6 +72,17 @@ class Client(db.Model):
     wifi_password = db.Column(db.String(100), nullable=True)
     review_url = db.Column(db.String(255), nullable=True)
     booking_url = db.Column(db.String(255), nullable=True)
+    deposit_policy = db.Column(db.Text, nullable=True) # New
+    late_arrival_policy = db.Column(db.Text, nullable=True) # New
+
+    # Phase 32: Facilities & Capacity
+    total_seating = db.Column(db.Integer, nullable=True)
+    max_group_size = db.Column(db.Integer, nullable=True)
+    seating_configuration = db.Column(db.Text, nullable=True) # New Field
+    has_private_room = db.Column(db.Boolean, default=False)
+    private_room_capacity = db.Column(db.Integer, nullable=True)
+    facilities_list = db.Column(db.Text, nullable=True) # CSV: Outdoor, AC, Toilet...
+    family_facilities_list = db.Column(db.Text, nullable=True) # CSV: Baby Chair, Kids Menu...
 
     # Relationships
     knowledge_base = db.relationship('KnowledgeBase', backref='client', uselist=False, cascade="all, delete-orphan")

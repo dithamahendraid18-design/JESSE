@@ -483,6 +483,16 @@ def fix_db_schema():
                 ('clients', 'youtube_url', 'VARCHAR(255)', None),
                 ('clients', 'font_style', "VARCHAR(50)", "DEFAULT 'Modern Sans'"),
                 ('clients', 'operating_hours', 'TEXT', None),
+                # Facilities & Capacity
+                ('clients', 'total_seating', 'INTEGER', None),
+                ('clients', 'max_group_size', 'INTEGER', None),
+                ('clients', 'seating_configuration', 'TEXT', None),
+                ('clients', 'private_room_capacity', 'INTEGER', None),
+                ('clients', 'has_private_room', 'BOOLEAN', 'DEFAULT FALSE'),
+                ('clients', 'facilities_list', 'TEXT', None),
+                ('clients', 'family_facilities_list', 'TEXT', None),
+                ('clients', 'deposit_policy', 'TEXT', None),
+                ('clients', 'late_arrival_policy', 'TEXT', None),
             ]
 
             for table, col, col_type, default in migrations:
