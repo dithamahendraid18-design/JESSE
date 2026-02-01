@@ -37,6 +37,16 @@ class MenuService:
         allergy_info = form_data.get('allergy_info')
         labels = form_data.get('labels') # Comma-separated string
         
+        # Spiciness & Prep Time (New)
+        spiciness_level = 0
+        try:
+            spiciness_level = int(form_data.get('spiciness_level', 0))
+        except:
+            pass
+            
+        prep_time = form_data.get('prep_time')
+        portion_size = form_data.get('portion_size')
+        
         image_url = None
         if files and 'image' in files:
             file = files['image']
@@ -48,6 +58,9 @@ class MenuService:
             price=price,
             original_price=original_price,
             labels=labels,
+            spiciness_level=spiciness_level,
+            prep_time=prep_time,
+            portion_size=portion_size,
             category=category,
             description=description,
             image_url=image_url,
@@ -86,7 +99,7 @@ class MenuService:
                     raw_op = str(val).replace(',', '.')
                     item.original_price = float(raw_op)
                 except ValueError:
-                    item.original_price = None
+                    item.original_price = float(form_data['original_price']) if form_data.get('original_price') else None
             else:
                 item.original_price = None
 
@@ -101,6 +114,18 @@ class MenuService:
 
         if 'allergy_info' in form_data:
             item.allergy_info = form_data['allergy_info']
+
+        if 'spiciness_level' in form_data:
+            try:
+                item.spiciness_level = int(form_data['spiciness_level'])
+            except:
+                item.spiciness_level = 0
+
+        if 'prep_time' in form_data:
+            item.prep_time = form_data['prep_time']
+
+        if 'portion_size' in form_data:
+            item.portion_size = form_data['portion_size']
         
         if files and 'image' in files:
             file = files['image']

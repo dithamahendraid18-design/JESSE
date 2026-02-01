@@ -493,6 +493,10 @@ def fix_db_schema():
                 ('clients', 'family_facilities_list', 'TEXT', None),
                 ('clients', 'deposit_policy', 'TEXT', None),
                 ('clients', 'late_arrival_policy', 'TEXT', None),
+                # Menu Details
+                ('menu_items', 'spiciness_level', 'INTEGER', "DEFAULT 0"),
+                ('menu_items', 'prep_time', 'TEXT', None),
+                ('menu_items', 'portion_size', 'VARCHAR(100)', None),
             ]
 
             for table, col, col_type, default in migrations:

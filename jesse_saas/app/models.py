@@ -174,6 +174,9 @@ class MenuItem(db.Model):
     allergy_info = db.Column(db.String(255), nullable=True)
     original_price = db.Column(db.Float, nullable=True) # New field for Promo/Strikethrough
     labels = db.Column(db.String(255), nullable=True) # New field for Badges (comma-separated)
+    spiciness_level = db.Column(db.Integer, default=0) # 0-3
+    prep_time = db.Column(db.String(50), nullable=True) # e.g. "15 mins"
+    portion_size = db.Column(db.String(100), nullable=True) # New: e.g. "2 Pax" or "Large"
 
     def to_dict(self):
         return {
@@ -186,7 +189,10 @@ class MenuItem(db.Model):
             'description': self.description,
             'image_url': self.image_url,
             'allergy_info': self.allergy_info,
-            'is_available': self.is_available
+            'is_available': self.is_available,
+            'spiciness_level': self.spiciness_level,
+            'prep_time': self.prep_time,
+            'portion_size': self.portion_size
         }
 
     def __repr__(self):
