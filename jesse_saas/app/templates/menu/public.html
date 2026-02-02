@@ -31,9 +31,20 @@
             }
         } catch (e) { console.log('Theme init error', e); }
     </script>
+    {% if client.font_style == 'Classic Serif' %}
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Merriweather:wght@400;700&display=swap"
         rel="stylesheet">
+    {% elif client.font_style == 'Playful' %}
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    {% elif client.font_style == 'Monospace' %}
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    {% else %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% endif %}
 
     <style>
         /* Force opaque background immediately */
@@ -49,6 +60,48 @@
         }
 
         :root {
+
+            /* Font Mapping */
+                {
+                % if client.font_style=='Classic Serif' %
+            }
+
+            --font-heading: 'Playfair Display',
+            serif;
+            --font-body: 'Merriweather',
+            serif;
+
+                {
+                % elif client.font_style=='Playful' %
+            }
+
+            --font-heading: 'Comic Neue',
+            cursive;
+            --font-body: 'Comic Neue',
+            cursive;
+
+                {
+                % elif client.font_style=='Monospace' %
+            }
+
+            --font-heading: 'Roboto Mono',
+            monospace;
+            --font-body: 'Roboto Mono',
+            monospace;
+
+                {
+                % else %
+            }
+
+            --font-heading: 'Inter',
+            sans-serif;
+            --font-body: 'Inter',
+            sans-serif;
+
+                {
+                % endif %
+            }
+
             /* Light Mode */
             --bg-app: #f3f4f6;
             --bg-surface: #ffffff;
@@ -68,7 +121,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-body);
             background-color: var(--bg-app) !important;
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
@@ -86,7 +139,7 @@
         h1,
         h2,
         h3 {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-heading);
         }
 
         /* Hide Scrollbar Globally */

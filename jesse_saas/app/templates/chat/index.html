@@ -37,6 +37,47 @@
     <style>
         :root {
 
+            /* Font Mapping */
+                {
+                % if client.font_style=='Classic Serif' %
+            }
+
+            --font-heading: 'Playfair Display',
+            serif;
+            --font-body: 'Merriweather',
+            serif;
+
+                {
+                % elif client.font_style=='Playful' %
+            }
+
+            --font-heading: 'Comic Neue',
+            cursive;
+            --font-body: 'Comic Neue',
+            cursive;
+
+                {
+                % elif client.font_style=='Monospace' %
+            }
+
+            --font-heading: 'Roboto Mono',
+            monospace;
+            --font-body: 'Roboto Mono',
+            monospace;
+
+                {
+                % else %
+            }
+
+            --font-heading: 'Inter',
+            sans-serif;
+            --font-body: 'Inter',
+            sans-serif;
+
+                {
+                % endif %
+            }
+
             /* Fix: Ensure single line to prevent Jinja/CSS syntax errors */
             /* --theme-color is defined in the body tag */
 
@@ -63,11 +104,11 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-body);
         }
 
         h1 {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-heading);
         }
 
         /* Custom Scrollbar */
