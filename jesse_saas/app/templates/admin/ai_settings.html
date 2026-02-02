@@ -10,7 +10,7 @@
         </button>
     </div>
 
-    <form id="ai-form" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <form id="ai-form" method="POST" class="max-w-2xl mx-auto space-y-8">
         <!-- Left Column: Brain Configuration -->
         <div class="space-y-6">
             <!-- Card 1: Provider & Credentials -->
@@ -101,29 +101,8 @@
                 </div>
             </div>
         </div>
-
-        <!-- Right Column: Persona -->
-        <div class="space-y-6">
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 h-full flex flex-col">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
-                    <h3 class="text-lg font-semibold text-gray-800">System Persona</h3>
-                    <button type="button" onclick="loadTemplate()"
-                        class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded border">
-                        Load Restaurant Template
-                    </button>
-                </div>
-
-                <div class="flex-1">
-                    <textarea name="system_prompt" id="system-prompt"
-                        class="w-full h-full min-h-[400px] border rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm leading-relaxed"
-                        placeholder="You are a helpful assistant...">{{ kb.system_prompt or '' }}</textarea>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">
-                    This is the "Brain" of your bot. Be specific about its role, tone, and constraints.
-                </p>
-            </div>
-        </div>
-    </form>
+</div>
+</form>
 </div>
 
 <script>
@@ -178,14 +157,6 @@
             apiKeyInput.type = "text";
         } else {
             apiKeyInput.type = "password";
-        }
-    }
-
-    function loadTemplate() {
-        const template = `You are Jesse, a friendly and efficient AI waiter at {{ client.restaurant_name }}. \n\nYOUR ROLE:\n- Help customers understand the menu.\n- Answer questions about ingredients, price, and dietary info.\n- Take table reservations if asked (direct them to the link).\n\nTONE:\n- Warm, professional, and concise.\n- Do not be overly verbose.\n\nCONSTRAINTS:\n- Only answer questions related to the restaurant.\n- If you don't know an answer, apologize and suggest calling the restaurant.\n- Never make up menu items not in the database.`;
-
-        if (confirm("Overwrite current prompt?")) {
-            document.getElementById('system-prompt').value = template;
         }
     }
 

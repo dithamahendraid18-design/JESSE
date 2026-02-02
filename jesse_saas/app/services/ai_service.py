@@ -31,55 +31,18 @@ class AIService:
                 items_list.append(f"- {item.name} ({price}){desc}")
             menu_text = "\n".join(items_list)
         
-        # 2b. Construct Final System Prompt
-        # Strategy: Combine User Persona (or Default) + Data Context + Menu + Guidelines
+        # 2b. Construct Final System Prompt (New Structured Template)
         
-        # A. Persona (Role & Tone)
-        persona = kb.system_prompt
-        if not persona:
-             persona = f"""You are the AI Concierge for {client_model.restaurant_name}.
-Your job is to answer guest questions strictly based on the provided context.
-Be polite, concise, and helpful. Keep responses under 50 words."""
+        # Helper: Gather Social Media Links
+        social_links = []
+        if client_model.instagram_url: social_links.append(f"Instagram: {client_model.instagram_url}")
+        if client_model.whatsapp_url: social_links.append(f"WhatsApp: {client_model.whatsapp_url}")
+        if client_model.tiktok_url: social_links.append(f"TikTok: {client_model.tiktok_url}")
+        if client_model.youtube_url: social_links.append(f"YouTube: {client_model.youtube_url}")
+        social_media_text = ", ".join(social_links) if social_links else "Follow us on social media for updates."
 
-        # Helper: Try to parse JSON starters if flow fields are missing
-        c_starters = []
-        try:
-            if kb.conversation_starters:
-                c_starters = json.loads(kb.conversation_starters)
-        except:
-            c_starters = []
-
-        # Map actions to field names for fallback
-        # action_name -> (kb_field_value, context_label)
-        # We only need to extract text if the explicit field is empty
-        
-        def get_flow_text(field_val, action_target, keywords=None):
-            if field_val: return field_val
-            
-            # Helper: Check exact action match first
-            for btn in c_starters:
-                if btn.get('action') == action_target:
-                    return btn.get('response_text') or btn.get('payload') or ''
-            
-            # Helper: Fuzzy match by Label if action match fails
-            if keywords:
-                for btn in c_starters:
-                    label = (btn.get('label') or '').lower()
-                    if any(k in label for k in keywords):
-                        return btn.get('response_text') or btn.get('payload') or ''
-            
-            return ''
-
-        about_txt = get_flow_text(kb.flow_about, 'about', ['about', 'story'])
-        hours_txt = get_flow_text(kb.flow_hours, 'hours', ['hour', 'open', 'time'])
-        loc_txt = get_flow_text(kb.flow_location, 'location', ['location', 'address', 'map', 'where is'])
-        contact_txt = get_flow_text(kb.flow_contact, 'contact', ['contact', 'call', 'phone'])
-        # Menu intro often in 'menu' action or just explicit
-        menu_intro = get_flow_text(kb.flow_menu, 'menu', ['menu', 'food']) or get_flow_text(None, 'main_menu')
-
-        # B. Data Context (Auto-injected from Client Hub)
-        # Helper: Parse Delivery Partners JSON
-        delivery_partners_txt = ""
+        # Helper: Delivery Partners JSON
+        delivery_partners_txt = "Not currently listed."
         try:
             if client_model.delivery_partners:
                 partners = json.loads(client_model.delivery_partners)
@@ -88,61 +51,73 @@ Be polite, concise, and helpful. Keep responses under 50 words."""
                 else:
                     delivery_partners_txt = str(client_model.delivery_partners)
         except:
-             delivery_partners_txt = client_model.delivery_partners or ''
+             delivery_partners_txt = client_model.delivery_partners or 'Not currently listed.'
 
-        # Helper: Create a readable list of ALL conversation starters for the AI
-        starters_context = ""
-        if c_starters:
-            starters_text_list = []
-            for btn in c_starters:
-                label = btn.get('label', 'Unknown')
-                content = btn.get('response_text') or btn.get('payload') or 'No content'
-                starters_text_list.append(f"- Topic '{label}': {content}")
-            starters_context = "\nADDITIONAL TOPICS (Custom Knowledge):\n" + "\n".join(starters_text_list)
+        # Helper: Seating & Privacy
+        seating_data = client_model.seating_configuration or ""
+        if client_model.has_private_room:
+            seating_data += f" | Private Room Available (Capacity: {client_model.private_room_capacity or 'Unknown'})"
+        
+        # Helper: Menu Formatting (Detailed with Allergens)
+        menu_items_detailed = []
+        if menu_items:
+            for item in menu_items:
+                price_str = f"{client_model.currency_symbol}{item.price}"
+                original_price_str = f" (Original: {client_model.currency_symbol}{item.original_price})" if item.original_price else ""
+                spicy = f" | Spiciness: {item.spiciness_level}/3" if item.spiciness_level > 0 else ""
+                allergens = f" | ALLERGENS: {item.allergy_info}" if item.allergy_info else " | Allergens: None reported"
+                labels = f" | Tags: {item.labels}" if item.labels else ""
+                portion = f" | Portion: {item.portion_size}" if item.portion_size else ""
+                
+                menu_items_detailed.append(
+                    f"[{item.category}] {item.name}: {price_str}{original_price_str}{portion}{spicy}{labels}{allergens} - {item.description or 'No description'}"
+                )
+            full_menu_database = "\n".join(menu_items_detailed)
+        else:
+            full_menu_database = "Menu is currently being updated. Please ask staff for details."
 
-        context_data = f"""
-CONTEXT (Read-Only):
-- About Us: {kb.about_us or about_txt or 'Not specified'}
-- Opening Hours: {kb.opening_hours or hours_txt or 'Not specified'}
-- Address/Location: {kb.location_address or 'Not specified'}
-- Location Details: {loc_txt or ''}
-- Google Maps: {client_model.maps_url or 'Not specified'}
-- WiFi SSID: {client_model.wifi_ssid or 'Not specified'}
-- WiFi Password: {client_model.wifi_password or kb.wifi_password or 'Ask staff'}
-- Contact Phone: {client_model.public_phone or kb.contact_phone or 'Not specified'}
-- Contact Email: {client_model.public_email or 'Not specified'}
-- Contact Details: {contact_txt or ''}
-- Reservation Link: {client_model.booking_url or kb.reservation_url or 'Walk-ins welcome'}
-- Delivery/Order Link: {client_model.delivery_url or 'Not specified'}
-- Delivery Partners: {delivery_partners_txt or 'Not specified'}
-- Review Us: {client_model.review_url or 'Not specified'}
-- Instagram: {client_model.instagram_url or 'Not specified'}
-- Website: {client_model.website_url or 'Not specified'}
-- Currency: {client_model.currency_code} ({client_model.currency_symbol})
-- Menu Introduction: {menu_intro or ''}
-- Payment Methods: {kb.payment_methods or 'Not specified'}
-- Parking Info: {kb.parking_info or 'Not specified'}
-- Dietary Options: {kb.dietary_info or 'Not specified'}
-- Policy: {kb.policy_info or 'Standard rules'}
-{starters_context}
+        # The Template Requested by User
+        system_prompt = f"""### ROLE & IDENTITY
+You are JESSE, the AI Concierge for {client_model.restaurant_name}.
+Currency Used: {client_model.currency_code} ({client_model.currency_symbol})
+Your goal is to assist guests with accurate information based ONLY on the context below.
+
+### [1] REGIONAL & CONTACT CONTEXT
+- Address: {client_model.address or kb.location_address or 'Contact restaurant for address'}
+- Landmark/Directions: {client_model.direction_note or 'Located in ' + (client_model.address or 'the area')}
+- Google Maps: {client_model.maps_url or 'Search for ' + client_model.restaurant_name}
+- Parking: {kb.parking_info or client_model.parking_info or 'Available nearby'}
+- Website: {client_model.website_url or 'Coming soon'}
+- Contact: Phone {client_model.public_phone or kb.contact_phone or 'Not specified'} | Email {client_model.public_email or 'Not specified'}
+- Social Media: {social_media_text}
+- Operating Hours: {client_model.operating_hours or kb.opening_hours or 'Open daily'}
+- Current Status: Check operating hours for current status (Timezone: {client_model.timezone})
+- Delivery Partners: {delivery_partners_txt}
+
+### [2] GUEST EXPERIENCE & RULES
+- WiFi: SSID "{client_model.wifi_ssid or 'Ask Staff'}" | Pass "{client_model.wifi_password or kb.wifi_password or 'Ask Staff'}"
+- Payment Methods: {kb.payment_methods or 'Cash and Major Cards'}
+- Review Link: {client_model.review_url or 'Google/Social Media'}
+- Reservations: {client_model.booking_url or kb.reservation_url or 'Walk-ins only'}
+- Booking Policy: {kb.deposit_policy or 'No deposit required'} | {kb.late_arrival_policy or '15-min grace period'}
+- House Rules & Context: {kb.policy_info or 'Standard dining etiquette'} | {kb.dietary_info or 'We accommodate major dietary needs'}
+
+### [3] FACILITIES & CAPACITY
+- Seating Configuration: {seating_data or 'Various seating options'}
+- Amenities: {client_model.facilities_list or 'Standard dining facilities'}
+- Family & Kids: {client_model.family_facilities_list or 'Family-friendly environment'}
+
+### [4] MENU DATABASE (TRUTH SOURCE)
+Rules: You can ONLY recommend items listed here. Check ALLERGENS strictly.
+{full_menu_database}
+
+### INSTRUCTIONS
+1. Use the [MENU DATABASE] to answer questions about food, price, portion, and allergens.
+2. If a user asks to book a table, provide the {client_model.booking_url or kb.reservation_url or 'the reservation link'} and mention the {kb.deposit_policy or 'any deposit requirements'} if applicable.
+3. If asked about location, combine the Address with the Landmark Note for clarity.
+4. If asked about WiFi, provide the details immediately.
 """
 
-        # C. Menu Context (Already fetched above)
-        menu_context = f"\nMENU ITEMS (Live Database):\n{menu_text}\n"
-
-        # D. Functional Guidelines
-        guidelines = f"""
-GUIDELINES:
-- You represent {client_model.restaurant_name}. Use the tone defined in the persona above.
-- Use the CONTEXT and MENU ITEMS to answer questions.
-- If specific ingredients are not listed in the menu, do not make them up.
-- If the answer is NOT in the context, apologize and suggest calling {kb.contact_phone or 'the restaurant'}.
-- If the user asks to see the menu, answer politely AND append: [BUTTON:View Menu|open_menu]
-- If the user asks for a reservation, answer polite AND append: [BUTTON:Book a Table|link:{kb.reservation_url or '#'}]
-"""
-
-        # Combine All
-        system_prompt = f"{persona}\n{context_data}\n{menu_context}\n{guidelines}"
 
         # 3. Determine API Key (DB first, then Env)
         api_key = kb.ai_api_key

@@ -96,7 +96,6 @@ class BotService:
         
         kb.ai_provider = form_data.get('ai_provider')
         kb.ai_model = form_data.get('ai_model')
-        kb.system_prompt = form_data.get('system_prompt')
         
         try:
             kb.temperature = float(form_data.get('temperature', 0.7))
