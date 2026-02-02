@@ -242,7 +242,9 @@
                         data-allergy="{{ item.allergy_info or '' }}"
                         data-price="{{ client.currency_symbol or 'Rp ' }}{{ '{:,.2f}'.format(item.price) }}"
                         data-original-price="{{ (client.currency_symbol or 'Rp ') + '{:,.2f}'.format(item.original_price) if item.original_price else '' }}"
-                        onclick="openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price, this.dataset.allergy, this.dataset['original-price'] || this.dataset.originalPrice)">
+                        data-spiciness="{{ item.spiciness_level }}" data-portion="{{ item.portion_size or '' }}"
+                        data-prep="{{ item.prep_time or '' }}"
+                        onclick="openLightbox(this.dataset.img, this.dataset.title, this.dataset.desc, this.dataset.price, this.dataset.allergy, this.dataset['original-price'] || this.dataset.originalPrice, this.dataset.spiciness, this.dataset.portion, this.dataset.prep)">
 
                         <!-- Image (1:1 Square) -->
                         {% if item.image_url %}
@@ -291,7 +293,7 @@
                                     class="font-bold text-[var(--text-primary)] text-base leading-tight group-hover:text-theme transition-colors line-clamp-2">
                                     {{ item.name }}
                                 </h4>
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-2 flex-wrap">
                                     {% if show_promo %}
                                     <span class="text-xs text-gray-400 line-through decoration-gray-400">
                                         {{ client.currency_symbol or 'Rp ' }}{{ "{:,.2f}".format(item.original_price) }}
@@ -299,10 +301,16 @@
                                     <span class="font-bold text-red-500 text-sm">
                                         {{ client.currency_symbol or 'Rp ' }}{{ "{:,.2f}".format(item.price) }}
                                     </span>
-                                    <!-- Badge is absolute positioned usually, but let's keep it simple here or add to top left -->
                                     {% else %}
                                     <span class="font-bold text-theme text-sm">
                                         {{ client.currency_symbol or 'Rp ' }}{{ "{:,.2f}".format(item.price) }}
+                                    </span>
+                                    {% endif %}
+
+                                    {% if item.portion_size %}
+                                    <span
+                                        class="text-[10px] text-[var(--text-secondary)] border border-[var(--border-color)] rounded px-1.5 py-0.5">
+                                        {{ item.portion_size }}
                                     </span>
                                     {% endif %}
                                 </div>
@@ -375,6 +383,38 @@
                                 </h3>
                                 <p class="text-xl font-bold text-[var(--theme-color)]" id="lightbox-price">$0</p>
                             </div>
+
+                            <!-- Info Bar (New) -->
+                            <div id="lightbox-info-bar" class="flex flex-wrap items-center gap-3 mb-4 hidden">
+                                <!-- Spiciness -->
+                                <div id="info-spiciness"
+                                    class="hidden items-center gap-1.5 text-xs font-bold text-orange-600 bg-orange-50 dark:bg-orange-900/30 px-2.5 py-1 rounded-md border border-orange-100 dark:border-orange-800">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                                    </svg>
+                                    <span id="text-spiciness">Level 1</span>
+                                </div>
+                                <!-- Portion -->
+                                <div id="info-portion"
+                                    class="hidden items-center gap-1.5 text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-2.5 py-1 rounded-md border border-blue-100 dark:border-blue-800">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    <span id="text-portion">1 Pax</span>
+                                </div>
+                                <!-- Prep Time -->
+                                <div id="info-prep"
+                                    class="hidden items-center gap-1.5 text-xs font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded-md border border-gray-200 dark:border-gray-700">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span id="text-prep">15m</span>
+                                </div>
+                            </div>
+
                             <div class="mt-2">
                                 <p class="text-base text-[var(--text-secondary)] leading-relaxed" id="lightbox-desc">
                                     Description goes here.
@@ -572,13 +612,66 @@
     <script src="{{ url_for('static', filename='js/menu-masonry.js') }}"></script>
     <script>
         // --- Lightbox Logic ---
-        function openLightbox(img, title, desc, price, allergy) {
+        function openLightbox(img, title, desc, price, allergy, originalPrice, spiciness, portion, prep) {
             const modal = document.getElementById('lightbox');
             if (modal) {
                 document.getElementById('lightbox-img').src = img;
                 document.getElementById('lightbox-title').textContent = title;
                 document.getElementById('lightbox-price').textContent = price;
                 document.getElementById('lightbox-desc').textContent = desc;
+
+                // Handle Info Bar (Spiciness, Portion, Prep)
+                const infoBar = document.getElementById('lightbox-info-bar');
+                const spicyEl = document.getElementById('info-spiciness');
+                const portionEl = document.getElementById('info-portion');
+                const prepEl = document.getElementById('info-prep');
+
+                let hasInfo = false;
+
+                // Spiciness
+                if (spiciness && parseInt(spiciness) > 0) {
+                    spiciness = parseInt(spiciness); // Ensure int
+                    let label = 'Mild';
+                    if (spiciness == 2) label = 'Spicy';
+                    if (spiciness >= 3) label = 'Extra Spicy';
+
+                    document.getElementById('text-spiciness').textContent = label;
+                    spicyEl.classList.remove('hidden');
+                    spicyEl.classList.add('flex');
+                    hasInfo = true;
+                } else {
+                    spicyEl.classList.add('hidden');
+                    spicyEl.classList.remove('flex');
+                }
+
+                // Portion
+                if (portion && portion !== 'undefined' && portion !== 'None' && portion.trim() !== '') {
+                    document.getElementById('text-portion').textContent = portion;
+                    portionEl.classList.remove('hidden');
+                    portionEl.classList.add('flex');
+                    hasInfo = true;
+                } else {
+                    portionEl.classList.add('hidden');
+                    portionEl.classList.remove('flex');
+                }
+
+                // Prep Time
+                if (prep && prep !== 'undefined' && prep !== 'None' && prep.trim() !== '') {
+                    document.getElementById('text-prep').textContent = prep;
+                    prepEl.classList.remove('hidden');
+                    prepEl.classList.add('flex');
+                    hasInfo = true;
+                } else {
+                    prepEl.classList.add('hidden');
+                    prepEl.classList.remove('flex');
+                }
+
+                // Toggle Info Bar
+                if (hasInfo) {
+                    infoBar.classList.remove('hidden');
+                } else {
+                    infoBar.classList.add('hidden');
+                }
 
                 // Handle Allergy Info
                 const allergyContainer = document.getElementById('lightbox-allergy-container');
