@@ -107,9 +107,13 @@ class BotService:
         except ValueError:
             kb.max_tokens = 1024
             
-        new_key = form_data.get('ai_api_key')
         if new_key and new_key.strip():
             kb.ai_api_key = new_key.strip()
+            
+        # Bot Personality
+        kb.personality_tone = form_data.get('personality_tone', 'friendly')
+        kb.personality_emoji = form_data.get('personality_emoji', 'minimal')
+        kb.personality_length = form_data.get('personality_length', 'concise')
             
         db.session.commit()
         return kb

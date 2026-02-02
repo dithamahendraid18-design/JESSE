@@ -150,6 +150,11 @@ class KnowledgeBase(db.Model):
     temperature = db.Column(db.Float, default=0.7)
     max_tokens = db.Column(db.Integer, default=1024)
 
+    # Phase 33: Bot Personality
+    personality_tone = db.Column(db.String(50), default='friendly')
+    personality_emoji = db.Column(db.String(50), default='minimal')
+    personality_length = db.Column(db.String(50), default='concise')
+
     # Legacy/Fallback
     fallback_message = db.Column(db.Text, nullable=True)
     conversation_starters = db.Column(db.Text, nullable=True) # JSON string

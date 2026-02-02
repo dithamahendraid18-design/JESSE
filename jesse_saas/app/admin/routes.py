@@ -497,6 +497,10 @@ def fix_db_schema():
                 ('menu_items', 'spiciness_level', 'INTEGER', "DEFAULT 0"),
                 ('menu_items', 'prep_time', 'TEXT', None),
                 ('menu_items', 'portion_size', 'VARCHAR(100)', None),
+                # Bot Personality
+                ('knowledge_base', 'personality_tone', 'VARCHAR(50)', "DEFAULT 'friendly'"),
+                ('knowledge_base', 'personality_emoji', 'VARCHAR(50)', "DEFAULT 'minimal'"),
+                ('knowledge_base', 'personality_length', 'VARCHAR(50)', "DEFAULT 'concise'"),
             ]
 
             for table, col, col_type, default in migrations:
