@@ -136,6 +136,11 @@
                                     </div>
                                 </label>
                             </div>
+                            <div id="email-address-container" class="hidden animate-fade-in">
+                                <input type="email" id="notify-email-address" placeholder="manager@example.com"
+                                    class="w-full border-gray-200 rounded-lg text-sm px-4 py-2">
+                                <p class="text-[10px] text-gray-400 mt-1">Alamat email untuk menerima alert handoff.</p>
+                            </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-600">WhatsApp Notification</span>
                                 <label class="relative inline-flex items-center cursor-pointer">
@@ -338,6 +343,8 @@
     try { notifData = JSON.parse(hiddenNotifs.value || '{}'); } catch (e) { }
 
     const emailToggle = document.getElementById('notify-email-toggle');
+    const emailAddress = document.getElementById('notify-email-address');
+    const emailContainer = document.getElementById('email-address-container');
     const waToggle = document.getElementById('notify-wa-toggle');
     const waNumber = document.getElementById('notify-wa-number');
     const waContainer = document.getElementById('wa-number-container');
@@ -346,17 +353,24 @@
 
     function initNotifs() {
         emailToggle.checked = notifData.email || false;
+        emailAddress.value = notifData.email_address || '';
+        if (emailToggle.checked) emailContainer.classList.remove('hidden');
+
         waToggle.checked = notifData.wa || false;
         waNumber.value = notifData.wa_number || '';
         if (waToggle.checked) waContainer.classList.remove('hidden');
     }
 
-    [emailToggle, waToggle, waNumber].forEach(el => {
-        el.addEventListener('change', () => {
+    [emailToggle, emailAddress, waToggle, waNumber].forEach(el => {
+        el.addEventListener('input', () => {
             notifData.email = emailToggle.checked;
+            notifData.email_address = emailAddress.value;
             notifData.wa = waToggle.checked;
             notifData.wa_number = waNumber.value;
+
+            emailContainer.classList.toggle('hidden', !emailToggle.checked);
             waContainer.classList.toggle('hidden', !waToggle.checked);
+
             hiddenNotifs.value = JSON.stringify(notifData);
         });
     });
