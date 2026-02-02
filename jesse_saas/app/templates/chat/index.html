@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"
-    style="{% if client.font_style == 'Classic Serif' %}--font-heading: 'Playfair Display', serif; --font-body: 'Merriweather', serif;{% elif client.font_style == 'Playful' %}--font-heading: 'Comic Neue', cursive; --font-body: 'Comic Neue', cursive;{% elif client.font_style == 'Monospace' %}--font-heading: 'Roboto Mono', monospace; --font-body: 'Roboto Mono', monospace;{% else %}--font-heading: 'Inter', sans-serif; --font-body: 'Inter', sans-serif;{% endif %}">
+<html lang="en" data-font="{{ client.font_style or 'Modern Sans' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -47,7 +46,32 @@
     <link rel="icon" type="image/png"
         href="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') if client.knowledge_base and client.knowledge_base.avatar_image else url_for('static', filename='img/favicon.png') }}">
     <style>
+        /* Font Mapping */
+        html[data-font="Classic Serif"] {
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Merriweather', serif;
+        }
+
+        html[data-font="Playful"] {
+            --font-heading: 'Comic Neue', cursive;
+            --font-body: 'Comic Neue', cursive;
+        }
+
+        html[data-font="Monospace"] {
+            --font-heading: 'Roboto Mono', monospace;
+            --font-body: 'Roboto Mono', monospace;
+        }
+
+        html[data-font="Modern Sans"] {
+            --font-heading: 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
         :root {
+            /* Fallback Font Variables */
+            --font-heading: 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+
             /* Fix: Ensure single line to prevent Jinja/CSS syntax errors */
             /* --theme-color is defined in the body tag */
 

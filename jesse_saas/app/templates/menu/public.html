@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth"
-    style="{% if client.font_style == 'Classic Serif' %}--font-heading: 'Playfair Display', serif; --font-body: 'Merriweather', serif;{% elif client.font_style == 'Playful' %}--font-heading: 'Comic Neue', cursive; --font-body: 'Comic Neue', cursive;{% elif client.font_style == 'Monospace' %}--font-heading: 'Roboto Mono', monospace; --font-body: 'Roboto Mono', monospace;{% else %}--font-heading: 'Inter', sans-serif; --font-body: 'Inter', sans-serif;{% endif %}">
+<html lang="en" class="scroll-smooth" data-font="{{ client.font_style or 'Modern Sans' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -48,6 +47,27 @@
     {% endif %}
 
     <style>
+        /* Font Mapping */
+        html[data-font="Classic Serif"] {
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Merriweather', serif;
+        }
+
+        html[data-font="Playful"] {
+            --font-heading: 'Comic Neue', cursive;
+            --font-body: 'Comic Neue', cursive;
+        }
+
+        html[data-font="Monospace"] {
+            --font-heading: 'Roboto Mono', monospace;
+            --font-body: 'Roboto Mono', monospace;
+        }
+
+        html[data-font="Modern Sans"] {
+            --font-heading: 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
         /* Force opaque background immediately */
         html {
             background-color: #f8f9fa;
@@ -61,6 +81,10 @@
         }
 
         :root {
+            /* Fallback Font Variables */
+            --font-heading: 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+
             /* Light Mode */
             --bg-app: #f3f4f6;
             --bg-surface: #ffffff;
