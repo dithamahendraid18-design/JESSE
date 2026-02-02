@@ -84,23 +84,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // 2. Lightbox Logic
     // -------------------------------------------------------------------------
-    window.openLightbox = function (imgUrl, title, desc, price, allergy, originalPrice) {
+    // -------------------------------------------------------------------------
+    // 2. Lightbox Logic
+    // -------------------------------------------------------------------------
+    window.openLightbox = function (imgUrl, title, desc, price, allergy, originalPrice, spiciness, portion, prep) {
         const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
         const lbTitle = document.getElementById('lightbox-title');
         const lbDesc = document.getElementById('lightbox-desc');
         const lbPrice = document.getElementById('lightbox-price');
-        // We need a separate element for original price in lightbox? 
-        // Or we construct the price display.
-        // Let's assume lbPrice can handle complex display if we clear it first?
-        // Wait, lbPrice is h5 or p? It's usually textContent.
-        // Let's modify the HTML of lbPrice.
+
+        // Info Bar Elements
+        const infoBar = document.getElementById('lightbox-info-bar');
+        const spicyEl = document.getElementById('info-spiciness');
+        const portionEl = document.getElementById('info-portion');
+        const prepEl = document.getElementById('info-prep');
 
         // Allergen Checks
         const allergyContainer = document.getElementById('lightbox-allergy-container');
         const allergyText = document.getElementById('lightbox-allergy');
 
-        console.log('OpenLightbox (Masonry) Debug:', { title, allergy, originalPrice });
+        console.log('OpenLightbox (Masonry) Debug:', { title, allergy, originalPrice, spiciness, portion, prep });
 
         if (lb && lbImg) {
             lbImg.src = imgUrl;
@@ -115,10 +119,72 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     // Normal Mode
                     lbPrice.textContent = price || '';
-                    // Ensure no leftover HTML if we switch back
-                    lbPrice.className = "text-xl font-bold text-[var(--theme-color)]"; // Reset class if needed?
+                    lbPrice.className = "text-xl font-bold text-[var(--theme-color)]";
                 }
             }
+
+            // --- Info Bar Logic ---
+            let hasInfo = false;
+
+            // Spiciness
+            if (spicyEl) {
+                if (spiciness && parseInt(spiciness) > 0) {
+                    let level = parseInt(spiciness);
+                    let label = 'Mild';
+                    if (level == 2) label = 'Spicy';
+                    if (level >= 3) label = 'Extra Spicy';
+
+                    const span = document.getElementById('text-spiciness');
+                    if (span) span.textContent = label;
+
+                    spicyEl.classList.remove('hidden');
+                    spicyEl.classList.add('flex');
+                    hasInfo = true;
+                } else {
+                    spicyEl.classList.add('hidden');
+                    spicyEl.classList.remove('flex');
+                }
+            }
+
+            // Portion
+            if (portionEl) {
+                if (portion && portion !== 'undefined' && portion !== 'None' && portion.trim() !== '') {
+                    const span = document.getElementById('text-portion');
+                    if (span) span.textContent = portion;
+
+                    portionEl.classList.remove('hidden');
+                    portionEl.classList.add('flex');
+                    hasInfo = true;
+                } else {
+                    portionEl.classList.add('hidden');
+                    portionEl.classList.remove('flex');
+                }
+            }
+
+            // Prep Time
+            if (prepEl) {
+                if (prep && prep !== 'undefined' && prep !== 'None' && prep.trim() !== '') {
+                    const span = document.getElementById('text-prep');
+                    if (span) span.textContent = prep;
+
+                    prepEl.classList.remove('hidden');
+                    prepEl.classList.add('flex');
+                    hasInfo = true;
+                } else {
+                    prepEl.classList.add('hidden');
+                    prepEl.classList.remove('flex');
+                }
+            }
+
+            // Toggle Info Bar Wrapper
+            if (infoBar) {
+                if (hasInfo) {
+                    infoBar.classList.remove('hidden');
+                } else {
+                    infoBar.classList.add('hidden');
+                }
+            }
+
 
             // Handle Allergy Info (Robust Check)
             if (allergyContainer && allergyText) {

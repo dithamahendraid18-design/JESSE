@@ -612,7 +612,9 @@
     <script src="{{ url_for('static', filename='js/menu-masonry.js') }}"></script>
     <script>
         // --- Lightbox Logic ---
-        function openLightbox(img, title, desc, price, allergy, originalPrice, spiciness, portion, prep) {
+        // --- Lightbox Logic ---
+        // DEPRECATED: Logic moved to menu-masonry.js
+        function openLightbox_legacy(img, title, desc, price, allergy, originalPrice, spiciness, portion, prep) {
             const modal = document.getElementById('lightbox');
             if (modal) {
                 document.getElementById('lightbox-img').src = img;
@@ -700,7 +702,7 @@
             }
         }
 
-        function closeLightbox() {
+        function closeLightbox_legacy() {
             const modal = document.getElementById('lightbox');
             if (modal) {
                 modal.classList.add('opacity-0');
