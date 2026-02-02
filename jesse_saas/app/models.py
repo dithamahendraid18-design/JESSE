@@ -166,6 +166,7 @@ class KnowledgeBase(db.Model):
 
     # Phase 34: Compliance & Handoff
     holiday_dates = db.Column(db.Text, nullable=True) # JSON list
+    use_last_order_buffer = db.Column(db.Boolean, default=False)
     last_order_buffer = db.Column(db.Integer, default=0) # minutes
     handoff_notifications = db.Column(db.Text, nullable=True) # JSON
     handoff_reply = db.Column(db.Text, nullable=True)

@@ -505,6 +505,7 @@ def fix_db_schema():
                 ('clients', 'tos_url', 'VARCHAR(255)', None),
                 ('clients', 'show_ai_disclaimer', 'BOOLEAN', 'DEFAULT TRUE'),
                 ('knowledge_base', 'holiday_dates', 'TEXT', None),
+                ('knowledge_base', 'use_last_order_buffer', 'BOOLEAN', 'DEFAULT FALSE'),
                 ('knowledge_base', 'last_order_buffer', 'INTEGER', 'DEFAULT 0'),
                 ('knowledge_base', 'handoff_notifications', 'TEXT', None),
                 ('knowledge_base', 'handoff_reply', 'TEXT', None),

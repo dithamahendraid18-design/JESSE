@@ -124,7 +124,7 @@ class AIService:
         except: pass
 
         # Helper: Last Order Buffer
-        buffer_info = f"Last order is {kb.last_order_buffer} minutes before closing time." if kb.last_order_buffer else "Last order is at closing time."
+        buffer_info = f"Last order is {kb.last_order_buffer} minutes before closing time." if (kb.use_last_order_buffer and kb.last_order_buffer) else "Last order is at closing time."
 
         # The Template Requested by User
         system_prompt = f"""### ROLE & IDENTITY

@@ -131,6 +131,7 @@ class BotService:
         
         kb.human_handoff_triggers = form_data.get('human_handoff_triggers')
         kb.holiday_dates = form_data.get('holiday_dates')
+        kb.use_last_order_buffer = True if form_data.get('use_last_order_buffer') == 'true' else False
         try:
             kb.last_order_buffer = int(form_data.get('last_order_buffer', 0))
         except ValueError:
