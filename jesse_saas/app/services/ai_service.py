@@ -96,10 +96,41 @@ class AIService:
         
         tone_instruction = f"{tone_map.get(kb.personality_tone, tone_map['friendly'])} {emoji_map.get(kb.personality_emoji, emoji_map['minimal'])} {length_map.get(kb.personality_length, length_map['concise'])}"
 
+        # Helper: Smart Operating Hours Parsing
+        try:
+            hours_json = json.loads(client_model.operating_hours or '{}')
+            operating_hours_text = ""
+            if isinstance(hours_json, dict) and 'monday' in hours_json:
+                h_lines = []
+                for day, data in hours_json.items():
+                    if data.get('is_closed'):
+                        h_lines.append(f"- {day.capitalize()}: CLOSED")
+                    else:
+                        shifts = data.get('shifts', [])
+                        shift_str = ", ".join([f"{s['start']}-{s['end']}" for s in shifts])
+                        h_lines.append(f"- {day.capitalize()}: {shift_str}")
+                operating_hours_text = "\n".join(h_lines)
+            else:
+                operating_hours_text = str(client_model.operating_hours or 'Open daily')
+        except:
+            operating_hours_text = str(client_model.operating_hours or 'Open daily')
+
+        # Helper: Holidays Parsing
+        holiday_text = "No upcoming special holidays."
+        try:
+            holidays = json.loads(kb.holiday_dates or '[]')
+            if holidays:
+                holiday_text = "\n".join([f"- {h['date']}: {h['name']}" for h in holidays if h.get('date')])
+        except: pass
+
+        # Helper: Last Order Buffer
+        buffer_info = f"Last order is {kb.last_order_buffer} minutes before closing time." if kb.last_order_buffer else "Last order is at closing time."
+
         # The Template Requested by User
         system_prompt = f"""### ROLE & IDENTITY
 You are JESSE, the AI Concierge for {client_model.restaurant_name}.
 Currency Used: {client_model.currency_code} ({client_model.currency_symbol})
+{f"IMPORTANT: Start your very first interaction with: 'I am an AI assistant for {client_model.restaurant_name}.'" if client_model.show_ai_disclaimer else ""}
 
 ### TONE OF VOICE
 - Your personality settings: {tone_instruction}
@@ -115,7 +146,11 @@ Your goal is to assist guests with accurate information based ONLY on the contex
 - Website: {client_model.website_url or 'Coming soon'}
 - Contact: Phone {client_model.public_phone or kb.contact_phone or 'Not specified'} | Email {client_model.public_email or 'Not specified'}
 - Social Media: {social_media_text}
-- Operating Hours: {client_model.operating_hours or kb.opening_hours or 'Open daily'}
+- Operating Hours:
+{operating_hours_text}
+- Special Holidays (CLOSED on these dates):
+{holiday_text}
+- Last Order Policy: {buffer_info}
 - Current Status: Check operating hours for current status (Timezone: {client_model.timezone})
 - Delivery Partners: {delivery_partners_txt}
 
@@ -126,6 +161,7 @@ Your goal is to assist guests with accurate information based ONLY on the contex
 - Reservations: {client_model.booking_url or kb.reservation_url or 'Walk-ins only'}
 - Booking Policy: {kb.deposit_policy or 'No deposit required'} | {kb.late_arrival_policy or '15-min grace period'}
 - House Rules & Context: {kb.policy_info or 'Standard dining etiquette'} | {kb.dietary_info or 'We accommodate major dietary needs'}
+- Legal: Privacy Policy ({client_model.privacy_policy_url or 'Ask staff'}) | Terms of Service ({client_model.tos_url or 'Ask staff'})
 
 ### [3] FACILITIES & CAPACITY
 - Seating Configuration: {seating_data or 'Various seating options'}

@@ -501,6 +501,13 @@ def fix_db_schema():
                 ('knowledge_base', 'personality_tone', 'VARCHAR(50)', "DEFAULT 'friendly'"),
                 ('knowledge_base', 'personality_emoji', 'VARCHAR(50)', "DEFAULT 'minimal'"),
                 ('knowledge_base', 'personality_length', 'VARCHAR(50)', "DEFAULT 'concise'"),
+                # Compliance & Operations Overhaul
+                ('clients', 'tos_url', 'VARCHAR(255)', None),
+                ('clients', 'show_ai_disclaimer', 'BOOLEAN', 'DEFAULT TRUE'),
+                ('knowledge_base', 'holiday_dates', 'TEXT', None),
+                ('knowledge_base', 'last_order_buffer', 'INTEGER', 'DEFAULT 0'),
+                ('knowledge_base', 'handoff_notifications', 'TEXT', None),
+                ('knowledge_base', 'handoff_reply', 'TEXT', None),
             ]
 
             for table, col, col_type, default in migrations:

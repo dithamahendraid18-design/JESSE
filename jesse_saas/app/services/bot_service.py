@@ -125,8 +125,19 @@ class BotService:
         
         client.timezone = form_data.get('timezone')
         client.privacy_policy_url = form_data.get('privacy_policy_url')
+        client.tos_url = form_data.get('tos_url')
+        client.show_ai_disclaimer = True if form_data.get('show_ai_disclaimer') == 'true' else False
         client.operating_hours = form_data.get('operating_hours')
+        
         kb.human_handoff_triggers = form_data.get('human_handoff_triggers')
+        kb.holiday_dates = form_data.get('holiday_dates')
+        try:
+            kb.last_order_buffer = int(form_data.get('last_order_buffer', 0))
+        except ValueError:
+            kb.last_order_buffer = 0
+            
+        kb.handoff_notifications = form_data.get('handoff_notifications')
+        kb.handoff_reply = form_data.get('handoff_reply')
         
         db.session.commit()
         return kb

@@ -75,6 +75,10 @@ class Client(db.Model):
     deposit_policy = db.Column(db.Text, nullable=True) # New
     late_arrival_policy = db.Column(db.Text, nullable=True) # New
 
+    # Phase 34: Compliance & Legal
+    tos_url = db.Column(db.String(255), nullable=True)
+    show_ai_disclaimer = db.Column(db.Boolean, default=True)
+
     # Phase 32: Facilities & Capacity
     total_seating = db.Column(db.Integer, nullable=True)
     max_group_size = db.Column(db.Integer, nullable=True)
@@ -159,6 +163,12 @@ class KnowledgeBase(db.Model):
     fallback_message = db.Column(db.Text, nullable=True)
     conversation_starters = db.Column(db.Text, nullable=True) # JSON string
     human_handoff_triggers = db.Column(db.Text, nullable=True) # Comma-separated
+
+    # Phase 34: Compliance & Handoff
+    holiday_dates = db.Column(db.Text, nullable=True) # JSON list
+    last_order_buffer = db.Column(db.Integer, default=0) # minutes
+    handoff_notifications = db.Column(db.Text, nullable=True) # JSON
+    handoff_reply = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return f"<KnowledgeBase for Client {self.client_id}>"
