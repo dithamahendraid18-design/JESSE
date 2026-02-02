@@ -42,92 +42,101 @@ def get_client_config(public_id):
 
 @bp.route('/chat', methods=['POST'])
 def chat():
-    data = request.get_json() or {}
-    public_id = data.get('public_id')
-    message_type = data.get('type') # 'button_click' or 'text_input'
-    message_content = data.get('message')
+    try:
+        data = request.get_json() or {}
+        public_id = data.get('public_id')
+        message_type = data.get('type') # 'button_click' or 'text_input'
+        message_content = data.get('message')
 
-    if not public_id:
-        return jsonify({"error": "Missing public_id"}), 400
+        if not public_id:
+            return jsonify({"error": "Missing public_id"}), 400
 
-    # Step 1: Identification
-    client = Client.query.filter_by(public_id=public_id).first()
-    if not client:
-        return jsonify({"error": "Client not found"}), 404
+        # Step 1: Identification
+        client = Client.query.filter_by(public_id=public_id).first()
+        if not client:
+            return jsonify({"error": "Client not found"}), 404
 
-    # Step 2: Tier Validation (Strict)
-    if message_type == 'text_input' and client.plan_type == 'basic':
-        return jsonify({
-            "error": "Unauthorized", 
-            "message": "Text chat is a Pro feature."
-        }), 403
+        # Step 2: Tier Validation (Strict)
+        if message_type == 'text_input' and client.plan_type == 'basic':
+            return jsonify({
+                "error": "Unauthorized", 
+                "message": "Text chat is a Pro feature."
+            }), 403
 
-    response_data = {}
+        response_data = {}
 
-    # Step 3: Handle Button Clicks (Free Tier)
-    if message_type == 'button_click':
-        kb = client.knowledge_base
-        if not kb:
-            # If no KB exists, handle gracefully
-            return jsonify({"response": "No knowledge base configured."}), 200
+        # Step 3: Handle Button Clicks (Free Tier)
+        if message_type == 'button_click':
+            kb = client.knowledge_base
+            if not kb:
+                # If no KB exists, handle gracefully
+                return jsonify({"response": "No knowledge base configured."}), 200
 
-        msg_lower = (message_content or "").lower()
-        
-        reply = "I don't have that information."
-        
-        if "menu" in msg_lower:
-            text = kb.flow_menu or "Here is our menu:"
-            menu_url = kb.menu_url if kb.menu_url else None
-            # If menu_url is stored but it's a file? Current logic: menu_url is a String URL usually.
-            # But what if I want to serve the digital menu book URL?
-            # Standard logic: menu_url text field.
+            msg_lower = (message_content or "").lower()
             
-            reply = f"{text}\n\n[Open Menu]({menu_url})" if menu_url else (text if kb.flow_menu else "Menu not available.")
-        
-        elif "wifi" in msg_lower:
-            reply = f"WiFi Password: {kb.wifi_password}" if kb.wifi_password else "No WiFi information."
-        
-        elif "hours" in msg_lower:
-            reply = kb.flow_hours or (f"Our hours are: {kb.opening_hours}" if kb.opening_hours else "Hours not specified.")
-        
-        elif "location" in msg_lower:
-            reply = kb.flow_location or (f"We are located at: {kb.location_address}" if kb.location_address else "Address not specified.")
-        
-        elif "about" in msg_lower:
-            reply = kb.flow_about or (kb.about_us if kb.about_us else "I don't have information about us yet.")
-        
-        elif "reservation" in msg_lower or "contact" in msg_lower:
-            text = kb.flow_contact or "Contact us or book a table:"
-            reply = f"{text}\n\n[Book Now]({kb.reservation_url})" if kb.reservation_url else (text if kb.flow_contact else "Reservations not configured.")
-        
-        response_data = {"response": reply}
+            reply = "I don't have that information."
+            
+            if "menu" in msg_lower:
+                text = kb.flow_menu or "Here is our menu:"
+                menu_url = kb.menu_url if kb.menu_url else None
+                # If menu_url is stored but it's a file? Current logic: menu_url is a String URL usually.
+                # But what if I want to serve the digital menu book URL?
+                # Standard logic: menu_url text field.
+                
+                reply = f"{text}\n\n[Open Menu]({menu_url})" if menu_url else (text if kb.flow_menu else "Menu not available.")
+            
+            elif "wifi" in msg_lower:
+                reply = f"WiFi Password: {kb.wifi_password}" if kb.wifi_password else "No WiFi information."
+            
+            elif "hours" in msg_lower:
+                reply = kb.flow_hours or (f"Our hours are: {kb.opening_hours}" if kb.opening_hours else "Hours not specified.")
+            
+            elif "location" in msg_lower:
+                reply = kb.flow_location or (f"We are located at: {kb.location_address}" if kb.location_address else "Address not specified.")
+            
+            elif "about" in msg_lower:
+                reply = kb.flow_about or (kb.about_us if kb.about_us else "I don't have information about us yet.")
+            
+            elif "reservation" in msg_lower or "contact" in msg_lower:
+                text = kb.flow_contact or "Contact us or book a table:"
+                reply = f"{text}\n\n[Book Now]({kb.reservation_url})" if kb.reservation_url else (text if kb.flow_contact else "Reservations not configured.")
+            
+            response_data = {"response": reply}
 
-        # Log Interaction
-        log = InteractionLog(
-            client_id=client.id,
-            interaction_type='button_click',
-            user_query=message_content
-        )
-        db.session.add(log)
-        db.session.commit()
+            # Log Interaction
+            log = InteractionLog(
+                client_id=client.id,
+                interaction_type='button_click',
+                user_query=message_content
+            )
+            db.session.add(log)
+            db.session.commit()
 
-    # Step 4: Handle Text Input (Pro Tier)
-    elif message_type == 'text_input':
-        # Real AI Response
-        from app.services.ai_service import generate_smart_reply
-        kb = client.knowledge_base
-        
-        # Pass both client object and KB object
-        ai_reply = generate_smart_reply(message_content, client, kb)
-        response_data = {"response": ai_reply}
-        
-        # Log Interaction
-        log = InteractionLog(
-            client_id=client.id,
-            interaction_type='ai_chat',
-            user_query=message_content
-        )
-        db.session.add(log)
-        db.session.commit()
+        # Step 4: Handle Text Input (Pro Tier)
+        elif message_type == 'text_input':
+            # Real AI Response
+            from app.services.ai_service import generate_smart_reply
+            kb = client.knowledge_base
+            
+            # Pass both client object and KB object
+            ai_reply = generate_smart_reply(message_content, client, kb)
+            response_data = {"response": ai_reply}
+            
+            # Log Interaction
+            log = InteractionLog(
+                client_id=client.id,
+                interaction_type='ai_chat',
+                user_query=message_content
+            )
+            db.session.add(log)
+            db.session.commit()
 
-    return jsonify(response_data), 200
+        return jsonify(response_data), 200
+    except Exception as e:
+        print(f"CRITICAL API ERROR (/api/chat): {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "error": "Internal Server Error",
+            "message": f"A technical issue occurred: {str(e)}"
+        }), 500
