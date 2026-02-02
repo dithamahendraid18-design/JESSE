@@ -103,8 +103,15 @@
             --border-color: #333333;
         }
 
-        body {
+        body,
+        input,
+        button,
+        textarea,
+        select {
             font-family: var(--font-body);
+        }
+
+        body {
             background-color: var(--bg-app) !important;
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
@@ -121,7 +128,10 @@
 
         h1,
         h2,
-        h3 {
+        h3,
+        h4,
+        h5,
+        h6 {
             font-family: var(--font-heading);
         }
 

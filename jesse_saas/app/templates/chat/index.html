@@ -97,11 +97,20 @@
             --shadow-color: rgba(0, 0, 0, 0.4);
         }
 
-        body {
+        body,
+        input,
+        button,
+        textarea,
+        select {
             font-family: var(--font-body);
         }
 
-        h1 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             font-family: var(--font-heading);
         }
 
@@ -213,7 +222,7 @@
 <!-- BODY: Handles Standalone (Desktop/Mobile) vs Embed layout -->
 
 <body id="body-el" style="--theme-color: {{ theme_color or '#2563EB' }};"
-    class="h-[100dvh] w-full flex flex-col font-sans antialiased overflow-hidden bg-[var(--bg-app)] transition-colors duration-300">
+    class="h-[100dvh] w-full flex flex-col antialiased overflow-hidden bg-[var(--bg-app)] transition-colors duration-300">
 
     <!-- MAIN CONTAINER (The Phone Frame) -->
     <main id="app-frame" class="w-full h-full flex flex-col relative bg-[var(--bg-app)] transition-colors duration-300">
