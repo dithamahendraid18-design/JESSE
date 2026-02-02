@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+    style="{% if client.font_style == 'Classic Serif' %}--font-heading: 'Playfair Display', serif; --font-body: 'Merriweather', serif;{% elif client.font_style == 'Playful' %}--font-heading: 'Comic Neue', cursive; --font-body: 'Comic Neue', cursive;{% elif client.font_style == 'Monospace' %}--font-heading: 'Roboto Mono', monospace; --font-body: 'Roboto Mono', monospace;{% else %}--font-heading: 'Inter', sans-serif; --font-body: 'Inter', sans-serif;{% endif %}">
 
 <head>
     <meta charset="UTF-8">
@@ -29,55 +30,24 @@
             darkMode: 'class',
         }
     </script>
+    {% if client.font_style == 'Classic Serif' %}
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Merriweather:wght@400;700&display=swap"
         rel="stylesheet">
+    {% elif client.font_style == 'Playful' %}
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    {% elif client.font_style == 'Monospace' %}
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    {% else %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    {% endif %}
     <link rel="icon" type="image/png"
         href="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') if client.knowledge_base and client.knowledge_base.avatar_image else url_for('static', filename='img/favicon.png') }}">
     <style>
         :root {
-
-            /* Font Mapping */
-                {
-                % if client.font_style=='Classic Serif' %
-            }
-
-            --font-heading: 'Playfair Display',
-            serif;
-            --font-body: 'Merriweather',
-            serif;
-
-                {
-                % elif client.font_style=='Playful' %
-            }
-
-            --font-heading: 'Comic Neue',
-            cursive;
-            --font-body: 'Comic Neue',
-            cursive;
-
-                {
-                % elif client.font_style=='Monospace' %
-            }
-
-            --font-heading: 'Roboto Mono',
-            monospace;
-            --font-body: 'Roboto Mono',
-            monospace;
-
-                {
-                % else %
-            }
-
-            --font-heading: 'Inter',
-            sans-serif;
-            --font-body: 'Inter',
-            sans-serif;
-
-                {
-                % endif %
-            }
-
             /* Fix: Ensure single line to prevent Jinja/CSS syntax errors */
             /* --theme-color is defined in the body tag */
 
