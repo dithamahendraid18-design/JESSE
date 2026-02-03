@@ -1,6 +1,8 @@
 import os
 import requests
 import json
+from datetime import datetime
+import pytz
 from flask import current_app
 from app.models import MenuItem
 
@@ -158,6 +160,11 @@ class AIService:
     - Special Holidays:
     {holiday_text}
     - Last Order Policy: {buffer_info}
+    
+    ### [TIME CONTEXT]
+    - Current Time: {datetime.now(pytz.timezone(safe_get(client_model, 'timezone', 'UTC'))).strftime('%A, %Y-%m-%d %H:%M')}
+    - Current Status: Compare the 'Current Time' with 'Operating Hours' and 'Special Holidays' above.
+    
     - Delivery Partners: {delivery_partners_txt}
     
     ### [2] GUEST EXPERIENCE & RULES
