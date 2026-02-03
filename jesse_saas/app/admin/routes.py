@@ -104,8 +104,8 @@ def new_client():
         name = request.form['restaurant_name']
         plan_type = request.form['plan_type']
         status = request.form.get('status', 'active')
-        theme_color = request.form.get('theme_color', '#2563EB')
-        logo = request.files.get('restaurant_logo')
+        theme_color = request.form.get('theme_color', '#000000')
+        logo = request.files.get('avatar')
         
         new_client = ClientManager.create_client(
             restaurant_name=name, 
@@ -114,6 +114,7 @@ def new_client():
             theme_color=theme_color,
             logo_file=logo
         )
+        flash(f'Client {name} created successfully.', 'success')
         return redirect(url_for('admin.edit_client', client_id=new_client.id))
         
     return render_template('admin/client_form.html', client=None, kb=None, active_page='clients')

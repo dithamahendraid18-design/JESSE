@@ -14,9 +14,9 @@ from app.services.upload_service import UploadService
 
 class ClientManager:
     @staticmethod
-    def create_client(restaurant_name, plan_type, status='active', theme_color='#2563EB', logo_file=None):
+    def create_client(restaurant_name, plan_type, status='active', theme_color='#000000', logo_file=None):
         """
-        Create a new client with extended parameters and an initial KnowledgeBase.
+        Create a new client with a unique slug and initialized settings.
         """
         # Generate unique slug
         base_slug = slugify(restaurant_name)
@@ -30,23 +30,26 @@ class ClientManager:
         new_client = Client(
             restaurant_name=restaurant_name,
             plan_type=plan_type,
-            slug=slug,
             status=status,
-            theme_color=theme_color
+            theme_color=theme_color,
+            slug=slug
         )
         db.session.add(new_client)
         db.session.commit()
         
-        # Create Empty KB
+        # Create KB
         kb = KnowledgeBase(client_id=new_client.id)
-        db.session.add(kb)
         
-        # Handle Logo Upload if provided
-        if logo_file and logo_file.filename != '':
-            url = UploadService.upload(logo_file, folder='avatars', public_id_prefix=new_client.public_id)
-            if url:
-                kb.avatar_image = url
-                
+        # Handle Logo during creation
+        if logo_file:
+            try:
+                url = UploadService.upload(logo_file, folder='avatars', public_id_prefix=new_client.public_id)
+                if url:
+                    kb.avatar_image = url
+            except Exception as e:
+                print(f"Logo upload failed during creation: {e}")
+
+        db.session.add(kb)
         db.session.commit()
         
         return new_client
@@ -61,7 +64,6 @@ class ClientManager:
         client.slug = form_data.get('slug')
         client.status = form_data.get('status')
         client.theme_color = form_data.get('theme_color')
-        client.plan_type = form_data.get('plan_type')
         client.plan_type = form_data.get('plan_type')
         client.billing_note = form_data.get('billing_note')
         

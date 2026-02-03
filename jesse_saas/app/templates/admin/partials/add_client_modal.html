@@ -1,0 +1,153 @@
+<!-- Add Client Modal Partial -->
+<div id="addClientModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Overlay -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+            onclick="closeAddClientModal()"></div>
+
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal Panel -->
+        <div
+            class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-gray-100">
+            <div class="bg-white px-8 pt-6 pb-4">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-extrabold text-gray-900 flex items-center gap-2">
+                        <span class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                </path>
+                            </svg>
+                        </span>
+                        New Client Setup
+                    </h3>
+                    <button onclick="closeAddClientModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form action="{{ url_for('admin.new_client') }}" method="POST" enctype="multipart/form-data"
+                    class="space-y-5">
+                    <!-- Restaurant Name -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Restaurant Name</label>
+                        <input type="text" name="restaurant_name" required placeholder="e.g. Luna Restaurant & Lounge"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Subscription Tier -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Subscription Tier</label>
+                            <select name="plan_type"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="pro">Pro (Recommended)</option>
+                                <option value="basic">Basic</option>
+                            </select>
+                        </div>
+                        <!-- Status -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Initial Status</label>
+                            <select name="status"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Brand Color -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Primary Brand Color</label>
+                        <div class="flex items-center gap-3">
+                            <div class="relative group">
+                                <input type="color" name="theme_color" value="#3B82F6" id="colorPicker"
+                                    oninput="document.getElementById('colorHex').value = this.value"
+                                    class="w-12 h-12 rounded-lg cursor-pointer border-0 p-0 overflow-hidden">
+                            </div>
+                            <input type="text" id="colorHex" value="#3B82F6"
+                                oninput="document.getElementById('colorPicker').value = this.value"
+                                class="flex-1 px-4 py-3 rounded-xl border border-gray-200 font-mono text-sm uppercase outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Logo Upload -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Restaurant Logo (Optional)</label>
+                        <div
+                            class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-blue-400 transition-colors bg-gray-50">
+                            <div class="space-y-1 text-center">
+                                <svg class="mx-auto h-10 w-10 text-gray-400" stroke="currentColor" fill="none"
+                                    viewBox="0 0 48 48" aria-hidden="true">
+                                    <path
+                                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <div class="flex text-sm text-gray-600">
+                                    <label for="file-upload"
+                                        class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                        <span>Upload a file</span>
+                                        <input id="file-upload" name="avatar" type="file" class="sr-only"
+                                            accept="image/*">
+                                    </label>
+                                    <p class="pl-1">or drag and drop</p>
+                                </div>
+                                <p class="text-xs text-gray-500">PNG, JPG, WebP up to 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="pt-4 flex gap-3">
+                        <button type="button" onclick="closeAddClientModal()"
+                            class="flex-1 px-4 py-3 border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="flex-[2] px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+                            Create Client
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAddClientModal() {
+        document.getElementById('addClientModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeAddClientModal() {
+        document.getElementById('addClientModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Drag and drop visual feedback
+    document.addEventListener('DOMContentLoaded', () => {
+        const dropZone = document.querySelector('.border-dashed');
+        if (dropZone) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('border-blue-500', 'bg-blue-50'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('border-blue-500', 'bg-blue-50'), false);
+            });
+        }
+    });
+</script>
