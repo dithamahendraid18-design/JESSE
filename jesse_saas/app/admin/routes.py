@@ -103,8 +103,17 @@ def new_client():
     if request.method == 'POST':
         name = request.form['restaurant_name']
         plan_type = request.form['plan_type']
+        status = request.form.get('status', 'active')
+        theme_color = request.form.get('theme_color', '#2563EB')
+        logo = request.files.get('restaurant_logo')
         
-        new_client = ClientManager.create_client(name, plan_type)
+        new_client = ClientManager.create_client(
+            restaurant_name=name, 
+            plan_type=plan_type,
+            status=status,
+            theme_color=theme_color,
+            logo_file=logo
+        )
         return redirect(url_for('admin.edit_client', client_id=new_client.id))
         
     return render_template('admin/client_form.html', client=None, kb=None, active_page='clients')

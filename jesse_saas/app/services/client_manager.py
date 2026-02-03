@@ -14,9 +14,9 @@ from app.services.upload_service import UploadService
 
 class ClientManager:
     @staticmethod
-    def create_client(restaurant_name, plan_type):
+    def create_client(restaurant_name, plan_type, status='active', theme_color='#2563EB', logo_file=None):
         """
-        Create a new client with a unique slug and an empty KnowledgeBase.
+        Create a new client with extended parameters and an initial KnowledgeBase.
         """
         # Generate unique slug
         base_slug = slugify(restaurant_name)
@@ -30,7 +30,9 @@ class ClientManager:
         new_client = Client(
             restaurant_name=restaurant_name,
             plan_type=plan_type,
-            slug=slug
+            slug=slug,
+            status=status,
+            theme_color=theme_color
         )
         db.session.add(new_client)
         db.session.commit()
@@ -38,6 +40,13 @@ class ClientManager:
         # Create Empty KB
         kb = KnowledgeBase(client_id=new_client.id)
         db.session.add(kb)
+        
+        # Handle Logo Upload if provided
+        if logo_file and logo_file.filename != '':
+            url = UploadService.upload(logo_file, folder='avatars', public_id_prefix=new_client.public_id)
+            if url:
+                kb.avatar_image = url
+                
         db.session.commit()
         
         return new_client
