@@ -100,7 +100,7 @@ def create_app(config_class=Config):
     def utility_processor():
         def resolve_file(filename, folder='', width=None):
             return UploadService.resolve_url(filename, width=width)
-        return dict(resolve_file=resolve_file)
+        return dict(resolve_file=resolve_file, resolve_url=UploadService.resolve_url)
 
     @app.route('/uploads/<path:filename>')
     def uploaded_file(filename):
