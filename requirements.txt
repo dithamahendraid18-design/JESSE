@@ -5,10 +5,11 @@ Flask-CORS
 python-dotenv
 cloudinary
 python-slugify
-openai
 pytz
 gunicorn
 psycopg2-binary
 requests
 sqlalchemy
 werkzeug
+qrcode
+Pillow
