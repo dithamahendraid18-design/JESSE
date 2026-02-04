@@ -153,7 +153,7 @@ class AIService:
             try:
                 op_hours = safe_get(client_model, 'operating_hours')
                 hours_json = json.loads(op_hours or '{}')
-                if isinstance(hours_json, dict) and 'monday' in hours_json:
+                if isinstance(hours_json, dict) and len(hours_json) > 0:
                     h_lines = []
                     for day, data in hours_json.items():
                         if data.get('is_closed'):
