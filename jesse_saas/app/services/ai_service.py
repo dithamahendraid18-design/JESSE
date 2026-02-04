@@ -358,7 +358,7 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
             print(f"AI Service Critical Error: {e}")
             import traceback
             traceback.print_exc()
-            return "I'm having a technical issue processing your request. Please contact support."
+            return f"DEBUG: I'm having a technical issue: {str(e)}"
 
     @staticmethod
     def _call_groq(api_key, model, system, user, temp, tokens):
