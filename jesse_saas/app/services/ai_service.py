@@ -210,6 +210,10 @@ class AIService:
             "unprofessional", "slow service", "lama sekali", "terrible", "buruk"
         ]
 
+        # --- [5] DATA REFINEMENT (Internationalization) ---
+        facilities_txt = safe_get(client_model, 'facilities_list') or 'Not specified'
+        facilities_txt = facilities_txt.replace('Mushola', 'Prayer Room')
+
         # Final Template V2 (Optimized)
         rest_name = safe_get(client_model, 'restaurant_name', 'the restaurant')
         system_prompt = f"""
@@ -257,7 +261,7 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
 
 ### [3] FACILITIES
 - Seating: {seating_data}
-- Facilities: {safe_get(client_model, 'facilities_list')} (e.g., Wheelchair access, Prayer room)
+- Facilities: {facilities_txt} (e.g., Wheelchair access, Prayer room)
 
 ### [4] MENU DATABASE
 (Use this data strictly for food queries. Check allergens carefully.)
