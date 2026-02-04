@@ -188,10 +188,21 @@ class AIService:
         mgr_contact_info = f"Email: {mgr_email} | WhatsApp: {mgr_phone}"
 
         # --- [4] HARDCODED TRIGGERS (Absolute vs Contextual) ---
-        # TRIGGER_MUTLAK: High-risk/Illegal issues. AI MUST stop immediately.
-        TRIGGER_MUTLAK = ["poison", "racun", "police", "polisi", "suicide", "bunuh diri", "scam", "penipuan", "illegal", "narkoba", "drugs"]
-        # TRIGGER_KONTEKSTUAL: Service issues. AI speaks with empathy then hands off.
-        TRIGGER_KONTEKSTUAL = ["complaint", "komplain", "kecewa", "angry", "marah", "rude", "kasar", "refund", "pengembalian", "manager", "atasan", "owner"]
+        # TRIGGER_MUTLAK: High-risk/Illegal/Emergency. AI MUST provide contact politely but immediately.
+        TRIGGER_MUTLAK = [
+            "poison", "racun", "police", "polisi", "suicide", "bunuh diri", "scam", "penipuan", 
+            "illegal", "narkoba", "drugs", "assault", "emergency", "darurat", "fire", "kebakaran",
+            "medical", "medis", "injury", "luka", "allergic reaction", "alergi parah", "hospital",
+            "sexual harassment", "pelecehan", "theft", "pencurian", "robbery", "rampok", "threat", "ancaman"
+        ]
+        # TRIGGER_KONTEKSTUAL: Service issues/Feedback. AI speaks with empathy then hands off.
+        TRIGGER_KONTEKSTUAL = [
+            "complaint", "komplain", "kecewa", "angry", "marah", "rude", "kasar", "refund", 
+            "pengembalian", "manager", "atasan", "owner", "bad service", "pelayanan buruk",
+            "hair in food", "rambut di makanan", "cold food", "makanan dingin", "dirty", "kotor",
+            "wrong order", "salah pesanan", "overcharged", "mahal sekali", "disappointed",
+            "unprofessional", "slow service", "lama sekali", "terrible", "buruk"
+        ]
 
         # Final Template V2 (Optimized)
         rest_name = safe_get(client_model, 'restaurant_name', 'the restaurant')
@@ -204,8 +215,8 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
 
 ### CRITICAL RULES (SAFETY & BEHAVIOR)
 1. **TRIGGER MUTLAK (ABSOLUTE):** If user mentions keywords from this list: {TRIGGER_MUTLAK}.
-   - **ACTION:** STOP all conversation. Do NOT apologize. Do NOT explain. 
-   - **REPLY ONLY WITH:** "I apologize, but for safety and legal reasons, I cannot handle this request. Please contact our Manager immediately at {mgr_contact_info}."
+   - **ACTION:** STOP all standard concierge tasks. 
+   - **REPLY:** "I apologize for the gravity of this situation. For your safety and to ensure the most appropriate assistance, I cannot handle this request. Please contact our Management directly and immediately at {mgr_contact_info}."
 2. **TRIGGER KONTEKSTUAL (CONTEXTUAL):** If user mentions keywords from this list: {TRIGGER_KONTEKSTUAL} or shows frustration/anger.
    - **ACTION:** Show extreme empathy. Apologize sincerely for the inconvenience. 
    - **REPLY:** Briefly state that you are an AI and cannot solve this directly, then provide the Manager's contact ({mgr_contact_info}) to ensure they get the best help.
