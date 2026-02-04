@@ -246,7 +246,12 @@
     function renderSchedule() {
         scheduleRows.innerHTML = '';
         days.forEach(day => {
-            const data = hoursData[day] || { is_closed: false, shifts: [{ start: '09:00', end: '21:00' }] };
+            // Ensure data exists in hoursData object (fix for save issue)
+            if (!hoursData[day]) {
+                hoursData[day] = { is_closed: false, shifts: [{ start: '09:00', end: '21:00' }] };
+            }
+            const data = hoursData[day];
+
             if (!data.shifts) data.shifts = [{ start: '09:00', end: '21:00' }];
 
             const row = document.createElement('div');
