@@ -32,13 +32,22 @@
                         <label class="block text-sm font-bold text-gray-700 mb-2">Restaurant Timezone</label>
                         <select name="timezone"
                             class="w-full border-gray-200 rounded-lg px-4 py-2.5 bg-white focus:ring-2 focus:ring-blue-500 text-sm">
+                            <option value="UTC" {% if client.timezone=='UTC' %}selected{% endif %}>UTC (Universal)
+                            </option>
+                            <option value="America/New_York" {% if client.timezone=='America/New_York' %}selected{%
+                                endif %}>America/New_York (EST)</option>
+                            <option value="America/Los_Angeles" {% if client.timezone=='America/Los_Angeles'
+                                %}selected{% endif %}>America/Los_Angeles (PST)</option>
+                            <option value="Europe/London" {% if client.timezone=='Europe/London' %}selected{% endif %}>
+                                Europe/London (GMT)</option>
+                            <option value="Asia/Singapore" {% if client.timezone=='Asia/Singapore' %}selected{% endif
+                                %}>Asia/Singapore</option>
                             <option value="Asia/Jakarta" {% if client.timezone=='Asia/Jakarta' %}selected{% endif %}>
                                 Asia/Jakarta (WIB)</option>
                             <option value="Asia/Makassar" {% if client.timezone=='Asia/Makassar' %}selected{% endif %}>
                                 Asia/Makassar (WITA)</option>
                             <option value="Asia/Jayapura" {% if client.timezone=='Asia/Jayapura' %}selected{% endif %}>
                                 Asia/Jayapura (WIT)</option>
-                            <option value="UTC" {% if client.timezone=='UTC' %}selected{% endif %}>UTC</option>
                         </select>
                         <p class="text-[10px] text-blue-500 mt-2">Penting: Pastikan zona waktu sesuai agar JESSE tidak
                             salah menjawab status buka/tutup.</p>

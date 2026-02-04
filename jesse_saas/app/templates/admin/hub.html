@@ -216,36 +216,6 @@
             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Regional & Contact Details</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Row 1: Operating Hours & Timezone -->
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Operating Hours (Schedule)</label>
-                        <textarea name="operating_hours" rows="2"
-                            placeholder="Mon-Fri: 09:00 - 22:00&#10;Sat-Sun: 10:00 - 23:00"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.operating_hours or '' }}</textarea>
-                        <p class="text-xs text-gray-500 mt-1">Format: Day: Start - End. The Bot uses this to answer "Are
-                            you open?".</p>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
-                        <select name="timezone"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="UTC" {% if client.timezone=='UTC' %}selected{% endif %}>UTC (Universal)
-                            </option>
-                            <option value="America/New_York" {% if client.timezone=='America/New_York' %}selected{%
-                                endif %}>America/New_York (EST)</option>
-                            <option value="America/Los_Angeles" {% if client.timezone=='America/Los_Angeles'
-                                %}selected{% endif %}>America/Los_Angeles (PST)</option>
-                            <option value="Europe/London" {% if client.timezone=='Europe/London' %}selected{% endif %}>
-                                Europe/London (GMT)</option>
-                            <option value="Asia/Singapore" {% if client.timezone=='Asia/Singapore' %}selected{% endif
-                                %}>Asia/Singapore</option>
-                            <option value="Asia/Jakarta" {% if client.timezone=='Asia/Jakarta' %}selected{% endif %}>
-                                Asia/Jakarta</option>
-                        </select>
-                        <p class="text-xs text-gray-500 mt-1">Set this correctly so the 'Open/Closed' logic matches the
-                            client's local time.</p>
-                    </div>
-
                     <!-- Row 2: Address -->
                     <div class="col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Full Address</label>
