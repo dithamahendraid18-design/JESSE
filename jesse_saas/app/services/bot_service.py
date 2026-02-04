@@ -129,7 +129,6 @@ class BotService:
         client.show_ai_disclaimer = True if form_data.get('show_ai_disclaimer') == 'true' else False
         client.operating_hours = form_data.get('operating_hours')
         
-        kb.human_handoff_triggers = form_data.get('human_handoff_triggers')
         kb.holiday_dates = form_data.get('holiday_dates')
         kb.use_last_order_buffer = True if form_data.get('use_last_order_buffer') == 'true' else False
         try:
