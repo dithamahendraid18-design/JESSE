@@ -187,6 +187,11 @@ class AIService:
 
         mgr_contact_info = f"Email: {mgr_email} | WhatsApp: {mgr_phone}"
         handoff_reply_custom = safe_get(kb, 'handoff_reply', 'I will connect you to our manager immediately to resolve this.')
+        
+        # Replace placeholders for better UI/UX sync
+        handoff_reply_custom = handoff_reply_custom.replace('{{public_phone}}', safe_get(client_model, 'public_phone', 'staff contact'))
+        handoff_reply_custom = handoff_reply_custom.replace('{{public_email}}', safe_get(client_model, 'public_email', 'management email'))
+        handoff_reply_custom = handoff_reply_custom.replace('{{mgr_contact}}', mgr_contact_info)
 
         # --- [4] HARDCODED TRIGGERS (Absolute vs Contextual) ---
         # TRIGGER_MUTLAK: High-risk/Illegal/Emergency. AI MUST provide contact politely but immediately.
