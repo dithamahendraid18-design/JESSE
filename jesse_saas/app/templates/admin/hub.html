@@ -492,10 +492,8 @@
                         <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Physical Amenities
                         </h4>
                         <div class="grid grid-cols-2 gap-2 mb-4">
-                            {% for amenity in ['Outdoor Seating', 'AC / Indoor', 'Wheelchair Accessible', 'Valet
-                            Parking',
-                            'EV Charging', 'Smoking Area', 'Non-Smoking', 'Power Outlets', 'Live Music',
-                            'Pet Friendly', 'Rooftop', 'Bar Seating', 'Prayer Room'] %}
+                            {% for amenity in ['Outdoor', 'AC', 'Toilet', 'Mushola', 'Wheelchair', 'Power Outlets',
+                            'Live Music', 'Pet Friendly'] %}
                             <label
                                 class="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
                                 <input type="checkbox"
@@ -511,9 +509,8 @@
                         </div>
 
                         <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Family & Kids</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            {% for family in ['Baby Chair', 'Kids Menu', 'Playground', 'Changing Table', 'Stroller
-                            Parking', 'Kids Cutlery'] %}
+                        <div class="flex gap-3">
+                            {% for family in ['Baby Chair', 'Kids Menu'] %}
                             <label
                                 class="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
                                 <input type="checkbox"
