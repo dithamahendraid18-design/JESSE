@@ -148,111 +148,111 @@ class AIService:
             p_length = safe_get(kb, 'personality_length', 'concise')
             tone_instruction = f"{tone_map.get(p_tone, tone_map['friendly'])} {emoji_map.get(p_emoji, emoji_map['minimal'])} {length_map.get(p_length, length_map['concise'])}"
     
-        # --- [1] LOGIKA WAKTU (Backend Calculation) ---
-        operating_hours_text = "Open daily"
-        try:
-            op_hours = safe_get(client_model, 'operating_hours')
-            hours_json = json.loads(op_hours or '{}')
-            if isinstance(hours_json, dict) and 'monday' in hours_json:
-                h_lines = []
-                for day, data in hours_json.items():
-                    if data.get('is_closed'):
-                        h_lines.append(f"- {day.capitalize()}: CLOSED")
-                    else:
-                        shifts = data.get('shifts', [])
-                        shift_str = ", ".join([f"{s['start']}-{s['end']}" for s in shifts])
-                        h_lines.append(f"- {day.capitalize()}: {shift_str}")
-                operating_hours_text = "\n".join(h_lines)
-            else:
-                operating_hours_text = str(op_hours or 'Open daily')
-        except: pass
+            # --- [1] LOGIKA WAKTU (Backend Calculation) ---
+            operating_hours_text = "Open daily"
+            try:
+                op_hours = safe_get(client_model, 'operating_hours')
+                hours_json = json.loads(op_hours or '{}')
+                if isinstance(hours_json, dict) and 'monday' in hours_json:
+                    h_lines = []
+                    for day, data in hours_json.items():
+                        if data.get('is_closed'):
+                            h_lines.append(f"- {day.capitalize()}: CLOSED")
+                        else:
+                            shifts = data.get('shifts', [])
+                            shift_str = ", ".join([f"{s['start']}-{s['end']}" for s in shifts])
+                            h_lines.append(f"- {day.capitalize()}: {shift_str}")
+                    operating_hours_text = "\n".join(h_lines)
+                else:
+                    operating_hours_text = str(op_hours or 'Open daily')
+            except: pass
 
-        tz_name = safe_get(client_model, 'timezone', 'UTC')
-        now_in_tz = datetime.now(pytz.timezone(tz_name))
-        is_open_now = AIService.check_restaurant_status(client_model, now_in_tz)
-        status_str = "OPEN" if is_open_now else "CLOSED"
+            tz_name = safe_get(client_model, 'timezone', 'UTC')
+            now_in_tz = datetime.now(pytz.timezone(tz_name))
+            is_open_now = AIService.check_restaurant_status(client_model, now_in_tz)
+            status_str = "OPEN" if is_open_now else "CLOSED"
 
-        # --- [2] LOGIKA EKSTRA (Social & Delivery) ---
-        social_links = []
-        if safe_get(client_model, 'instagram_url'): social_links.append(f"Instagram: {client_model.instagram_url}")
-        if safe_get(client_model, 'whatsapp_url'): social_links.append(f"WhatsApp: {client_model.whatsapp_url}")
-        if safe_get(client_model, 'tiktok_url'): social_links.append(f"TikTok: {client_model.tiktok_url}")
-        if safe_get(client_model, 'youtube_url'): social_links.append(f"YouTube: {client_model.youtube_url}")
-        social_media_text = ", ".join(social_links) if social_links else "Follow us on social media for updates."
+            # --- [2] LOGIKA EKSTRA (Social & Delivery) ---
+            social_links = []
+            if safe_get(client_model, 'instagram_url'): social_links.append(f"Instagram: {client_model.instagram_url}")
+            if safe_get(client_model, 'whatsapp_url'): social_links.append(f"WhatsApp: {client_model.whatsapp_url}")
+            if safe_get(client_model, 'tiktok_url'): social_links.append(f"TikTok: {client_model.tiktok_url}")
+            if safe_get(client_model, 'youtube_url'): social_links.append(f"YouTube: {client_model.youtube_url}")
+            social_media_text = ", ".join(social_links) if social_links else "Follow us on social media for updates."
 
-        delivery_partners_txt = "Not currently listed."
-        try:
-            dp = safe_get(client_model, 'delivery_partners')
-            if dp:
-                partners = json.loads(dp)
-                if isinstance(partners, list):
-                    delivery_partners_txt = ", ".join([f"{p.get('platform', 'Partner')}: {p.get('url', '')}" for p in partners])
-        except: pass
+            delivery_partners_txt = "Not currently listed."
+            try:
+                dp = safe_get(client_model, 'delivery_partners')
+                if dp:
+                    partners = json.loads(dp)
+                    if isinstance(partners, list):
+                        delivery_partners_txt = ", ".join([f"{p.get('platform', 'Partner')}: {p.get('url', '')}" for p in partners])
+            except: pass
 
-        # --- [3] CONTACT INFO HANDOFF (Manager) ---
-        mgr_email = "the manager"
-        mgr_phone = safe_get(client_model, 'public_phone') or "staff"
-        
-        try:
-            handoff = safe_get(kb, 'handoff_notifications')
-            if handoff:
-                h_json = json.loads(handoff)
-                if h_json.get('email_address'): mgr_email = h_json['email_address']
-                if h_json.get('wa_number'): mgr_phone = h_json['wa_number']
-        except: pass
+            # --- [3] CONTACT INFO HANDOFF (Manager) ---
+            mgr_email = "the manager"
+            mgr_phone = safe_get(client_model, 'public_phone') or "staff"
+            
+            try:
+                handoff = safe_get(kb, 'handoff_notifications')
+                if handoff:
+                    h_json = json.loads(handoff)
+                    if h_json.get('email_address'): mgr_email = h_json['email_address']
+                    if h_json.get('wa_number'): mgr_phone = h_json['wa_number']
+            except: pass
 
-        mgr_contact_info = f"Email: {mgr_email} | WhatsApp: {mgr_phone}"
-        handoff_reply_custom = safe_get(kb, 'handoff_reply', 'I will connect you to our manager immediately to resolve this.')
-        
-        # Replace placeholders for better UI/UX sync
-        handoff_reply_custom = handoff_reply_custom.replace('{{public_phone}}', safe_get(client_model, 'public_phone', 'staff contact'))
-        handoff_reply_custom = handoff_reply_custom.replace('{{public_email}}', safe_get(client_model, 'public_email', 'management email'))
-        handoff_reply_custom = handoff_reply_custom.replace('{{mgr_contact}}', mgr_contact_info)
+            mgr_contact_info = f"Email: {mgr_email} | WhatsApp: {mgr_phone}"
+            handoff_reply_custom = safe_get(kb, 'handoff_reply', 'I will connect you to our manager immediately to resolve this.')
+            
+            # Replace placeholders for better UI/UX sync
+            handoff_reply_custom = handoff_reply_custom.replace('{{public_phone}}', safe_get(client_model, 'public_phone', 'staff contact'))
+            handoff_reply_custom = handoff_reply_custom.replace('{{public_email}}', safe_get(client_model, 'public_email', 'management email'))
+            handoff_reply_custom = handoff_reply_custom.replace('{{mgr_contact}}', mgr_contact_info)
 
-        # --- [4] HARDCODED TRIGGERS (Absolute vs Contextual) ---
-        # TRIGGER_MUTLAK: High-risk/Illegal/Emergency. AI MUST provide contact politely but immediately.
-        TRIGGER_MUTLAK = [
-            "poison", "racun", "police", "polisi", "suicide", "bunuh diri", "scam", "penipuan", 
-            "illegal", "narkoba", "drugs", "assault", "emergency", "darurat", "fire", "kebakaran",
-            "medical", "medis", "injury", "luka", "allergic reaction", "alergi parah", "hospital",
-            "sexual harassment", "pelecehan", "theft", "pencurian", "robbery", "rampok", "threat", "ancaman"
-        ]
-        # TRIGGER_KONTEKSTUAL: Service issues/Feedback. AI speaks with empathy then hands off.
-        TRIGGER_KONTEKSTUAL = [
-            "complaint", "komplain", "kecewa", "angry", "marah", "rude", "kasar", "refund", 
-            "pengembalian", "manager", "atasan", "owner", "bad service", "pelayanan buruk",
-            "hair in food", "rambut di makanan", "cold food", "makanan dingin", "dirty", "kotor",
-            "wrong order", "salah pesanan", "overcharged", "mahal sekali", "disappointed",
-            "unprofessional", "slow service", "lama sekali", "terrible", "buruk"
-        ]
+            # --- [4] HARDCODED TRIGGERS (Absolute vs Contextual) ---
+            # TRIGGER_MUTLAK: High-risk/Illegal/Emergency. AI MUST provide contact politely but immediately.
+            TRIGGER_MUTLAK = [
+                "poison", "racun", "police", "polisi", "suicide", "bunuh diri", "scam", "penipuan", 
+                "illegal", "narkoba", "drugs", "assault", "emergency", "darurat", "fire", "kebakaran",
+                "medical", "medis", "injury", "luka", "allergic reaction", "alergi parah", "hospital",
+                "sexual harassment", "pelecehan", "theft", "pencurian", "robbery", "rampok", "threat", "ancaman"
+            ]
+            # TRIGGER_KONTEKSTUAL: Service issues/Feedback. AI speaks with empathy then hands off.
+            TRIGGER_KONTEKSTUAL = [
+                "complaint", "komplain", "kecewa", "angry", "marah", "rude", "kasar", "refund", 
+                "pengembalian", "manager", "atasan", "owner", "bad service", "pelayanan buruk",
+                "hair in food", "rambut di makanan", "cold food", "makanan dingin", "dirty", "kotor",
+                "wrong order", "salah pesanan", "overcharged", "mahal sekali", "disappointed",
+                "unprofessional", "slow service", "lama sekali", "terrible", "buruk"
+            ]
 
-        # --- [5] DATA REFINEMENT (Internationalization) ---
-        facilities_txt = safe_get(client_model, 'facilities_list') or 'Not specified'
-        facilities_txt = facilities_txt.replace('Mushola', 'Prayer Room')
-        family_facilities = safe_get(client_model, 'family_facilities_list') or 'None listed'
+            # --- [5] DATA REFINEMENT (Internationalization) ---
+            facilities_txt = safe_get(client_model, 'facilities_list') or 'Not specified'
+            facilities_txt = facilities_txt.replace('Mushola', 'Prayer Room')
+            family_facilities = safe_get(client_model, 'family_facilities_list') or 'None listed'
 
-        # Special Holidays & Buffers
-        holiday_text = "Standard schedule applies."
-        try:
-            holidays = safe_get(kb, 'holiday_dates')
-            if holidays:
-                h_list = json.loads(holidays)
-                if h_list:
-                    holiday_text = "\n".join([f"- {h['date']}: {h['name']}" for h in h_list])
-        except: pass
+            # Special Holidays & Buffers
+            holiday_text = "Standard schedule applies."
+            try:
+                holidays = safe_get(kb, 'holiday_dates')
+                if holidays:
+                    h_list = json.loads(holidays)
+                    if h_list:
+                        holiday_text = "\n".join([f"- {h['date']}: {h['name']}" for h in h_list])
+            except: pass
 
-        buffer_text = "None"
-        if safe_get(kb, 'use_last_order_buffer'):
-            buffer_text = f"{safe_get(kb, 'last_order_buffer', 30)} minutes before closing."
+            buffer_text = "None"
+            if safe_get(kb, 'use_last_order_buffer'):
+                buffer_text = f"{safe_get(kb, 'last_order_buffer', 30)} minutes before closing."
 
-        # Policies
-        dep_pol = safe_get(client_model, 'deposit_policy') or "No deposit required for standard bookings."
-        late_pol = safe_get(client_model, 'late_arrival_policy') or "Tables are typically held for 15 minutes."
-        about_text = safe_get(kb, 'about_us') or f"Welcome to {rest_name}."
+            # Policies
+            dep_pol = safe_get(client_model, 'deposit_policy') or "No deposit required for standard bookings."
+            late_pol = safe_get(client_model, 'late_arrival_policy') or "Tables are typically held for 15 minutes."
+            about_text = safe_get(kb, 'about_us') or f"Welcome to {rest_name}."
 
-        # Final Template V2 (Optimized)
-        rest_name = safe_get(client_model, 'restaurant_name', 'the restaurant')
-        system_prompt = f"""
+            # Final Template V2 (Optimized)
+            rest_name = safe_get(client_model, 'restaurant_name', 'the restaurant')
+            system_prompt = f"""
 ### IDENTITY & ROLE
 You are JESSE, the specialized AI Concierge for {rest_name}.
 - Your Goal: Serve guests, answer questions about the menu/venue, and facilitate bookings.
@@ -314,7 +314,7 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
 1. Check the **Current Status** ({status_str}) before inviting guests.
 2. If asked about allergens (Vegan, Nut-free), CHECK the tags in [MENU DATABASE]. If unsure, say "I cannot guarantee, please ask staff."
 3. End with a helpful question or Call-to-Action (e.g., "Would you like to book a table?").
-"""
+            """
     
             # 3. API Key
             api_key = safe_get(kb, 'ai_api_key')
