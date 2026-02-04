@@ -105,16 +105,32 @@ class AIService:
             if menu_items:
                 for item in menu_items:
                     price_str = f"{currency}{item.price}"
+                    # Promo price check
+                    if item.original_price and item.original_price > item.price:
+                        price_str = f"{currency}{item.price} (Special Promo! Was {currency}{item.original_price})"
+                    
                     labels = item.labels if item.labels else ""
+                    
+                    # Extra metadata
+                    meta = []
+                    if item.spiciness_level and item.spiciness_level > 0:
+                        meta.append(f"Spiciness: {item.spiciness_level}/3")
+                    if item.prep_time:
+                        meta.append(f"Prep Time: {item.prep_time}")
+                    if item.portion_size:
+                        meta.append(f"Portion: {item.portion_size}")
+                    
+                    meta_str = f" [{', '.join(meta)}]" if meta else ""
+                    
                     allergens = f"Allergens: {item.allergy_info}" if item.allergy_info else "No allergens reported"
                     
-                    # Format: "- Truffle Risotto ($28): Vegetarian, Contains Dairy."
+                    # Format: "- Truffle Risotto ($28): Vegetarian, Contains Dairy. [Spiciness: 1/3, Prep Time: 15 mins]"
                     menu_items_detailed.append(
-                        f"- {item.name} ({price_str}): {labels}{', ' if labels and allergens else ''}{allergens}."
+                        f"- {item.name} ({price_str}): {labels}{', ' if labels and allergens else ''}{allergens}.{meta_str}"
                     )
-                full_menu_database = "\n".join(menu_items_detailed)
+                full_database_context = "\n".join(menu_items_detailed)
             else:
-                full_menu_database = "Menu is currently being updated. Please ask staff for details."
+                full_database_context = "Menu is currently being updated. Please ask staff for details."
     
             # Personality Tone
             tone_map = {
@@ -213,6 +229,26 @@ class AIService:
         # --- [5] DATA REFINEMENT (Internationalization) ---
         facilities_txt = safe_get(client_model, 'facilities_list') or 'Not specified'
         facilities_txt = facilities_txt.replace('Mushola', 'Prayer Room')
+        family_facilities = safe_get(client_model, 'family_facilities_list') or 'None listed'
+
+        # Special Holidays & Buffers
+        holiday_text = "Standard schedule applies."
+        try:
+            holidays = safe_get(kb, 'holiday_dates')
+            if holidays:
+                h_list = json.loads(holidays)
+                if h_list:
+                    holiday_text = "\n".join([f"- {h['date']}: {h['name']}" for h in h_list])
+        except: pass
+
+        buffer_text = "None"
+        if safe_get(kb, 'use_last_order_buffer'):
+            buffer_text = f"{safe_get(kb, 'last_order_buffer', 30)} minutes before closing."
+
+        # Policies
+        dep_pol = safe_get(client_model, 'deposit_policy') or "No deposit required for standard bookings."
+        late_pol = safe_get(client_model, 'late_arrival_policy') or "Tables are typically held for 15 minutes."
+        about_text = safe_get(kb, 'about_us') or f"Welcome to {rest_name}."
 
         # Final Template V2 (Optimized)
         rest_name = safe_get(client_model, 'restaurant_name', 'the restaurant')
@@ -240,7 +276,8 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
 - Adjust vocabulary to match this persona strictly.
 - Keep answers concise and helpful.
 
-### [1] CONTEXT: LOCATION & OPS
+### [1] CONTEXT: LOCATION & ABOUT
+- **About Us:** {about_text}
 - Address: {safe_get(client_model, 'address') or 'Please contact us for address'}
 - Directions: {safe_get(client_model, 'direction_note') or 'Nearby'}
 - Parking: {safe_get(client_model, 'parking_info') or 'Public parking available'}
@@ -248,24 +285,30 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
 - Social Media: {social_media_text}
 - Delivery Partners: {delivery_partners_txt}
 - WiFi: SSID "{safe_get(client_model, 'wifi_ssid', 'Ask Staff')}" | Pass "{safe_get(client_model, 'wifi_password', 'Ask Staff')}"
+
+### [2] OPERATIONS & POLICIES
 - **Operating Hours:**
 {operating_hours_text}
+- **Special Holiday Closures:**
+{holiday_text}
 - **Current Time (Server):** {now_in_tz.strftime('%A, %Y-%m-%d %I:%M %p')}
 - **Open Status:** {status_str} (Trust this status over the hours list).
-
-### [2] GUEST POLICIES
+- **Last Order Buffer:** {buffer_text}
 - Payment: {safe_get(kb, 'payment_methods', 'Cash & Cards')}
 - Reservation: {safe_get(client_model, 'booking_url') or 'Walk-ins welcome'}
-- Policy: {safe_get(kb, 'policy_info', 'Standard rules apply')}
+- **Deposit Policy:** {dep_pol}
+- **Late Arrival Policy:** {late_pol}
+- General Policy: {safe_get(kb, 'policy_info', 'Standard rules apply')}
 - Tax/Gratuity Info: {safe_get(kb, 'tax_info', 'Included in prices unless specified')}
 
 ### [3] FACILITIES
 - Seating: {seating_data}
-- Facilities: {facilities_txt} (e.g., Wheelchair access, Prayer room)
+- Physical Facilities: {facilities_txt}
+- **Family & Kids Facilities:** {family_facilities} (e.g., Baby Chair)
 
 ### [4] MENU DATABASE
-(Use this data strictly for food queries. Check allergens carefully.)
-{full_menu_database}
+(Use this data strictly for food queries. Check allergens and metadata carefully.)
+{full_database_context}
 
 ### RESPONSE INSTRUCTIONS
 1. Check the **Current Status** ({status_str}) before inviting guests.
