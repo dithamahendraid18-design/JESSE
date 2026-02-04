@@ -109,26 +109,28 @@
                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
                             </path>
                         </svg>
-                        <h3 class="text-xl font-bold text-gray-800 uppercase tracking-wide">Safety & Handoff</h3>
+                        <h3 class="text-xl font-bold text-gray-800 uppercase tracking-wide">Manager Contact & Handoff
+                        </h3>
                     </div>
 
                     <!-- Emergency Keywords -->
                     <div class="mb-6">
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Emergency Keywords (Handoff
-                            Triggers)</label>
-                        <textarea name="human_handoff_triggers" rows="3"
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Handoff Triggers (Emergency
+                            Keywords)</label>
+                        <textarea name="human_handoff_triggers" rows="2"
                             class="w-full border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 text-sm font-mono"
                             placeholder="scam, police, manager, complaint">{{ kb.human_handoff_triggers or '' }}</textarea>
-                        <p class="text-[10px] text-gray-400 mt-2 uppercase">Gunakan koma sebagai pemisah. Bot akan
-                            berhenti menjawab otomatis jika kata ini muncul.</p>
+                        <p class="text-[10px] text-gray-400 mt-2 uppercase">Bot akan berhenti menjawab otomatis dan
+                            beralih ke Manager jika kata ini muncul.</p>
                     </div>
 
-                    <!-- Notifications -->
+                    <!-- Manager Contact Information -->
                     <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-6">
-                        <label class="block text-sm font-bold text-gray-700 mb-4">Notification Settings</label>
+                        <label class="block text-sm font-bold text-gray-700 mb-4">Manager Contact (For
+                            Safety/Complaints)</label>
                         <div id="notifications-config" class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600">Email Notification</span>
+                                <span class="text-sm text-gray-600">Manager Email</span>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="notify-email-toggle" class="sr-only peer">
                                     <div
@@ -139,10 +141,11 @@
                             <div id="email-address-container" class="hidden animate-fade-in">
                                 <input type="email" id="notify-email-address" placeholder="manager@example.com"
                                     class="w-full border-gray-200 rounded-lg text-sm px-4 py-2">
-                                <p class="text-[10px] text-gray-400 mt-1">Alamat email untuk menerima alert handoff.</p>
+                                <p class="text-[10px] text-gray-400 mt-1">AI akan merujuk email ini untuk komplain
+                                    serius.</p>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600">WhatsApp Notification</span>
+                                <span class="text-sm text-gray-600">Manager WhatsApp</span>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="notify-wa-toggle" class="sr-only peer">
                                     <div
@@ -153,7 +156,8 @@
                             <div id="wa-number-container" class="hidden animate-fade-in">
                                 <input type="text" id="notify-wa-number" placeholder="628123456789"
                                     class="w-full border-gray-200 rounded-lg text-sm px-4 py-2">
-                                <p class="text-[10px] text-gray-400 mt-1">Gunakan format kode negara (62).</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Gunakan format kode negara (62). AI akan
+                                    merujuk nomor ini untuk keadaan darurat.</p>
                             </div>
                         </div>
                         <input type="hidden" name="handoff_notifications" id="handoff-notifications-input"
@@ -186,6 +190,13 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Tax & Gratuity Information</label>
+                        <textarea name="tax_info" rows="2" placeholder="e.g. 10% VAT and 5% Service Charge included."
+                            class="w-full border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 text-sm">{{ kb.tax_info or '' }}</textarea>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase">Sebutkan jika harga sudah termasuk pajak
+                            atau ada biaya tambahan.</p>
+                    </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Privacy Policy URL</label>
                         <input type="url" name="privacy_policy_url" value="{{ client.privacy_policy_url or '' }}"

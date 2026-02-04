@@ -522,6 +522,7 @@ def fix_db_schema():
                 ('knowledge_base', 'last_order_buffer', 'INTEGER', 'DEFAULT 0'),
                 ('knowledge_base', 'handoff_notifications', 'TEXT', None),
                 ('knowledge_base', 'handoff_reply', 'TEXT', None),
+                ('knowledge_base', 'tax_info', 'TEXT', None),
             ]
 
             for table, col, col_type, default in migrations:

@@ -139,6 +139,7 @@ class BotService:
             
         kb.handoff_notifications = form_data.get('handoff_notifications')
         kb.handoff_reply = form_data.get('handoff_reply')
+        kb.tax_info = form_data.get('tax_info')
         
         db.session.commit()
         return kb

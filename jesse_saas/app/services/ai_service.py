@@ -8,6 +8,39 @@ from app.models import MenuItem
 
 class AIService:
     @staticmethod
+    def check_restaurant_status(client_model, current_time):
+        """
+        Checks if the restaurant is open based on operating_hours JSON and current_time.
+        """
+        try:
+            op_hours = getattr(client_model, "operating_hours", None)
+            if not op_hours:
+                return True  # Default to open if no hours set
+
+            hours_json = json.loads(op_hours)
+            day_name = current_time.strftime("%A").lower()
+
+            if day_name not in hours_json:
+                return False
+
+            day_data = hours_json[day_name]
+            if day_data.get("is_closed"):
+                return False
+
+            current_hhmm = current_time.strftime("%H:%M")
+            shifts = day_data.get("shifts", [])
+
+            for shift in shifts:
+                start = shift.get("start")
+                end = shift.get("end")
+                if start and end:
+                    if start <= current_hhmm <= end:
+                        return True
+            return False
+        except:
+            return True  # Fallback to avoid breaking things
+
+    @staticmethod
     def generate_smart_reply(user_message, client_model, kb):
         """
         Generates a response using the configured AI provider.
@@ -72,14 +105,12 @@ class AIService:
             if menu_items:
                 for item in menu_items:
                     price_str = f"{currency}{item.price}"
-                    original_price_str = f" (Original: {currency}{item.original_price})" if item.original_price else ""
-                    spicy = f" | Spiciness: {item.spiciness_level}/3" if item.spiciness_level > 0 else ""
-                    allergens = f" | ALLERGENS: {item.allergy_info}" if item.allergy_info else " | Allergens: None reported"
-                    labels = f" | Tags: {item.labels}" if item.labels else ""
-                    portion = f" | Portion: {item.portion_size}" if item.portion_size else ""
+                    labels = item.labels if item.labels else ""
+                    allergens = f"Allergens: {item.allergy_info}" if item.allergy_info else "No allergens reported"
                     
+                    # Format: "- Truffle Risotto ($28): Vegetarian, Contains Dairy."
                     menu_items_detailed.append(
-                        f"[{item.category}] {item.name}: {price_str}{original_price_str}{portion}{spicy}{labels}{allergens} - {item.description or 'No description'}"
+                        f"- {item.name} ({price_str}): {labels}{', ' if labels and allergens else ''}{allergens}."
                     )
                 full_menu_database = "\n".join(menu_items_detailed)
             else:
@@ -101,93 +132,119 @@ class AIService:
             p_length = safe_get(kb, 'personality_length', 'concise')
             tone_instruction = f"{tone_map.get(p_tone, tone_map['friendly'])} {emoji_map.get(p_emoji, emoji_map['minimal'])} {length_map.get(p_length, length_map['concise'])}"
     
-            # Operating Hours
-            operating_hours_text = "Open daily"
-            try:
-                op_hours = safe_get(client_model, 'operating_hours')
-                hours_json = json.loads(op_hours or '{}')
-                if isinstance(hours_json, dict) and 'monday' in hours_json:
-                    h_lines = []
-                    for day, data in hours_json.items():
-                        if data.get('is_closed'):
-                            h_lines.append(f"- {day.capitalize()}: CLOSED")
-                        else:
-                            shifts = data.get('shifts', [])
-                            shift_str = ", ".join([f"{s['start']}-{s['end']}" for s in shifts])
-                            h_lines.append(f"- {day.capitalize()}: {shift_str}")
-                    operating_hours_text = "\n".join(h_lines)
-                else:
-                    operating_hours_text = str(op_hours or 'Open daily')
-            except: pass
-    
-            # Holidays
-            holiday_text = "No upcoming special holidays."
-            try:
-                h_dates = safe_get(kb, 'holiday_dates')
-                holidays = json.loads(h_dates or '[]')
-                if holidays:
-                    holiday_text = "\n".join([f"- {h['date']}: {h['name']}" for h in holidays if h.get('date')])
-            except: pass
-    
-            # Last Order Buffer
-            use_buf = safe_get(kb, 'use_last_order_buffer', False)
-            buf_min = safe_get(kb, 'last_order_buffer', 0)
-            buffer_info = f"Last order is {buf_min} minutes before closing time." if (use_buf and buf_min) else "Last order is at closing time."
-    
-            # Final Template
-            rest_name = safe_get(client_model, 'restaurant_name', 'the restaurant')
-            system_prompt = f"""### ROLE & IDENTITY
-    You are JESSE, the AI Concierge for {rest_name}.
-    Currency Used: {safe_get(client_model, 'currency_code', 'USD')} ({currency})
-    {f"IMPORTANT: Start your very first interaction with: 'I am an AI assistant for {rest_name}.'" if safe_get(client_model, 'show_ai_disclaimer') else ""}
-    
-    ### TONE OF VOICE
-    - Your personality settings: {tone_instruction}
-    - Adjust your vocabulary and sentence structure to match this persona strictly.
-    
-    Your goal is to assist guests with accurate information based ONLY on the context below.
-    
-    ### [1] REGIONAL & CONTACT CONTEXT
-    - Address: {safe_get(client_model, 'address') or safe_get(kb, 'location_address') or 'Contact restaurant for address'}
-    - Landmark/Directions: {safe_get(client_model, 'direction_note') or 'Located in the area'}
-    - Google Maps: {safe_get(client_model, 'maps_url') or 'Search for ' + rest_name}
-    - Parking: {safe_get(kb, 'parking_info') or safe_get(client_model, 'parking_info') or 'Available nearby'}
-    - Website: {safe_get(client_model, 'website_url') or 'Coming soon'}
-    - Contact: Phone {safe_get(client_model, 'public_phone') or safe_get(kb, 'contact_phone') or 'Not specified'} | Email {safe_get(client_model, 'public_email', 'Not specified')}
-    - Social Media: {social_media_text}
-    - Operating Hours:
-    {operating_hours_text}
-    - Special Holidays:
-    {holiday_text}
-    - Last Order Policy: {buffer_info}
-    
-    ### [TIME CONTEXT]
-    - Current Time: {datetime.now(pytz.timezone(safe_get(client_model, 'timezone', 'UTC'))).strftime('%A, %Y-%m-%d %H:%M')}
-    - Current Status: Compare the 'Current Time' with 'Operating Hours' and 'Special Holidays' above.
-    
-    - Delivery Partners: {delivery_partners_txt}
-    
-    ### [2] GUEST EXPERIENCE & RULES
-    - WiFi: SSID "{safe_get(client_model, 'wifi_ssid', 'Ask Staff')}" | Pass "{safe_get(client_model, 'wifi_password') or safe_get(kb, 'wifi_password') or 'Ask Staff'}"
-    - Payment Methods: {safe_get(kb, 'payment_methods') or 'Cash and Major Cards'}
-    - Review Link: {safe_get(client_model, 'review_url') or 'Google/Social Media'}
-    - Reservations: {safe_get(client_model, 'booking_url') or safe_get(kb, 'reservation_url') or 'Walk-ins only'}
-    - Booking Policy: {safe_get(kb, 'deposit_policy') or 'No deposit required'} | {safe_get(kb, 'late_arrival_policy') or '15-min grace period'}
-    - House Rules: {safe_get(kb, 'policy_info') or 'Standard etiquette'} | {safe_get(kb, 'dietary_info') or 'Dietary needs accommodated'}
-    - Legal: Terms ({safe_get(client_model, 'tos_url', 'Ask staff')})
-    
-    ### [3] FACILITIES & CAPACITY
-    - Seating: {seating_data or 'Various options'}
-    - Amenities: {safe_get(client_model, 'facilities_list') or 'Standard dining facilities'}
-    - Family & Kids: {safe_get(client_model, 'family_facilities_list', 'Family-friendly')}
-    
-    ### [4] MENU DATABASE
-    {full_menu_database}
-    
-    ### INSTRUCTIONS
-    1. Answer queries based on the database.
-    2. Suggest booking via {safe_get(client_model, 'booking_url') or safe_get(kb, 'reservation_url') or 'the website'} if applicable.
-    """
+        # --- [1] LOGIKA WAKTU (Backend Calculation) ---
+        operating_hours_text = "Open daily"
+        try:
+            op_hours = safe_get(client_model, 'operating_hours')
+            hours_json = json.loads(op_hours or '{}')
+            if isinstance(hours_json, dict) and 'monday' in hours_json:
+                h_lines = []
+                for day, data in hours_json.items():
+                    if data.get('is_closed'):
+                        h_lines.append(f"- {day.capitalize()}: CLOSED")
+                    else:
+                        shifts = data.get('shifts', [])
+                        shift_str = ", ".join([f"{s['start']}-{s['end']}" for s in shifts])
+                        h_lines.append(f"- {day.capitalize()}: {shift_str}")
+                operating_hours_text = "\n".join(h_lines)
+            else:
+                operating_hours_text = str(op_hours or 'Open daily')
+        except: pass
+
+        tz_name = safe_get(client_model, 'timezone', 'UTC')
+        now_in_tz = datetime.now(pytz.timezone(tz_name))
+        is_open_now = AIService.check_restaurant_status(client_model, now_in_tz)
+        status_str = "OPEN" if is_open_now else "CLOSED"
+
+        # --- [2] LOGIKA EKSTRA (Social & Delivery) ---
+        social_links = []
+        if safe_get(client_model, 'instagram_url'): social_links.append(f"Instagram: {client_model.instagram_url}")
+        if safe_get(client_model, 'whatsapp_url'): social_links.append(f"WhatsApp: {client_model.whatsapp_url}")
+        if safe_get(client_model, 'tiktok_url'): social_links.append(f"TikTok: {client_model.tiktok_url}")
+        if safe_get(client_model, 'youtube_url'): social_links.append(f"YouTube: {client_model.youtube_url}")
+        social_media_text = ", ".join(social_links) if social_links else "Follow us on social media for updates."
+
+        delivery_partners_txt = "Not currently listed."
+        try:
+            dp = safe_get(client_model, 'delivery_partners')
+            if dp:
+                partners = json.loads(dp)
+                if isinstance(partners, list):
+                    delivery_partners_txt = ", ".join([f"{p.get('platform', 'Partner')}: {p.get('url', '')}" for p in partners])
+        except: pass
+
+        # --- [3] CONTACT INFO HANDOFF (Manager) ---
+        mgr_email = "the manager"
+        mgr_phone = safe_get(client_model, 'public_phone') or "staff"
+        
+        try:
+            handoff = safe_get(kb, 'handoff_notifications')
+            if handoff:
+                h_json = json.loads(handoff)
+                if h_json.get('email_address'): mgr_email = h_json['email_address']
+                if h_json.get('wa_number'): mgr_phone = h_json['wa_number']
+        except: pass
+
+        mgr_contact_info = f"Email: {mgr_email} | WhatsApp: {mgr_phone}"
+
+        # Final Template V2 (Optimized)
+        rest_name = safe_get(client_model, 'restaurant_name', 'the restaurant')
+        system_prompt = f"""
+### IDENTITY & ROLE
+You are JESSE, the specialized AI Concierge for {rest_name}.
+- Your Goal: Serve guests, answer questions about the menu/venue, and facilitate bookings.
+- Current Status: The restaurant is currently **{status_str}**.
+- Currency: {safe_get(client_model, 'currency_code', 'USD')} ({currency})
+
+### CRITICAL RULES (SAFETY & BEHAVIOR)
+1. **SAFETY FIRST:** If user mentions "Poisoning", "Police", "Suicide", "Scam", or "Refund":
+   - STOP conversational pleasantries.
+   - Reply ONLY with: "I apologize, but for safety reasons, I cannot handle this request. Please contact our Manager directly at {mgr_contact_info}."
+2. **COMPLAINTS:** If user is angry/complaining (e.g., "rude staff", "bad food"):
+   - Show high empathy. Apologize sincerely.
+   - Direct them to the Manager ({mgr_contact_info}) immediately. Do NOT try to solve it yourself.
+3. **SCOPE LIMIT:** - You are a Concierge, NOT a Chef. Do NOT provide recipes.
+   - You are NOT a Doctor. Do NOT give medical advice.
+   - If asked about topics outside the restaurant (politics, math, etc.), politely decline.
+4. **NO HALLUCINATION:** If an item is NOT in the [MENU DATABASE], say it is unavailable. Do NOT invent menu items.
+
+### TONE & STYLE
+- Tone Instruction: {tone_instruction}
+- Adjust vocabulary to match this persona strictly.
+- Keep answers concise and helpful.
+
+### [1] CONTEXT: LOCATION & OPS
+- Address: {safe_get(client_model, 'address') or 'Please contact us for address'}
+- Directions: {safe_get(client_model, 'direction_note') or 'Nearby'}
+- Parking: {safe_get(client_model, 'parking_info') or 'Public parking available'}
+- Contact: {safe_get(client_model, 'public_phone')} | {safe_get(client_model, 'public_email')}
+- Social Media: {social_media_text}
+- Delivery Partners: {delivery_partners_txt}
+- WiFi: SSID "{safe_get(client_model, 'wifi_ssid', 'Ask Staff')}" | Pass "{safe_get(client_model, 'wifi_password', 'Ask Staff')}"
+- **Operating Hours:**
+{operating_hours_text}
+- **Current Time (Server):** {now_in_tz.strftime('%A, %Y-%m-%d %I:%M %p')}
+- **Open Status:** {status_str} (Trust this status over the hours list).
+
+### [2] GUEST POLICIES
+- Payment: {safe_get(kb, 'payment_methods', 'Cash & Cards')}
+- Reservation: {safe_get(client_model, 'booking_url') or 'Walk-ins welcome'}
+- Policy: {safe_get(kb, 'policy_info', 'Standard rules apply')}
+- Tax/Gratuity Info: {safe_get(kb, 'tax_info', 'Included in prices unless specified')}
+
+### [3] FACILITIES
+- Seating: {seating_data}
+- Facilities: {safe_get(client_model, 'facilities_list')} (e.g., Wheelchair access, Prayer room)
+
+### [4] MENU DATABASE
+(Use this data strictly for food queries. Check allergens carefully.)
+{full_menu_database}
+
+### RESPONSE INSTRUCTIONS
+1. Check the **Current Status** ({status_str}) before inviting guests.
+2. If asked about allergens (Vegan, Nut-free), CHECK the tags in [MENU DATABASE]. If unsure, say "I cannot guarantee, please ask staff."
+3. End with a helpful question or Call-to-Action (e.g., "Would you like to book a table?").
+"""
     
             # 3. API Key
             api_key = safe_get(kb, 'ai_api_key')

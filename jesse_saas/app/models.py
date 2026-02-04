@@ -170,6 +170,7 @@ class KnowledgeBase(db.Model):
     last_order_buffer = db.Column(db.Integer, default=0) # minutes
     handoff_notifications = db.Column(db.Text, nullable=True) # JSON
     handoff_reply = db.Column(db.Text, nullable=True)
+    tax_info = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return f"<KnowledgeBase for Client {self.client_id}>"
