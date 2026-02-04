@@ -248,10 +248,10 @@ class AIService:
             # Policies
             dep_pol = safe_get(client_model, 'deposit_policy') or "No deposit required for standard bookings."
             late_pol = safe_get(client_model, 'late_arrival_policy') or "Tables are typically held for 15 minutes."
-            about_text = safe_get(kb, 'about_us') or f"Welcome to {rest_name}."
 
             # Final Template V2 (Optimized)
             rest_name = safe_get(client_model, 'restaurant_name', 'the restaurant')
+            about_text = safe_get(kb, 'about_us') or f"Welcome to {rest_name}."
             system_prompt = f"""
 ### IDENTITY & ROLE
 You are JESSE, the specialized AI Concierge for {rest_name}.
@@ -358,7 +358,7 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
             print(f"AI Service Critical Error: {e}")
             import traceback
             traceback.print_exc()
-            return f"DEBUG: I'm having a technical issue: {str(e)}"
+            return "I'm having a technical issue processing your request. Please contact support."
 
     @staticmethod
     def _call_groq(api_key, model, system, user, temp, tokens):
