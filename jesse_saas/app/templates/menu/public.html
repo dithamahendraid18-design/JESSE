@@ -378,7 +378,8 @@
 
                             <!-- Description (Visual Hierarchy: Smaller, Gray) -->
                             {% if item.description %}
-                            <p class="text-[var(--text-secondary)] text-xs leading-relaxed line-clamp-3 mt-auto">
+                            <p
+                                class="text-[var(--text-secondary)] text-xs leading-relaxed line-clamp-3 mt-auto whitespace-pre-line">
                                 {{ item.description }}
                             </p>
                             {% endif %}
@@ -476,7 +477,8 @@
                             </div>
 
                             <div class="mt-2">
-                                <p class="text-base text-[var(--text-secondary)] leading-relaxed" id="lightbox-desc">
+                                <p class="text-base text-[var(--text-secondary)] leading-relaxed whitespace-pre-line"
+                                    id="lightbox-desc">
                                     Description goes here.
                                 </p>
                             </div>
