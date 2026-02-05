@@ -53,6 +53,95 @@ def create_app(config_class=Config):
                     
         except Exception as e:
             print(f"❌ Migration Error: {e}")
+
+        # ---------------------------------------------------------
+        # HOTFIX Part 2: Client Table Migrations (Facilities, Branding, etc.)
+        # ---------------------------------------------------------
+        try:
+            from sqlalchemy import text, inspect
+            inspector = inspect(db.engine)
+            if 'clients' in inspector.get_table_names():
+                cols = [c['name'] for c in inspector.get_columns('clients')]
+                
+                # List of new columns to ensure exist
+                new_cols = [
+                    ('parking_info', 'TEXT'),
+                    ('direction_note', 'TEXT'),
+                    ('whatsapp_url', 'VARCHAR(255)'),
+                    ('tiktok_url', 'VARCHAR(255)'),
+                    ('youtube_url', 'VARCHAR(255)'),
+                    ('font_style', "VARCHAR(50) DEFAULT 'Modern Sans'"),
+                    ('operating_hours', 'TEXT'),
+                    ('total_seating', 'INTEGER'),
+                    ('max_group_size', 'INTEGER'),
+                    ('seating_configuration', 'TEXT'),
+                    ('private_room_capacity', 'INTEGER'),
+                    ('has_private_room', 'BOOLEAN DEFAULT 0'),
+                    ('facilities_list', 'TEXT'),
+                    ('family_facilities_list', 'TEXT'),
+                    ('deposit_policy', 'TEXT'),
+                    ('late_arrival_policy', 'TEXT'),
+                    ('tos_url', 'VARCHAR(255)'),
+                    ('show_ai_disclaimer', 'BOOLEAN DEFAULT 1')
+                ]
+
+                with db.engine.connect() as conn:
+                    for col_name, col_type in new_cols:
+                        if col_name not in cols:
+                            print(f"⚠️ Migration: Adding missing '{col_name}' to clients...")
+                            try:
+                                conn.execute(text(f"ALTER TABLE clients ADD COLUMN {col_name} {col_type}"))
+                                conn.commit()
+                            except Exception as ex:
+                                print(f"Failed to add {col_name}: {ex}")
+
+        except Exception as e:
+            print(f"❌ Client Migration Error: {e}")
+
+        # ---------------------------------------------------------
+        # HOTFIX Part 3: KnowledgeBase Table Migrations
+        # ---------------------------------------------------------
+        try:
+            from sqlalchemy import text, inspect
+            inspector = inspect(db.engine)
+            if 'knowledge_base' in inspector.get_table_names():
+                cols = [c['name'] for c in inspector.get_columns('knowledge_base')]
+                
+                # List of new columns to ensure exist
+                new_cols = [
+                    ('tax_info', 'TEXT'),
+                    ('handoff_notifications', 'TEXT'),
+                    ('handoff_reply', 'TEXT'),
+                    ('holiday_dates', 'TEXT'),
+                    ('use_last_order_buffer', 'BOOLEAN DEFAULT 0'),
+                    ('last_order_buffer', 'INTEGER DEFAULT 0'),
+                    ('payment_methods', 'TEXT'),
+                    ('parking_info', 'TEXT'),
+                    ('dietary_info', 'TEXT'),
+                    ('policy_info', 'TEXT'),
+                    ('system_prompt', 'TEXT'),
+                    ('ai_provider', "VARCHAR(50) DEFAULT 'groq'"),
+                    ('ai_model', "VARCHAR(100) DEFAULT 'llama3-70b-8192'"),
+                    ('ai_api_key', 'VARCHAR(255)'),
+                    ('temperature', 'FLOAT DEFAULT 0.7'),
+                    ('max_tokens', 'INTEGER DEFAULT 1024'),
+                    ('personality_tone', "VARCHAR(50) DEFAULT 'friendly'"),
+                    ('personality_emoji', "VARCHAR(50) DEFAULT 'minimal'"),
+                    ('personality_length', "VARCHAR(50) DEFAULT 'concise'")
+                ]
+
+                with db.engine.connect() as conn:
+                    for col_name, col_type in new_cols:
+                        if col_name not in cols:
+                            print(f"⚠️ Migration: Adding missing '{col_name}' to knowledge_base...")
+                            try:
+                                conn.execute(text(f"ALTER TABLE knowledge_base ADD COLUMN {col_name} {col_type}"))
+                                conn.commit()
+                            except Exception as ex:
+                                print(f"Failed to add {col_name}: {ex}")
+
+        except Exception as e:
+            print(f"❌ KB Migration Error: {e}")
         # ---------------------------------------------------------
 
     # Register Blueprints

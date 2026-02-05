@@ -577,35 +577,28 @@
     </div>
 </div>
 
+<!-- Data Injection -->
+<script id="current-categories-data" type="application/json">
+    {{ sorted_categories | tojson | safe }}
+</script>
+
 <script>
     // Existing script...
     const reorderModal = document.getElementById('reorder-modal');
     const categoryListContainer = document.getElementById('category-list-container');
     let currentCategories = []; // Will be populated
 
-    // Parse existing category order from backend or default
-    // We can infer categories from menu items in the table or pass them explicitly?
-    // Let's scrape them from the table for simplicity or pass from backend.
-    // Ideally passed from backend. For now, let's look at the DOM unique badges.
-
+    // Parse injected categories from backend
+    // This is much safer than scraping the DOM
     function getCategories() {
-        // Collect unique categories from the table + standard ones if missing?
-        // Actually, we should only show categories that EXIST or are in the PREVIOUS ORDER.
-        // Let's grab all badges.
-        const badges = document.querySelectorAll('td .text-\\[10px\\]');
-        const cats = new Set();
-        badges.forEach(b => cats.add(b.innerText.trim()));
-
-        // Also check if we have a stored order (we can't easily access that variable here without passing it)
-        // Let's assume the user wants to order the VISIBLE categories.
-        return Array.from(cats);
+        try {
+            const data = document.getElementById('current-categories-data').textContent;
+            return JSON.parse(data);
+        } catch (e) {
+            console.error("Error parsing categories", e);
+            return [];
+        }
     }
-
-    // Since we don't have the "stored_order" easily accessible in this static JS without templating,
-    // let's fetch it or just rely on what we have.
-    // IMPROVEMENT: Pass category_order to the template logic.
-    // For now, let's rely on a robust client-side collection.
-
 </script>
 
 <!-- Data Injection -->
