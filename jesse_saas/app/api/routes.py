@@ -114,15 +114,50 @@ def chat():
 
         # Step 4: Handle Text Input (Pro Tier)
         elif message_type == 'text_input':
-            # Real AI Response
+            session_id = data.get('session_id')
+            
+            # 1. Fetch History if Session ID exists
+            history = []
+            if session_id:
+                # Fetch last 10 messages, ordered by time
+                from app.models import ChatMessage
+                past_msgs = ChatMessage.query.filter_by(session_id=session_id).order_by(ChatMessage.timestamp.desc()).limit(10).all()
+                # Reverse to get chronological order
+                past_msgs.reverse()
+                
+                for msg in past_msgs:
+                    role = "user" if msg.sender == 'user' else "assistant"
+                    history.append({"role": role, "content": msg.content})
+
+            # 2. Real AI Response
             from app.services.ai_service import generate_smart_reply
             kb = client.knowledge_base
             
-            # Pass both client object and KB object
-            ai_reply = generate_smart_reply(message_content, client, kb)
+            # Pass both client object, KB object, AND history
+            ai_reply = generate_smart_reply(message_content, client, kb, history)
             response_data = {"response": ai_reply}
             
-            # Log Interaction
+            # 3. Save Context (User & Bot)
+            if session_id:
+                # User Msg
+                user_msg_db = ChatMessage(
+                    session_id=session_id,
+                    client_id=client.id,
+                    sender='user',
+                    content=message_content
+                )
+                db.session.add(user_msg_db)
+                
+                # Bot Msg
+                bot_msg_db = ChatMessage(
+                    session_id=session_id,
+                    client_id=client.id,
+                    sender='assistant',
+                    content=ai_reply
+                )
+                db.session.add(bot_msg_db)
+            
+            # Log Interaction (Legacy Log)
             log = InteractionLog(
                 client_id=client.id,
                 interaction_type='ai_chat',

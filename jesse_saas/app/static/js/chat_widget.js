@@ -633,9 +633,17 @@ function handleUserSubmit(e) {
     input.value = '';
     showTypingIndicator();
 
+    // === SESSION MANAGEMENT ===
+    let chatSessionId = localStorage.getItem('chat_session_id');
+    if (!chatSessionId) {
+        chatSessionId = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        localStorage.setItem('chat_session_id', chatSessionId);
+    }
+
     // Prepare Payload
     const payload = {
         public_id: typeof CLIENT_PUBLIC_ID !== 'undefined' ? CLIENT_PUBLIC_ID : '',
+        session_id: chatSessionId,
         type: 'text_input',
         message: text
     };

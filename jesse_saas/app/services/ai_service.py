@@ -41,7 +41,7 @@ class AIService:
             return True  # Fallback to avoid breaking things
 
     @staticmethod
-    def generate_smart_reply(user_message, client_model, kb):
+    def generate_smart_reply(user_message, client_model, kb, history=None):
         """
         Generates a response using the configured AI provider.
         Supports: Groq, OpenAI, Anthropic, and Generic OpenAI-Compatible.
@@ -343,14 +343,14 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
             # 6. Dispatch
             try:
                 if provider == 'openai':
-                    return AIService._call_openai(api_key, model, system_prompt, user_message, temp, max_tokens)
+                    return AIService._call_openai(api_key, model, system_prompt, user_message, temp, max_tokens, history)
                 elif provider == 'anthropic':
-                    return AIService._call_anthropic(api_key, model, system_prompt, user_message, temp, max_tokens)
+                    return AIService._call_anthropic(api_key, model, system_prompt, user_message, temp, max_tokens, history)
                 elif provider == 'openai_compatible':
                      base_url = os.environ.get('LLM_BASE_URL', "https://api.groq.com/openai/v1")
-                     return AIService._call_openai_compatible(api_key, base_url, model, system_prompt, user_message, temp, max_tokens)
+                     return AIService._call_openai_compatible(api_key, base_url, model, system_prompt, user_message, temp, max_tokens, history)
                 else:
-                    return AIService._call_groq(api_key, model, system_prompt, user_message, temp, max_tokens)
+                    return AIService._call_groq(api_key, model, system_prompt, user_message, temp, max_tokens, history)
             except Exception as e:
                 print(f"AI Provider Error ({provider}): {e}")
                 return "I'm having trouble connecting to my brain right now. Please try again later."
@@ -361,31 +361,45 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
             return "I'm having a technical issue processing your request. Please contact support."
 
     @staticmethod
-    def _call_groq(api_key, model, system, user, temp, tokens):
-        return AIService._call_openai_compatible(api_key, "https://api.groq.com/openai/v1", model, system, user, temp, tokens)
+    def _call_groq(api_key, model, system, user, temp, tokens, history):
+        return AIService._call_openai_compatible(api_key, "https://api.groq.com/openai/v1", model, system, user, temp, tokens, history)
 
     @staticmethod
-    def _call_openai(api_key, model, system, user, temp, tokens):
-        return AIService._call_openai_compatible(api_key, "https://api.openai.com/v1", model, system, user, temp, tokens)
+    def _call_openai(api_key, model, system, user, temp, tokens, history):
+        return AIService._call_openai_compatible(api_key, "https://api.openai.com/v1", model, system, user, temp, tokens, history)
 
     @staticmethod
-    def _call_openai_compatible(api_key, base_url, model, system, user, temp, tokens):
+    def _call_openai_compatible(api_key, base_url, model, system, user, temp, tokens, history):
         if base_url.endswith('/chat/completions'): base_url = base_url.replace('/chat/completions', '')
         target_url = f"{base_url.rstrip('/')}/chat/completions"
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-        payload = {"model": model, "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}], "temperature": temp, "max_tokens": tokens}
+        
+        # Build Messages: System -> History -> Current User Message
+        messages = [{"role": "system", "content": system}]
+        if history:
+            messages.extend(history)
+        messages.append({"role": "user", "content": user})
+        
+        payload = {"model": model, "messages": messages, "temperature": temp, "max_tokens": tokens}
         resp = requests.post(target_url, headers=headers, json=payload, timeout=25)
         resp.raise_for_status()
         return resp.json()['choices'][0]['message']['content']
 
     @staticmethod
-    def _call_anthropic(api_key, model, system, user, temp, tokens):
+    def _call_anthropic(api_key, model, system, user, temp, tokens, history):
         url = "https://api.anthropic.com/v1/messages"
         headers = {"x-api-key": api_key, "anthropic-version": "2023-06-01", "Content-Type": "application/json"}
-        payload = {"model": model, "system": system, "messages": [{"role": "user", "content": user}], "max_tokens": tokens, "temperature": temp}
+        
+        # Build Messages: History -> Current User Message
+        messages = []
+        if history:
+            messages.extend(history)
+        messages.append({"role": "user", "content": user})
+
+        payload = {"model": model, "system": system, "messages": messages, "max_tokens": tokens, "temperature": temp}
         resp = requests.post(url, headers=headers, json=payload, timeout=10)
         resp.raise_for_status()
         return resp.json()['content'][0]['text']
 
-def generate_smart_reply(user_message, client_model, kb):
-    return AIService.generate_smart_reply(user_message, client_model, kb)
+def generate_smart_reply(user_message, client_model, kb, history=None):
+    return AIService.generate_smart_reply(user_message, client_model, kb, history)

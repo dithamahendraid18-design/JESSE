@@ -234,3 +234,20 @@ class InteractionLog(db.Model):
 
     def __repr__(self):
         return f"<Log {self.interaction_type} - {self.timestamp}>"
+
+
+class ChatMessage(db.Model):
+    __tablename__ = 'chat_messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(50), nullable=False, index=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    
+    # 'user' or 'assistant' (or 'bot')
+    sender = db.Column(db.String(20), nullable=False) 
+    content = db.Column(db.Text, nullable=False)
+    
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<Msg {self.session_id} [{self.sender}]>"
