@@ -320,13 +320,29 @@ def create_app(config_class=Config):
         remaining = sorted([k for k in menu_by_cat.keys() if k not in sorted_categories])
         sorted_categories.extend(remaining)
 
+        # Append remaining categories
+        remaining = sorted([k for k in menu_by_cat.keys() if k not in sorted_categories])
+        sorted_categories.extend(remaining)
+
+        # Parse Label Colors
+        label_colors_map = {}
+        if client.knowledge_base and client.knowledge_base.label_colors:
+            try:
+                # json already imported above
+                label_colors_map = json.loads(client.knowledge_base.label_colors)
+                # Normalize keys to lower case
+                label_colors_map = {k.lower(): v for k, v in label_colors_map.items()}
+            except:
+                label_colors_map = {}
+
         return render_template(
             'menu/public.html',
             client=client,
             menu_by_cat=menu_by_cat,
             sorted_categories=sorted_categories,
             currency=client.currency_symbol or '$',
-            theme_color=client.theme_color or '#2563EB'
+            theme_color=client.theme_color or '#2563EB',
+            label_colors_map=label_colors_map
         )
 
     return app
