@@ -127,7 +127,8 @@ def create_app(config_class=Config):
                     ('max_tokens', 'INTEGER DEFAULT 1024'),
                     ('personality_tone', "VARCHAR(50) DEFAULT 'friendly'"),
                     ('personality_emoji', "VARCHAR(50) DEFAULT 'minimal'"),
-                    ('personality_length', "VARCHAR(50) DEFAULT 'concise'")
+                    ('personality_length', "VARCHAR(50) DEFAULT 'concise'"),
+                    ('label_colors', 'TEXT')
                 ]
 
                 with db.engine.connect() as conn:

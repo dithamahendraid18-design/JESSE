@@ -282,6 +282,24 @@ def client_menu_reorder_categories(client_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@bp.route('/client/<int:client_id>/menu/labels', methods=['POST'])
+def client_menu_labels(client_id):
+    client = Client.query.get_or_404(client_id)
+    kb = client.knowledge_base
+    if not kb:
+         return jsonify({'error': 'KB not found'}), 404
+         
+    import json
+    try:
+        data = request.get_json()
+        # Expecting JSON: { "New": {"bg": "...", "text": "..."}, ... }
+        # Validate or clean if necessary, but string dump is fine for now
+        kb.label_colors = json.dumps(data)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @bp.route('/client/<int:client_id>/bot-builder', methods=['GET', 'POST'])
 def client_bot(client_id):
     client = Client.query.get_or_404(client_id)

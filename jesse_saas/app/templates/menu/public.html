@@ -309,16 +309,29 @@
                                 {% for label_raw in item.labels.split(',') %}
                                 {% set label = label_raw.strip() %}
                                 {% if label %}
-                                {% set badge_color = 'bg-gray-800 text-white' %}
-                                {% if label|lower == 'new' %}{% set badge_color = 'bg-blue-600 text-white' %}
-                                {% elif label|lower == 'promo' %}{% set badge_color = 'bg-red-600 text-white' %}
-                                {% elif 'best' in label|lower %}{% set badge_color = 'bg-yellow-500 text-white' %}
-                                {% elif 'spicy' in label|lower %}{% set badge_color = 'bg-orange-600 text-white' %}
-                                {% elif 'vegan' in label|lower %}{% set badge_color = 'bg-green-600 text-white' %}
+                                {% set lower_label = label|lower %}
+                                {% set custom_style = '' %}
+                                {% set badge_class = 'bg-gray-800 text-white' %}
+
+                                <!-- Dynamic Lookup -->
+                                {% if label_colors_map and lower_label in label_colors_map %}
+                                {% set colors = label_colors_map[lower_label] %}
+                                {% set custom_style = 'background-color: ' + colors.bg + '; color: ' + colors.text + ';'
+                                %}
+                                {% set badge_class = '' %} <!-- clear default class if custom -->
+                                {% else %}
+                                <!-- Fallback Defaults -->
+                                {% if lower_label == 'new' %}{% set badge_class = 'bg-blue-600 text-white' %}
+                                {% elif lower_label == 'promo' %}{% set badge_class = 'bg-red-600 text-white' %}
+                                {% elif 'best' in lower_label %}{% set badge_class = 'bg-yellow-500 text-white' %}
+                                {% elif 'spicy' in lower_label %}{% set badge_class = 'bg-orange-600 text-white' %}
+                                {% elif 'vegan' in lower_label %}{% set badge_class = 'bg-green-600 text-white' %}
+                                {% endif %}
                                 {% endif %}
 
                                 <span
-                                    class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide shadow-sm {{ badge_color }}">
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide shadow-sm {{ badge_class }}"
+                                    {% if custom_style %}style="{{ custom_style }}" {% endif %}>
                                     {{ label }}
                                 </span>
                                 {% endif %}

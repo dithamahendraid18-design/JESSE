@@ -171,6 +171,9 @@ class KnowledgeBase(db.Model):
     handoff_notifications = db.Column(db.Text, nullable=True) # JSON
     handoff_reply = db.Column(db.Text, nullable=True)
     tax_info = db.Column(db.Text, nullable=True)
+    
+    # Phase 35: Visual Customization
+    label_colors = db.Column(db.Text, nullable=True) # JSON: {"New": {"bg": "#000", "text": "#fff"}}
 
     def __repr__(self):
         return f"<KnowledgeBase for Client {self.client_id}>"
