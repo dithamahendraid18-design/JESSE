@@ -335,10 +335,14 @@ You are JESSE, the specialized AI Concierge for {rest_name}.
     
             # 5. Settings
             try:
-                temp = float(safe_get(kb, 'temperature', 0.7))
-                max_tokens = int(safe_get(kb, 'max_tokens', 300))
+                # Handle None values explicitly (safe_get returns None if DB field is null)
+                raw_temp = safe_get(kb, 'temperature')
+                temp = float(raw_temp) if raw_temp is not None else 0.7
+                
+                raw_tokens = safe_get(kb, 'max_tokens')
+                max_tokens = int(raw_tokens) if raw_tokens is not None else 1024
             except:
-                temp, max_tokens = 0.7, 300
+                temp, max_tokens = 0.7, 1024
     
             # 6. Dispatch
             try:

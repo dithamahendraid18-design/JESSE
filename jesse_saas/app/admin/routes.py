@@ -532,6 +532,9 @@ def fix_db_schema():
                 ('knowledge_base', 'personality_tone', 'VARCHAR(50)', "DEFAULT 'friendly'"),
                 ('knowledge_base', 'personality_emoji', 'VARCHAR(50)', "DEFAULT 'minimal'"),
                 ('knowledge_base', 'personality_length', 'VARCHAR(50)', "DEFAULT 'concise'"),
+                # AI Parameters (Ensure they exist)
+                ('knowledge_base', 'temperature', 'FLOAT', "DEFAULT 0.7"),
+                ('knowledge_base', 'max_tokens', 'INTEGER', "DEFAULT 1024"),
                 # Compliance & Operations Overhaul
                 ('clients', 'tos_url', 'VARCHAR(255)', None),
                 ('clients', 'show_ai_disclaimer', 'BOOLEAN', 'DEFAULT TRUE'),
