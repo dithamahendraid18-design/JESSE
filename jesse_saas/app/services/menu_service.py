@@ -69,6 +69,14 @@ class MenuService:
         )
         db.session.add(item)
         db.session.commit()
+        
+        # RAG Sync
+        try:
+            from app.services.vector_service import VectorService
+            VectorService.upsert_item_embedding(item)
+        except Exception as e:
+            print(f"RAG Sync Error (Create): {e}")
+            
         return item
 
     @staticmethod
@@ -135,6 +143,14 @@ class MenuService:
                      item.image_url = url
 
         db.session.commit()
+        
+        # RAG Sync
+        try:
+            from app.services.vector_service import VectorService
+            VectorService.upsert_item_embedding(item)
+        except Exception as e:
+            print(f"RAG Sync Error (Update): {e}")
+
         return item
 
     @staticmethod
@@ -153,5 +169,12 @@ class MenuService:
         if client_id_check and item.client_id != client_id_check:
              raise PermissionError("Unauthorized")
         
+        # RAG Sync (Delete first or after? Delete embedding by ID)
+        try:
+            from app.services.vector_service import VectorService
+            VectorService.delete_item_embedding(item_id)
+        except Exception as e:
+            print(f"RAG Sync Error (Delete): {e}")
+
         db.session.delete(item)
         db.session.commit()

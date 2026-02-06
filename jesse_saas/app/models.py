@@ -251,3 +251,20 @@ class ChatMessage(db.Model):
 
     def __repr__(self):
         return f"<Msg {self.session_id} [{self.sender}]>"
+
+from pgvector.sqlalchemy import Vector
+
+class MenuEmbedding(db.Model):
+    __tablename__ = 'menu_embeddings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    menu_item_id = db.Column(db.Integer, db.ForeignKey('menu_items.id'), nullable=False)
+    
+    # 384 dimensions for all-MiniLM-L6-v2 (HuggingFace)
+    embedding = db.Column(Vector(384)) 
+    
+    # Relationship
+    menu_item = db.relationship('MenuItem', backref=db.backref('embedding', uselist=False))
+
+    def __repr__(self):
+        return f"<MenuEmbedding for Item {self.menu_item_id}>"

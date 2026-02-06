@@ -13,3 +13,4 @@ sqlalchemy
 werkzeug
 qrcode
 Pillow
+pgvector

@@ -59,10 +59,14 @@ class AIService:
             
             provider = provider.lower()
     
-            # 2a. Fetch Menu Data
+            # 2a. Fetch Menu Data (RAG Implementation)
+            from app.services.vector_service import VectorService
             client_id = getattr(client_model, 'id', None)
-            menu_items = MenuItem.query.filter_by(client_id=client_id, is_available=True).all() if client_id else []
-            menu_text = "No menu items available."
+            
+            # Search relevant items based on user message
+            menu_items = VectorService.search_menu(client_id, user_message, limit=7)
+            
+            menu_text = "No relevant menu items found for this query."
             if menu_items:
                 items_list = []
                 for item in menu_items:
@@ -70,6 +74,15 @@ class AIService:
                     desc = f": {item.description}" if item.description else ""
                     items_list.append(f"- {item.name} ({price}){desc}")
                 menu_text = "\n".join(items_list)
+            
+            # Fallback: If user asked for "Menu" generally (without specific food), 
+            # and search returned nothing (e.g. query "show me menu"), 
+            # we might want to show categories Top items?
+            # For now, rely on RAG. If "show menu" embeds to nothing, we have a problem.
+            # "show menu" usually matches everything or nothing? 
+            # "Menu" vector vs "Burger" vector.
+            # IMPROVEMENT: If query is very short/generic "Menu", maybe fetch popular items?
+            # Leaving as RAG-only for now as requested.
             
             # 2b. Construct Final System Prompt
             
