@@ -121,7 +121,7 @@ def chat():
             if session_id:
                 # Fetch last 10 messages, ordered by time
                 from app.models import ChatMessage
-                past_msgs = ChatMessage.query.filter_by(session_id=session_id).order_by(ChatMessage.timestamp.desc()).limit(10).all()
+                past_msgs = ChatMessage.query.filter_by(session_id=session_id, client_id=client.id).order_by(ChatMessage.timestamp.desc()).limit(10).all()
                 # Reverse to get chronological order
                 past_msgs.reverse()
                 
