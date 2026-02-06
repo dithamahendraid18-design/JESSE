@@ -109,7 +109,7 @@ class ClientManager:
         client.owner_phone = form_data.get('owner_phone')
         client.owner_email = form_data.get('owner_email')
         client.operating_hours = form_data.get('operating_hours')
-        client.timezone = form_data.get('timezone')
+        client.timezone = form_data.get('timezone') or 'UTC' # Prevent empty string
         client.public_phone = form_data.get('public_phone')
         client.public_email = form_data.get('public_email')
         client.address = form_data.get('address')

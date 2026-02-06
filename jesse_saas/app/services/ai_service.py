@@ -168,7 +168,14 @@ class AIService:
             except: pass
 
             tz_name = safe_get(client_model, 'timezone', 'UTC')
-            now_in_tz = datetime.now(pytz.timezone(tz_name))
+            try:
+                tz = pytz.timezone(tz_name)
+            except pytz.UnknownTimeZoneError:
+                # Fallback to UTC if timezone is invalid
+                print(f"Invalid Timezone '{tz_name}' for client {client_model.restaurant_name}. Defaulting to UTC.")
+                tz = pytz.utc
+            
+            now_in_tz = datetime.now(tz)
             is_open_now = AIService.check_restaurant_status(client_model, now_in_tz)
             status_str = "OPEN" if is_open_now else "CLOSED"
 
