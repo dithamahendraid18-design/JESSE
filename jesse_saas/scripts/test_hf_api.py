@@ -1,33 +1,29 @@
-import requests
+
+import sys
 import os
 
-api_key = os.environ.get('HUGGINGFACE_API_KEY')
+# Ensure app path is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-models = [
-    "sentence-transformers/all-MiniLM-L6-v2",
-    "sentence-transformers/all-mpnet-base-v2",
-    "BAAI/bge-small-en-v1.5"
-]
+from run import app
+from app.services.vector_service import VectorService
 
-headers = {"Authorization": f"Bearer {api_key}"}
-
-def test(model):
-    url = f"https://router.huggingface.co/hf-inference/models/{model}"
-    print(f"Testing {model} at {url}...")
-    try:
-        resp = requests.post(url, headers=headers, json={"inputs": "Hello world", "options": {"wait_for_model": True}})
-        print(f"Status: {resp.status_code}")
-        if resp.status_code == 200:
-            print("Success! Response snippet:", str(resp.json())[:100])
-            return True
+def test_hf():
+    print("Testing HF Embedding API...")
+    with app.app_context():
+        api_key = os.environ.get('HUGGINGFACE_API_KEY')
+        print(f"API Key present: {bool(api_key)}")
+        if api_key:
+            print(f"Key starts with: {api_key[:4]}...")
+        
+        text = "This is a test menu item."
+        vector = VectorService.get_embedding(text, api_key)
+        
+        if vector:
+            print(f"✅ Success! Vector length: {len(vector)}")
+            print(f"Sample: {vector[:5]}...")
         else:
-            print("Error:", resp.text)
-    except Exception as e:
-        print(f"Exception: {e}")
-    return False
+            print("❌ Failed to get embedding.")
 
 if __name__ == "__main__":
-    for m in models:
-        if test(m):
-            print(f"✅ Works: {m}")
-            break
+    test_hf()

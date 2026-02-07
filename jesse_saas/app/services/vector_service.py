@@ -20,7 +20,7 @@ class VectorService:
             return None
 
         # Model: all-MiniLM-L6-v2 is fast, free, and good for basic RAG
-        model_id = "sentence-transformers/all-MiniLM-L6-v2"
+        model_id = "BAAI/bge-small-en-v1.5"
         api_url = f"https://router.huggingface.co/hf-inference/models/{model_id}"
         headers = {
             "Authorization": f"Bearer {api_key}",
@@ -31,7 +31,9 @@ class VectorService:
         payload = {"inputs": [text], "options": {"wait_for_model": True}}
         
         try:
-            resp = requests.post(api_url, headers=headers, json=payload, timeout=10)
+            resp = requests.post(api_url, headers=headers, json=payload, timeout=30)
+            if resp.status_code != 200:
+                print(f"VectorService: HF Error {resp.status_code}: {resp.text}")
             resp.raise_for_status()
             
             # Response is a list of floats (the vector) directly, OR a list of lists if batch
