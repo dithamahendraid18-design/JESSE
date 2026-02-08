@@ -18,6 +18,19 @@ class ClientManager:
         """
         Create a new client with a unique slug and initialized settings.
         """
+        import json
+        
+        # Default 7-day schedule (09:00 - 21:00)
+        default_schedule = {
+            "monday": {"is_closed": False, "shifts": [{"start": "09:00", "end": "21:00"}]},
+            "tuesday": {"is_closed": False, "shifts": [{"start": "09:00", "end": "21:00"}]},
+            "wednesday": {"is_closed": False, "shifts": [{"start": "09:00", "end": "21:00"}]},
+            "thursday": {"is_closed": False, "shifts": [{"start": "09:00", "end": "21:00"}]},
+            "friday": {"is_closed": False, "shifts": [{"start": "09:00", "end": "22:00"}]},
+            "saturday": {"is_closed": False, "shifts": [{"start": "10:00", "end": "23:00"}]},
+            "sunday": {"is_closed": False, "shifts": [{"start": "10:00", "end": "22:00"}]}
+        }
+
         # Generate unique slug
         base_slug = slugify(restaurant_name)
         slug = base_slug
@@ -32,7 +45,8 @@ class ClientManager:
             plan_type=plan_type,
             status=status,
             theme_color=theme_color,
-            slug=slug
+            slug=slug,
+            operating_hours=json.dumps(default_schedule)
         )
         db.session.add(new_client)
         db.session.commit()

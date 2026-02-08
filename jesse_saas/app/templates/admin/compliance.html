@@ -241,7 +241,17 @@
 
     // 1. SCHEDULE LOGIC (Multiple Shifts)
     let hoursData = {};
-    try { hoursData = JSON.parse(hiddenHours.value || '{}'); } catch (e) { }
+    try {
+        hoursData = JSON.parse(hiddenHours.value || '{}');
+        // If parsing succeeds but object is empty, force defaults
+        if (Object.keys(hoursData).length === 0) throw new Error("Empty hours");
+    } catch (e) {
+        // Default Fallback
+        days.forEach(d => {
+            hoursData[d] = { is_closed: false, shifts: [{ start: '09:00', end: '21:00' }] };
+        });
+        hiddenHours.value = JSON.stringify(hoursData);
+    }
 
     function renderSchedule() {
         scheduleRows.innerHTML = '';
