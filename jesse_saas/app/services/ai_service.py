@@ -86,13 +86,14 @@ class AIService:
             
             # 2b. Construct Final System Prompt
             
-            # Social Media Links
+            # Social Media Links & Website
             social_links = []
+            if safe_get(client_model, 'website_url'): social_links.append(f"Website: {client_model.website_url}")
             if safe_get(client_model, 'instagram_url'): social_links.append(f"Instagram: {client_model.instagram_url}")
             if safe_get(client_model, 'whatsapp_url'): social_links.append(f"WhatsApp: {client_model.whatsapp_url}")
             if safe_get(client_model, 'tiktok_url'): social_links.append(f"TikTok: {client_model.tiktok_url}")
             if safe_get(client_model, 'youtube_url'): social_links.append(f"YouTube: {client_model.youtube_url}")
-            social_media_text = ", ".join(social_links) if social_links else "Follow us on social media for updates."
+            social_media_text = ", ".join(social_links) if social_links else "No social links listed."
     
             # Delivery Partners
             delivery_partners_txt = "Not currently listed."
@@ -192,22 +193,7 @@ class AIService:
             is_open_now = AIService.check_restaurant_status(client_model, now_in_tz)
             status_str = "OPEN" if is_open_now else "CLOSED"
 
-            # --- [2] LOGIKA EKSTRA (Social & Delivery) ---
-            social_links = []
-            if safe_get(client_model, 'instagram_url'): social_links.append(f"Instagram: {client_model.instagram_url}")
-            if safe_get(client_model, 'whatsapp_url'): social_links.append(f"WhatsApp: {client_model.whatsapp_url}")
-            if safe_get(client_model, 'tiktok_url'): social_links.append(f"TikTok: {client_model.tiktok_url}")
-            if safe_get(client_model, 'youtube_url'): social_links.append(f"YouTube: {client_model.youtube_url}")
-            social_media_text = ", ".join(social_links) if social_links else "Follow us on social media for updates."
 
-            delivery_partners_txt = "Not currently listed."
-            try:
-                dp = safe_get(client_model, 'delivery_partners')
-                if dp:
-                    partners = json.loads(dp)
-                    if isinstance(partners, list):
-                        delivery_partners_txt = ", ".join([f"{p.get('platform', 'Partner')}: {p.get('url', '')}" for p in partners])
-            except: pass
 
             # --- [3] CONTACT INFO HANDOFF (Manager) ---
             mgr_email = "the manager"
@@ -269,74 +255,67 @@ class AIService:
             dep_pol = safe_get(client_model, 'deposit_policy') or "No deposit required for standard bookings."
             late_pol = safe_get(client_model, 'late_arrival_policy') or "Tables are typically held for 15 minutes."
 
-            # Final Template V2 (Optimized)
+            # Dynamic Button Label Lookup
+            menu_btn_label = "View Full Menu" # Default
+            try:
+                starters = safe_get(kb, 'conversation_starters')
+                if starters:
+                    s_list = json.loads(starters)
+                    for s in s_list:
+                        if s.get('action') == 'open_menu':
+                            menu_btn_label = s.get('label', 'View Full Menu')
+                            break
+            except: pass
+
+            # Final Template V3 (Token Optimized)
             rest_name = safe_get(client_model, 'restaurant_name', 'the restaurant')
             about_text = safe_get(kb, 'about_us') or f"Welcome to {rest_name}."
+            
             system_prompt = f"""
-### IDENTITY & ROLE
-You are JESSE, the specialized AI Concierge for {rest_name}.
-- Your Goal: Serve guests, answer questions about the menu/venue, and facilitate bookings.
-- Current Status: The restaurant is currently **{status_str}**.
+### ROLE
+You are JESSE, AI Concierge for {rest_name}.
+- Goal: Answer queries & facilitate bookings. 
+- Status: **{status_str}**.
 - Currency: {safe_get(client_model, 'currency_code', 'USD')} ({currency})
 
-### CRITICAL RULES (SAFETY & BEHAVIOR)
-1. **TRIGGER MUTLAK (ABSOLUTE):** If user mentions keywords from this list: {TRIGGER_MUTLAK}.
-   - **ACTION:** STOP all other tasks. 
-   - **REPLY ONLY WITH:** "I apologize, but for safety and legal reasons, I cannot handle this request directly. Please contact our Management immediately at: {mgr_contact_info}"
-2. **TRIGGER KONTEKSTUAL (CONTEXTUAL):** If user mentions keywords from this list: {TRIGGER_KONTEKSTUAL} or shows frustration/anger.
-   - **ACTION:** Show high empathy. Apologize sincerely.
-   - **REPLY:** Use this specific message provided by management: "{handoff_reply_custom}". Then, ensure they have the contact info: {mgr_contact_info}.
-3. **SCOPE LIMIT:** - You are a Concierge, NOT a Chef. Do NOT provide recipes.
-   - You are NOT a Doctor. Do NOT give medical advice.
-   - If asked about topics outside the restaurant (politics, math, etc.), politely decline.
-4. **NO HALLUCINATION:** If an item is NOT in the [MENU DATABASE], say it is unavailable. Do NOT invent menu items.
+### SAFETY RULES (ABSOLUTE)
+1. **DANGER TRIGGERS:** If user mentions {TRIGGER_MUTLAK}:
+   - STOP. Reply ONLY: "I apologize, but for safety reasons, please contact Management: {mgr_contact_info}"
+2. **COMPLAINTS:** If user mentions {TRIGGER_KONTEKSTUAL} or is angry:
+   - Empathize deeply. Reply: "{handoff_reply_custom}" & provide: {mgr_contact_info}.
+3. **LIMITS:** No recipes, medical advice, or off-topic chat.
+4. **NO HALLUCINATION:** Stick strictly to [MENU DATABASE].
 
-### TONE & STYLE
-- Tone Instruction: {tone_instruction}
-- Adjust vocabulary to match this persona strictly.
-- Keep answers concise and helpful.
+### TONE
+{tone_instruction} matches this persona. BE CONCISE.
 
-### [1] CONTEXT: LOCATION & ABOUT
-- **About Us:** {about_text}
-- Address: {safe_get(client_model, 'address') or 'Please contact us for address'}
-- Directions: {safe_get(client_model, 'direction_note') or 'Nearby'}
-- Parking: {safe_get(client_model, 'parking_info') or 'Public parking available'}
-- Contact: {safe_get(client_model, 'public_phone')} | {safe_get(client_model, 'public_email')}
-- Social Media: {social_media_text}
-- Delivery Partners: {delivery_partners_txt}
-- WiFi: SSID "{safe_get(client_model, 'wifi_ssid', 'Ask Staff')}" | Pass "{safe_get(client_model, 'wifi_password', 'Ask Staff')}"
+### CONTEXT
+- **About:** {about_text}
+- **Location:** {safe_get(client_model, 'address') or 'N/A'}. {safe_get(client_model, 'direction_note') or ''}
+- **Contact:** {safe_get(client_model, 'public_phone')} | {safe_get(client_model, 'public_email')}
+- **Links:** {social_media_text}
+- **WiFi:** SSID "{safe_get(client_model, 'wifi_ssid', '-')}" | Pass "{safe_get(client_model, 'wifi_password', '-')}"
+- **Facilities:** {facilities_txt} | Family: {family_facilities} | Seating: {seating_data}
 
-### [2] OPERATIONS & POLICIES
-- **Operating Hours:**
+### OPERATIONS
+- **Open:** {status_str}. (Server Time: {now_in_tz.strftime('%A %I:%M %p')})
+- **Hours:**
 {operating_hours_text}
-- **Special Holiday Closures:**
-{holiday_text}
-- **Current Time (Server):** {now_in_tz.strftime('%A, %Y-%m-%d %I:%M %p')}
-- **Open Status:** {status_str} (Trust this status over the hours list).
-- **Last Order Buffer:** {buffer_text}
-- Payment: {safe_get(kb, 'payment_methods', 'Cash & Cards')}
-- Reservation: {safe_get(client_model, 'booking_url') or 'Walk-ins welcome'}
-- **Deposit Policy:** {dep_pol}
-- **Late Arrival Policy:** {late_pol}
-- General Policy: {safe_get(kb, 'policy_info', 'Standard rules apply')}
-- Tax/Gratuity Info: {safe_get(kb, 'tax_info', 'Included in prices unless specified')}
+- **Holidays:** {holiday_text}
+- **Policy:** {safe_get(kb, 'policy_info', 'Standard rules.')} Deposit: {dep_pol}. Late: {late_pol}.
+- **Payment:** {safe_get(kb, 'payment_methods', 'Cash/Cards')} | Tax: {safe_get(kb, 'tax_info', 'Included')}
 
-### [3] FACILITIES
-- Seating: {seating_data}
-- Physical Facilities: {facilities_txt}
-- **Family & Kids Facilities:** {family_facilities} (e.g., Baby Chair)
-
-### [4] MENU DATABASE
-(Use this data strictly for food queries. Check allergens and metadata carefully.)
+### MENU DATABASE
 {full_database_context}
 
-### RESPONSE INSTRUCTIONS
-1. Check the **Current Status** ({status_str}) before inviting guests.
-2. If asked about allergens (Vegan, Nut-free), CHECK the tags in [MENU DATABASE]. If unsure, say "I cannot guarantee, please ask staff."
-3. End with a helpful question or Call-to-Action (e.g., "Would you like to book a table?").
+### INSTRUCTIONS
+1. Check **Status** ({status_str}) before inviting.
+2. Allergens: Check [MENU DATABASE] tags. If unsure, say "Please ask staff".
+3. **MENU:** If asked "Show menu", use button: [BUTTON:{menu_btn_label}|open_menu]
+4. **LINKS:** Share links as buttons: [BUTTON:Label|link:URL]
+5. End with a helpful closing/CTA.
             """
-    
-            # 3. API Key
+
             api_key = safe_get(kb, 'ai_api_key')
             if not api_key:
                 if provider == 'openai': api_key = os.environ.get('OPENAI_API_KEY')
