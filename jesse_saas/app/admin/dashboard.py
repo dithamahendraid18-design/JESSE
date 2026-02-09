@@ -51,7 +51,7 @@ def fix_db_schema():
 
         # 2. Manual SQL Fallback (Safety Layer)
         with db.engine.connect() as conn:
-            # ... existing manual migrations ...
+            migrations = [
                 ('clients', 'parking_info', 'TEXT', None),
                 ('clients', 'direction_note', 'TEXT', None),
                 ('clients', 'whatsapp_url', 'VARCHAR(255)', None),
