@@ -2,53 +2,57 @@
 
 {% block studio_content %}
 <div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Bot Builder</h1>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <div>
+            <h1 class="text-4xl font-black text-gray-900 tracking-tighter italic">Bot Builder</h1>
+            <p class="text-sm text-gray-500 font-medium mt-1">Design the personality and flow of your AI Concierge.</p>
+        </div>
         <button type="submit" form="bot-form"
-            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">
-            Save Changes
+            class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-10 py-4 rounded-2xl hover:shadow-lg hover:shadow-blue-500/30 transition-all font-black uppercase tracking-widest text-xs">
+            Save Evolution
         </button>
     </div>
 
-    <form id="bot-form" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <form id="bot-form" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <!-- Left Column: Configuration -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="lg:col-span-2 space-y-10">
 
             <!-- Welcome Message & Image -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Welcome Experience</h3>
-
-
+            <div
+                class="glass-card p-10 rounded-[2.5rem] border border-white shadow-sm hover:shadow-md transition-shadow">
+                <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Welcome Experience</h3>
 
                 <!-- Welcome Text -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Greeting Message</label>
+                    <label class="block text-sm font-black text-gray-700 mb-2">Greeting Message</label>
                     <textarea name="welcome_message" id="welcome_input" rows="3"
                         oninput="document.getElementById('preview-greeting').innerHTML = linkify((this.value || 'Hello! How can I help you today?').trim())"
-                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="w-full bg-white/50 border border-gray-100 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all font-medium text-gray-900"
                         placeholder="Hello! Welcome to {{ client.restaurant_name }}. How can I help you today?">{{ (kb.welcome_message or '') | trim }}</textarea>
-                    <p class="text-xs text-gray-500 mt-1">The first message sent by the bot to start the conversation.
-                    </p>
+                    <p class="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-tight">The first message sent
+                        by the bot to start the conversation.</p>
                 </div>
             </div>
 
             <!-- Legacy Menu Panels Removed -->
 
             <!-- General Questions Flow -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
-                    <h3 class="text-lg font-semibold text-gray-800">Conversation Starters</h3>
-                    <span class="text-xs text-gray-500">Main Menu Buttons (e.g. Menu, Location, Contact)</span>
+            <div class="glass-card p-10 rounded-[2.5rem] border border-white shadow-sm">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest">Conversation Starters</h3>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Main Menu Buttons (e.g.
+                        Menu, Location, Contact)</p>
                 </div>
 
-                <div id="accordions-container" class="space-y-4">
+                <div id="accordions-container" class="space-y-6">
                     <!-- populated by JS -->
                 </div>
 
                 <button type="button" id="btn-add-main" onclick="BotBuilder.addNewButton()"
-                    class="mt-6 w-full py-2 border-2 border-dashed border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 font-medium flex items-center justify-center transition-colors">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    class="mt-8 w-full py-5 border-2 border-dashed border-gray-200 text-gray-400 rounded-[2rem] hover:border-blue-400 hover:bg-blue-50 hover:text-blue-600 transition-all font-black uppercase tracking-widest text-[10px] flex items-center justify-center group">
+                    <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
                     </svg>
                     Add Main Button
                 </button>
@@ -57,160 +61,172 @@
                 <input type="hidden" name="flow_menu_json" id="flow-menu-json">
             </div>
 
-            <!-- Menu Config Removed (Refactored to Starters) -->
-
-
             <!-- Fallback Message -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Safety Net</h3>
+            <div class="glass-card p-10 rounded-[2.5rem] border border-white shadow-sm">
+                <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Safety Net</h3>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Fallback Message</label>
+                    <label class="block text-sm font-black text-gray-700 mb-2">Fallback Message</label>
                     <textarea name="fallback_message" rows="2"
-                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="w-full bg-white/50 border border-gray-100 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all font-medium text-gray-900"
                         placeholder="I'm sorry, I didn't quite catch that. Could you rephrase?">{{ kb.fallback_message or "I'm sorry, I didn't quite get that." }}</textarea>
-                    <p class="text-xs text-gray-500 mt-1">What the bot says if it's unsure or encounters an error.</p>
+                    <p class="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-tight">What the bot says if
+                        it's unsure or encounters an error.</p>
                 </div>
             </div>
         </div>
 
         <!-- Right Column: Live Preview -->
         <div class="lg:col-span-1">
-            <div class="sticky top-6">
-                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Live Preview</h3>
+            <div class="sticky top-12">
+                <div class="flex items-center gap-2 mb-6">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] italic">Live Intelligence
+                        Feed</h3>
+                </div>
 
-                <!-- Mobile Mockup (Always Open App Interface) -->
-                <!-- Mobile Mockup (Shell Wrapper) -->
-                <div class="border-gray-900 bg-gray-900 rounded-[2.5rem] p-[8px] shadow-2xl mx-auto flex-shrink-0"
-                    style="height: 550px; width: 280px;">
-                    <div id="preview-screen"
-                        class="w-full h-full rounded-[2rem] overflow-hidden bg-[var(--bg-app)] relative flex flex-col font-sans transition-colors duration-300 transform translate-z-0"
-                        style="--theme-color: {{ client.theme_color or '#2563EB' }};">
+                <!-- Mobile Mockup (Premium Shell) -->
+                <div class="relative mx-auto">
+                    <!-- Outer Glint -->
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-tr from-gray-200 to-white rounded-[3rem] blur-xl opacity-30">
+                    </div>
 
-                        <!-- 1. HEADER (Sticky Top, Glass) -->
-                        <div
-                            class="bg-[var(--bg-app)]/95 backdrop-blur-sm border-b border-[var(--border-color)] px-4 py-3 flex items-center justify-between shrink-0 z-10 relative transition-colors duration-300 rounded-t-[2rem]">
-                            <div class="flex items-center gap-3">
-                                <div class="relative">
-                                    {% if client.knowledge_base and client.knowledge_base.avatar_image %}
-                                    <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
-                                        class="w-10 h-10 rounded-full object-cover border border-[var(--border-color)]">
-                                    {% else %}
-                                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold border border-[var(--border-color)] text-white"
-                                        style="background-color: var(--theme-color);">
-                                        {{ client.restaurant_name[0] }}
+                    <div class="relative border-[6px] border-gray-900 bg-gray-900 rounded-[3rem] p-1.5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] mx-auto flex-shrink-0"
+                        style="height: 600px; width: 300px;">
+
+                        <!-- Speaker Mesh -->
+                        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-12 h-1 bg-gray-800 rounded-full z-30">
+                        </div>
+
+                        <div id="preview-screen"
+                            class="w-full h-full rounded-[2.5rem] overflow-hidden bg-[var(--bg-app)] relative flex flex-col font-sans transition-colors duration-300"
+                            style="--theme-color: {{ client.theme_color or '#2563EB' }};">
+
+                            <!-- 1. HEADER (Sticky Top, Glass) -->
+                            <div
+                                class="bg-[var(--bg-app)]/80 backdrop-blur-xl border-b border-[var(--border-color)] px-5 py-4 flex items-center justify-between shrink-0 z-10 relative transition-colors duration-300">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        {% if client.knowledge_base and client.knowledge_base.avatar_image %}
+                                        <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
+                                            class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm border border-[var(--border-color)]">
+                                        {% else %}
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-black border border-[var(--border-color)] text-white shadow-sm ring-2 ring-white"
+                                            style="background-color: var(--theme-color);">
+                                            {{ client.restaurant_name[0] }}
+                                        </div>
+                                        {% endif %}
+                                        <span
+                                            class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[var(--bg-app)] rounded-full"></span>
                                     </div>
-                                    {% endif %}
-                                    <span
-                                        class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-[var(--bg-app)] rounded-full"></span>
+                                    <div>
+                                        <h1
+                                            class="font-black text-[var(--text-primary)] text-[11px] leading-tight transition-colors duration-300 tracking-tight">
+                                            {{ client.restaurant_name }}</h1>
+                                        <div class="flex items-center gap-1">
+                                            <span class="w-1 h-1 rounded-full bg-green-500"></span>
+                                            <p
+                                                class="text-[9px] text-green-600 font-black uppercase tracking-tighter transition-colors duration-300">
+                                                Active Now</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h1
-                                        class="font-bold text-[var(--text-primary)] text-sm leading-tight transition-colors duration-300">
-                                        {{ client.restaurant_name }}</h1>
+                                <div class="flex items-center gap-1.5">
+                                    <button type="button" onclick="togglePreviewTheme()"
+                                        class="text-[var(--text-secondary)] hover:text-blue-600 transition p-1.5 hover:bg-white/50 rounded-xl">
+                                        <svg id="preview-sun" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                        <svg id="preview-moon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 2. CHAT AREA (Scrollable Middle) -->
+                            <div id="preview-scroll-area"
+                                class="flex-1 overflow-y-auto p-5 space-y-5 scroll-smooth bg-[var(--bg-app)] relative z-0 transition-colors duration-300">
+
+                                <!-- Greeting Block -->
+                                <div class="flex flex-col items-start max-w-[90%]">
+                                    <!-- Bot Bubble with Avatar -->
+                                    <div class="flex items-end gap-2 mb-1">
+                                        <!-- Avatar -->
+                                        {% if client.knowledge_base and client.knowledge_base.avatar_image %}
+                                        <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
+                                            class="w-8 h-8 rounded-full object-cover border border-[var(--border-color)] shadow-sm">
+                                        {% else %}
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] border border-[var(--border-color)] shadow-sm text-white"
+                                            style="background-color: var(--theme-color);">
+                                            {{ client.restaurant_name[0] }}
+                                        </div>
+                                        {% endif %}
+
+                                        <div id="preview-greeting"
+                                            class="px-5 py-4 rounded-3xl rounded-tl-none shadow-sm text-[12px] leading-relaxed border transition-colors duration-300 whitespace-pre-line font-medium"
+                                            style="background-color: var(--bg-bubble-bot); border-color: var(--border-color); color: var(--text-primary);">
+                                            {{ (kb.welcome_message or 'Hello! How can I help you today?') | trim }}
+                                        </div>
+                                    </div>
+
+                                    <div id="preview-buttons"
+                                        class="flex flex-wrap gap-2 mt-3 ml-10 justify-start w-full">
+                                        <!-- Main Buttons injected here -->
+                                    </div>
+                                </div>
+
+                                <!-- Conversation Area -->
+                                <div id="preview-conversation" class="space-y-4 w-full"></div>
+                            </div>
+
+                            <!-- 3. COMPOSER (Sticky Bottom) -->
+                            <div
+                                class="bg-[var(--bg-app)] p-5 shrink-0 border-t border-[var(--border-color)] z-20 transition-colors duration-300">
+                                <div class="relative flex items-center cursor-not-allowed opacity-80">
+                                    <input type="text" placeholder="Design the conversation..." disabled
+                                        class="w-full bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] text-[12px] rounded-2xl pl-5 pr-12 py-4 focus:outline-none shadow-inner cursor-not-allowed placeholder-[var(--text-secondary)] transition-colors duration-300 font-medium">
+                                    <button disabled
+                                        class="absolute right-2 p-2.5 rounded-xl shadow-lg flex items-center justify-center cursor-not-allowed text-white"
+                                        style="background-color: var(--theme-color);">
+                                        <svg class="w-4 h-4 transform rotate-90" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="text-center mt-4">
                                     <p
-                                        class="text-xs text-[var(--text-secondary)] font-medium transition-colors duration-300">
-                                        Online</p>
+                                        class="text-[9px] text-[var(--text-secondary)] font-black tracking-widest uppercase opacity-50">
+                                        Studio Sandbox Mode
+                                    </p>
                                 </div>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <!-- Toggle Button -->
-                                <button type="button" onclick="togglePreviewTheme()"
-                                    class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition p-1 hover:bg-[var(--bg-surface)] rounded-full">
-                                    <svg id="preview-sun" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                    </svg>
-                                    <svg id="preview-moon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                                    </svg>
-                                </button>
-
-                                <button type="button" onclick="resetPreview()"
-                                    class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition p-1 hover:bg-[var(--bg-surface)] rounded-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 2. CHAT AREA (Scrollable Middle) -->
-                        <div id="preview-scroll-area"
-                            class="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth bg-[var(--bg-app)] relative z-0 transition-colors duration-300">
-
-
-
-                            <!-- Greeting Block -->
-                            <div class="flex flex-col items-start max-w-[90%]">
-                                <!-- Bot Bubble with Avatar -->
-                                <div class="flex items-end gap-2 mb-1">
-                                    <!-- Avatar -->
-                                    {% if client.knowledge_base and client.knowledge_base.avatar_image %}
-                                    <img src="{{ url_for('uploaded_file', filename='avatars/' + client.knowledge_base.avatar_image) }}"
-                                        class="w-8 h-8 rounded-full object-cover border border-[var(--border-color)] shadow-sm">
-                                    {% else %}
-                                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border border-[var(--border-color)] shadow-sm text-white"
-                                        style="background-color: var(--theme-color);">
-                                        {{ client.restaurant_name[0] }}
-                                    </div>
-                                    {% endif %}
-
-                                    <div id="preview-greeting"
-                                        class="px-4 py-3 rounded-2xl rounded-tl-none shadow-sm text-sm leading-relaxed border transition-colors duration-300 whitespace-pre-line"
-                                        style="background-color: var(--bg-bubble-bot); border-color: var(--border-color); color: var(--text-primary);">
-                                        {{ (kb.welcome_message or 'Hello! How can I help you today?') | trim }}</div>
-                                </div>
-
-                                <div id="preview-buttons"
-                                    class="flex flex-wrap gap-2 mt-2.5 ml-10 justify-start w-full">
-                                    <!-- Main Buttons injected here -->
-                                </div>
-                            </div>
-
-                            <!-- Conversation Area -->
-                            <div id="preview-conversation" class="space-y-4 w-full"></div>
-                        </div>
-
-                        <!-- 3. COMPOSER (Sticky Bottom) -->
-                        <div
-                            class="bg-[var(--bg-app)] p-4 shrink-0 border-t border-[var(--border-color)] z-20 transition-colors duration-300 rounded-b-[2rem]">
-                            <div class="relative flex items-center cursor-not-allowed opacity-80">
-                                <input type="text" placeholder="Type a message..." disabled
-                                    class="w-full bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm rounded-full pl-5 pr-12 py-3 focus:outline-none shadow-inner cursor-not-allowed placeholder-[var(--text-secondary)] transition-colors duration-300">
-                                <button disabled
-                                    class="absolute right-2 p-2 rounded-full shadow-lg flex items-center justify-center cursor-not-allowed text-white"
-                                    style="background-color: var(--theme-color);">
-                                    <svg class="w-4 h-4 transform rotate-90" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="text-center mt-3">
-                                <a href="#"
-                                    class="text-[10px] text-[var(--text-secondary)] font-medium tracking-wide">Powered
-                                    by
-                                    <span class="font-bold text-blue-600">JESSE</span></a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-4 text-center">
+                <div class="mt-8 text-center">
                     <button type="button" onclick="resetPreview()"
-                        class="text-xs text-gray-500 hover:text-blue-600 underline">Reset Simulation</button>
+                        class="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-blue-600 transition-colors flex items-center gap-2 mx-auto">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                            </path>
+                        </svg>
+                        Re-simulate
+                    </button>
                 </div>
             </div>
-
-            <!-- Launcher Preview REMOVED (Always Open Chat Mode) -->
         </div>
-    </form>
+        <!-- Launcher Preview REMOVED (Always Open Chat Mode) -->
+</div>
+</form>
 </div>
 
 <style>
@@ -379,7 +395,7 @@
 
     window.createPill = function (label, onClick) {
         const pill = document.createElement('button');
-        pill.className = `preview-theme-btn px-4 py-2 text-xs font-medium rounded-2xl shadow-sm flex-shrink-0 whitespace-normal h-auto leading-tight text-center max-w-[200px]`;
+        pill.className = `px-5 py-3 text-[11px] font-black uppercase tracking-widest rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-95 flex-shrink-0 whitespace-normal h-auto leading-tight text-center max-w-[220px] bg-white border border-gray-100 text-gray-700 hover:border-blue-400 hover:text-blue-600`;
         pill.innerText = label;
         pill.type = 'button';
         pill.onclick = (e) => onClick(e);
@@ -500,9 +516,10 @@
         botDiv.innerHTML = `
             <div class="flex items-end gap-2 mb-1">
                  ${avatarHtml}
-                <div class="px-4 py-3 rounded-2xl rounded-tl-none shadow-sm text-sm break-words max-w-[85%] leading-relaxed transition-colors duration-300 bg-white border border-gray-200 text-gray-800 whitespace-pre-line">${contentHtml}</div>
+                <div class="px-5 py-4 rounded-3xl rounded-tl-none shadow-sm text-[12px] leading-relaxed border transition-colors duration-300 whitespace-pre-line font-medium"
+                     style="background-color: var(--bg-bubble-bot); border-color: var(--border-color); color: var(--text-primary);">${contentHtml}</div>
             </div>
-            <div class="generated-buttons flex flex-wrap gap-2 mt-2 ml-10 justify-start"></div>
+            <div class="generated-buttons flex flex-wrap gap-2 mt-3 ml-10 justify-start w-full"></div>
         `;
         previewConversation.appendChild(botDiv);
 

@@ -38,40 +38,40 @@ const BotBuilder = (function () {
             btn.id = id;
 
             const div = document.createElement('div');
-            div.className = 'border border-gray-200 rounded-lg overflow-hidden bg-gray-50';
+            div.className = 'glass-card border border-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-md transition-all duration-500';
             div.innerHTML = `
-                <div class="flex justify-between items-center p-3 bg-white border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors" onclick="BotBuilder.toggleAccordion('${id}')">
-                    <span class="font-medium text-gray-700 text-sm flex items-center">
-                         <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs mr-2 font-bold">${index + 1}</span>
-                         ${btn.label || 'New Button'}
+                <div class="flex justify-between items-center p-6 bg-white/50 cursor-pointer hover:bg-blue-50/50 transition-colors group" onclick="BotBuilder.toggleAccordion('${id}')">
+                    <span class="font-black text-gray-900 text-xs flex items-center uppercase tracking-widest">
+                         <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-[10px] mr-4 shadow-lg shadow-blue-500/30">${index + 1}</span>
+                         ${btn.label || 'New Message Path'}
                     </span>
-                    <div class="flex items-center gap-2">
-                         <div class="flex items-center gap-1 mr-2 border-r pr-2 border-gray-200">
-                             <button type="button" onclick="BotBuilder.moveMainButton(event, ${index}, -1)" class="p-1 text-gray-400 hover:text-blue-600 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === 0 ? 'disabled' : ''}>
-                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                    <div class="flex items-center gap-3">
+                         <div class="flex items-center gap-1.5 mr-3 border-r pr-4 border-gray-200/50">
+                             <button type="button" onclick="BotBuilder.moveMainButton(event, ${index}, -1)" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-white transition-all ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === 0 ? 'disabled' : ''}>
+                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
                              </button>
-                             <button type="button" onclick="BotBuilder.moveMainButton(event, ${index}, 1)" class="p-1 text-gray-400 hover:text-blue-600 ${index === startersData.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === startersData.length - 1 ? 'disabled' : ''}>
-                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                             <button type="button" onclick="BotBuilder.moveMainButton(event, ${index}, 1)" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-white transition-all ${index === startersData.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === startersData.length - 1 ? 'disabled' : ''}>
+                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
                              </button>
                          </div>
-                         <button type="button" onclick="BotBuilder.deleteMainButton(event, ${index})" class="text-gray-400 hover:text-red-500 p-1">
-                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                         <button type="button" onclick="BotBuilder.deleteMainButton(event, ${index})" class="text-gray-400 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-all">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                          </button>
-                         <svg class="w-4 h-4 text-gray-400 transform transition-transform ${btn._expanded ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                         <svg class="w-4 h-4 text-blue-600 transform transition-transform duration-500 ${btn._expanded ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                 </div>
                 
-                <div class="${btn._expanded ? '' : 'hidden'} p-4 bg-white border-t border-gray-100 space-y-4">
+                <div class="${btn._expanded ? '' : 'hidden'} p-8 bg-white/30 border-t border-white/50 space-y-8 animate-fade-in">
                     
                     <!-- Row 1: Label & Action -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-8">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Button Label</label>
-                            <input type="text" value="${btn.label || ''}" oninput="BotBuilder.updateMainLabel(${index}, this.value)" class="w-full border rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500" placeholder="e.g. Nasi Goreng">
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Button Label</label>
+                            <input type="text" value="${btn.label || ''}" oninput="BotBuilder.updateMainLabel(${index}, this.value)" class="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all" placeholder="e.g. Reservation Inquiry">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Action Type</label>
-                            <select onchange="BotBuilder.updateMainAction(${index}, this.value)" class="w-full border rounded px-3 py-2 text-sm bg-white focus:ring-1 focus:ring-blue-500">
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Action Type</label>
+                            <select onchange="BotBuilder.updateMainAction(${index}, this.value)" class="w-full bg-white border border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all cursor-pointer">
                                 <option value="message" ${!btn.action || btn.action === 'message' ? 'selected' : ''}>Message Flow</option>
                                 <option value="link" ${btn.action === 'link' ? 'selected' : ''}>Link URL</option>
                                 <option value="open_menu" ${btn.action === 'open_menu' ? 'selected' : ''}>Open Menu (Dynamic)</option>
@@ -80,37 +80,42 @@ const BotBuilder = (function () {
                     </div>
 
                     <!-- Row 2 (Link Config) -->
-                    <div class="${btn.action === 'link' ? '' : 'hidden'} mt-4 bg-blue-50 p-4 rounded-lg border border-blue-100">
-                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Target URL</label>
-                        <input type="text" value="${btn.payload || ''}" oninput="BotBuilder.updateMainPayload(${index}, this.value)" class="w-full border rounded px-3 py-2 text-sm mb-3" placeholder="https://example.com">
+                    <div class="${btn.action === 'link' ? '' : 'hidden'} bg-blue-50/50 p-6 rounded-[1.5rem] border border-blue-100 shadow-inner">
+                        <label class="block text-[10px] font-black text-blue-600 uppercase tracking-widest mb-3 italic">Destination Payload</label>
+                        <input type="text" value="${btn.payload || ''}" oninput="BotBuilder.updateMainPayload(${index}, this.value)" class="w-full bg-white border border-blue-200 rounded-2xl px-5 py-3.5 text-sm font-medium mb-4 focus:ring-4 focus:ring-blue-500/10 focus:outline-none" placeholder="https://reservation.link">
                         
-                        <div class="flex items-center gap-2">
-                             <input type="checkbox" id="overlay-${index}" ${btn.open_in_overlay ? 'checked' : ''} onchange="BotBuilder.updateMainOverlay(${index}, this.checked)" class="rounded text-blue-600 focus:ring-blue-500 border-gray-300 w-4 h-4">
-                             <label for="overlay-${index}" class="text-sm text-gray-700 select-none cursor-pointer">Open inside Overlay (Webview)</label>
-                        </div>
+                        <label class="flex items-center gap-3 cursor-pointer group/label">
+                             <div class="relative w-10 h-6 bg-gray-200 rounded-full transition-colors group-hover/label:bg-gray-300 peer-checked:bg-blue-600">
+                                <input type="checkbox" id="overlay-${index}" ${btn.open_in_overlay ? 'checked' : ''} onchange="BotBuilder.updateMainOverlay(${index}, this.checked)" class="sr-only peer">
+                                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4 shadow-sm"></div>
+                             </div>
+                             <span class="text-xs font-black text-gray-700 uppercase tracking-tight">Open in Webview Overlay</span>
+                        </label>
                     </div>
 
                     <!-- Row 3 (Message Config - Gallery/Text/Chips) -->
-                    <div class="${(!btn.action || btn.action === 'message') ? '' : 'hidden'} mt-4 space-y-4">
+                    <div class="${(!btn.action || btn.action === 'message') ? '' : 'hidden'} space-y-8">
                         <!-- Block 1: Image Gallery -->
                         <div>
-                             <div class="flex justify-between items-center mb-2">
-                                <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Block 1: Images (Gallery)</label>
-                                <span class="text-[10px] text-gray-400">Multiple images allowed</span>
+                             <div class="flex justify-between items-center mb-4">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Bot Response Gallery</label>
+                                <span class="text-[9px] font-bold text-blue-500 uppercase tracking-tighter">Visual Assets</span>
                              </div>
                              
-                             <div class="grid grid-cols-4 gap-2 mb-2">
+                             <div class="flex flex-wrap gap-4 mb-4">
                                 ${(btn.blocks || []).filter(b => b.url).map((imgBlock, i) => `
-                                    <div class="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                                    <div class="relative group w-24 h-24 bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 shadow-sm transition-transform hover:scale-105">
                                         <img src="${imgBlock.url}" class="w-full h-full object-cover">
-                                        <button onclick="BotBuilder.deleteGalleryImage(${index}, '${imgBlock.url}')" class="absolute inset-0 bg-black/50 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-xs">&times;</button>
+                                        <button onclick="BotBuilder.deleteGalleryImage(${index}, '${imgBlock.url}')" class="absolute inset-0 bg-red-600/80 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
                                     </div>
                                 `).join('')}
                                 
                                 <!-- Upload Button -->
-                                <label class="relative aspect-square bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-colors cursor-pointer flex flex-col items-center justify-center text-gray-400 hover:text-blue-500">
-                                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                    <span class="text-[10px] font-medium">Add Img</span>
+                                <label class="w-24 h-24 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer flex flex-col items-center justify-center text-gray-300 hover:text-blue-500 group/upload">
+                                    <svg class="w-6 h-6 mb-1 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                                    <span class="text-[9px] font-black uppercase tracking-tighter">Upload</span>
                                     <input type="file" multiple accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="BotBuilder.uploadGalleryImages(this, ${index})">
                                 </label>
                              </div>
@@ -118,53 +123,58 @@ const BotBuilder = (function () {
 
                         <!-- Block 2: Text Description -->
                         <div>
-                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Block 2: Text Description</label>
-                             <textarea rows="3" oninput="BotBuilder.updateDescription(${index}, this.value)" class="w-full border rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 bg-white" placeholder="Type your message here...">${(btn.blocks || []).find(b => b.text && !b.url)?.text || ''}</textarea>
+                             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Bot Response Narrative</label>
+                             <textarea rows="3" oninput="BotBuilder.updateDescription(${index}, this.value)" class="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-medium text-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all shadow-inner" placeholder="Type the automated response here...">${(btn.blocks || []).find(b => b.text && !b.url)?.text || ''}</textarea>
                         </div>
 
                          <!-- Auto-Show Menu Checkbox -->
-                         <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
-                             <input type="checkbox" id="include_kb-${index}" ${btn.include_main_menu ? 'checked' : ''} onchange="BotBuilder.updateIncludeMenu(${index}, this.checked)" class="rounded text-blue-600 focus:ring-blue-500 border-gray-300">
-                             <label for="include_kb-${index}" class="text-xs text-gray-600 cursor-pointer select-none">Show Main Menu options after this response?</label>
+                         <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
+                             <div class="relative w-8 h-4 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300 transition-colors">
+                                 <input type="checkbox" id="include_kb-${index}" ${btn.include_main_menu ? 'checked' : ''} onchange="BotBuilder.updateIncludeMenu(${index}, this.checked)" class="sr-only peer">
+                                 <div class="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
+                             </div>
+                             <label for="include_kb-${index}" class="text-[10px] font-black text-gray-500 uppercase tracking-tight cursor-pointer select-none">Append Navigation Menu to this Response</label>
                          </div>
 
                         <!-- Sub-Buttons (Chips) -->
-                        <div class="bg-gray-50 rounded-lg border border-gray-200 p-3">
-                            <div class="flex justify-between items-center mb-2">
-                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Sub-Buttons (Chips)</label>
-                                <span class="text-[10px] text-gray-400">Optional small buttons below response</span>
+                        <div class="bg-gray-50/50 rounded-[2rem] border border-gray-100 p-6 shadow-inner">
+                            <div class="flex justify-between items-center mb-6">
+                                <label class="text-[10px] font-black text-blue-600 uppercase tracking-[0.1em] italic">Intelligence Nodes (Chips)</label>
+                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter italic">Small Actionable Prompts</span>
                             </div>
                             
-                             <div id="subs-container-${index}" class="space-y-2">
+                             <div id="subs-container-${index}" class="space-y-4">
                                  ${(btn.sub_buttons || []).map((sub, subIndex) => `
-                                    <div class="flex gap-2 items-center bg-white p-2 rounded shadow-sm border border-gray-200">
+                                    <div class="flex gap-4 items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100 group/sub">
                                         <div class="flex-1">
-                                            <input type="text" value="${sub.label || ''}" oninput="BotBuilder.updateSubBtn(${index}, ${subIndex}, 'label', this.value)" placeholder="Label (acts as text sent)" class="w-full text-xs border rounded px-2 py-1 focus:outline-none focus:border-blue-500">
+                                            <input type="text" value="${sub.label || ''}" oninput="BotBuilder.updateSubBtn(${index}, ${subIndex}, 'label', this.value)" placeholder="Label (acts as user message)" class="w-full text-xs font-bold bg-transparent focus:outline-none text-gray-900">
                                         </div>
                                         
-                                        <select onchange="BotBuilder.updateSubBtnType(${index}, ${subIndex}, this.value)" class="text-[10px] border border-gray-200 rounded px-1 py-1 bg-gray-50 focus:border-blue-500 text-gray-600 w-20 cursor-pointer">
-                                            <option value="message" ${!sub.action || sub.action === 'message' ? 'selected' : ''}>Message</option>
-                                            <option value="main_menu" ${sub.action === 'main_menu' ? 'selected' : ''}>Back Btn</option>
-                                        </select>
+                                        <div class="flex items-center gap-3">
+                                            <select onchange="BotBuilder.updateSubBtnType(${index}, ${subIndex}, this.value)" class="text-[9px] font-black border border-gray-100 rounded-lg px-2 py-1.5 bg-gray-50 focus:border-blue-500 text-gray-500 uppercase tracking-widest cursor-pointer">
+                                                <option value="message" ${!sub.action || sub.action === 'message' ? 'selected' : ''}>Message</option>
+                                                <option value="main_menu" ${sub.action === 'main_menu' ? 'selected' : ''}>Restart</option>
+                                            </select>
 
-                                        <!-- Actions -->
-                                        <div class="flex items-center gap-1 border-l pl-2 border-gray-100">
-                                            <div class="flex flex-col">
-                                                <button type="button" onclick="BotBuilder.moveSubBtn(${index}, ${subIndex}, -1)" class="text-gray-400 hover:text-blue-600 ${subIndex === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${subIndex === 0 ? 'disabled' : ''}>
-                                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                                                </button>
-                                                <button type="button" onclick="BotBuilder.moveSubBtn(${index}, ${subIndex}, 1)" class="text-gray-400 hover:text-blue-600 ${subIndex === btn.sub_buttons.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${subIndex === btn.sub_buttons.length - 1 ? 'disabled' : ''}>
-                                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                            <!-- Actions -->
+                                            <div class="flex items-center gap-1 border-l pl-3 border-gray-100">
+                                                <div class="flex flex-col">
+                                                    <button type="button" onclick="BotBuilder.moveSubBtn(${index}, ${subIndex}, -1)" class="text-gray-300 hover:text-blue-600 transition-colors ${subIndex === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${subIndex === 0 ? 'disabled' : ''}>
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 15l7-7 7 7"></path></svg>
+                                                    </button>
+                                                    <button type="button" onclick="BotBuilder.moveSubBtn(${index}, ${subIndex}, 1)" class="text-gray-300 hover:text-blue-600 transition-colors ${subIndex === btn.sub_buttons.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${subIndex === btn.sub_buttons.length - 1 ? 'disabled' : ''}>
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M19 9l-7 7-7-7"></path></svg>
+                                                    </button>
+                                                </div>
+                                                <button type="button" onclick="BotBuilder.deleteSubBtn(${index}, ${subIndex})" class="text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-all ml-1">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
                                                 </button>
                                             </div>
-                                            <button type="button" onclick="BotBuilder.deleteSubBtn(${index}, ${subIndex})" class="text-gray-400 hover:text-red-500 p-1 ml-1">
-                                                &times;
-                                            </button>
                                         </div>
                                     </div>
                                  `).join('')}
-                            </div>
-                            <button type="button" onclick="BotBuilder.addSubBtn(${index})" class="mt-3 w-full py-1.5 text-xs text-blue-600 font-medium border border-dashed border-blue-300 rounded hover:bg-blue-50 transition-colors">+ Add Child Button</button>
+                             </div>
+                             <button type="button" onclick="BotBuilder.addSubBtn(${index})" class="mt-6 w-full py-4 text-[10px] font-black uppercase tracking-[0.1em] text-blue-600 border-2 border-dashed border-blue-200 rounded-2xl hover:bg-blue-50 hover:border-blue-400 transition-all">+ Add Child Path</button>
                         </div>
                     </div>
                 </div>
