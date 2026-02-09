@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Database
+site.db
+*.sqlite3
+
+# OS
+.DS_Store
+Thumbs.db
+
+# App Specific
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+node_modules/
+.vercel

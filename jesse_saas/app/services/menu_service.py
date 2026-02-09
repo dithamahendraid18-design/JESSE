@@ -65,7 +65,8 @@ class MenuService:
             description=description,
             image_url=image_url,
             allergy_info=allergy_info,
-            is_available=True
+            is_available=True,
+            embedding_synced=False # Default to False until synced
         )
         db.session.add(item)
         db.session.commit()
@@ -73,9 +74,17 @@ class MenuService:
         # RAG Sync
         try:
             from app.services.vector_service import VectorService
-            VectorService.upsert_item_embedding(item)
+            if VectorService.upsert_item_embedding(item):
+                # Mark as Synced
+                item.embedding_synced = True
+                db.session.commit()
+            else:
+                print("RAG Sync Warning: Upsert returned False")
+                # Leave embedding_synced as False (default from init)
+                # It will be picked up by the 'Unsynced Items' alert in Dashboard
         except Exception as e:
             print(f"RAG Sync Error (Create): {e}")
+            # Item remains synced=False, caught by dashboard warning
             
         return item
 
@@ -90,6 +99,9 @@ class MenuService:
         if client_id_check and item.client_id != client_id_check:
             raise PermissionError("Unauthorized access to menu item")
             
+        # Flag as dirty initially
+        item.embedding_synced = False
+        
         if 'name' in form_data:
             item.name = form_data['name']
         
@@ -147,9 +159,15 @@ class MenuService:
         # RAG Sync
         try:
             from app.services.vector_service import VectorService
-            VectorService.upsert_item_embedding(item)
+            if VectorService.upsert_item_embedding(item):
+                # Mark as Synced
+                item.embedding_synced = True
+                db.session.commit()
+            else:
+                 print(f"RAG Sync Warning: Upsert returned False for item {item.id}")
         except Exception as e:
             print(f"RAG Sync Error (Update): {e}")
+            # Item remains synced=False
 
         return item
 

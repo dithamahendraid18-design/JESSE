@@ -141,35 +141,58 @@ class VectorService:
     @staticmethod
     def search_menu(client_id, query, limit=5):
         """
-        Semantic search for menu items.
+        Hybrid Search:
+        1. Vectors (Semantic)
+        2. Fallback to SQL ILIKE (Keyword) if Vectors fail or return nothing.
         """
+        items = []
+        
+        # --- STRATEGY 1: VECTOR SEARCH ---
         try:
-            # 1. Get Embedding for Query
-            # We need an API Key. We assume we can get it from context or env.
-            # In a request context, it's easier.
             from app.models import Client
-            client = Client.query.get(client_id)
             # Use HF Key
             api_key = os.environ.get('HUGGINGFACE_API_KEY')
             
-            query_vector = VectorService.get_embedding(query, api_key)
-            if not query_vector:
-                return []
-
-            # 2. Perform Cosine Similarity Search via pgvector
-            # L2 distance is default operator <->, but Cosine is usually <=> 
-            # Note: pgvector l2_distance is easiest.
-            # Order by distance (closest first).
-            results = db.session.query(MenuEmbedding, MenuItem).\
-                join(MenuItem).\
-                filter(MenuItem.client_id == client_id).\
-                order_by(MenuEmbedding.embedding.l2_distance(query_vector)).\
-                limit(limit).\
-                all()
-            
-            # 3. Return MenuItem objects
-            items = [r[1] for r in results]
-            return items
+            if api_key:
+                query_vector = VectorService.get_embedding(query, api_key)
+                if query_vector:
+                    # L2 distance search
+                    results = db.session.query(MenuEmbedding, MenuItem).\
+                        join(MenuItem).\
+                        filter(MenuItem.client_id == client_id).\
+                        order_by(MenuEmbedding.embedding.l2_distance(query_vector)).\
+                        limit(limit).\
+                        all()
+                    
+                    items = [r[1] for r in results]
+                    if items: return items
+                    
         except Exception as e:
-            print(f"Search Error: {e}")
+            print(f"Vector Search Failed (Fallback to SQL): {e}")
+
+        # --- STRATEGY 2: SQL KEYWORD FALLBACK ---
+        # If we are here, Vector failed or returned empty.
+        try:
+            print(f"Executing SQL Fallback for query: {query}")
+            # Split query into words and filter generic stopwords
+            keywords = [w for w in query.split() if len(w) > 3] 
+            
+            if not keywords: return [] # Query too short/generic
+
+            # Build OR query for each keyword against Name or Description
+            sql_query = MenuItem.query.filter(MenuItem.client_id == client_id)
+            
+            conditions = []
+            for kw in keywords:
+                term = f"%{kw}%"
+                conditions.append(MenuItem.name.ilike(term))
+                conditions.append(MenuItem.description.ilike(term))
+                conditions.append(MenuItem.category.ilike(term))
+            
+            from sqlalchemy import or_
+            items = sql_query.filter(or_(*conditions)).limit(limit).all()
+            return items
+            
+        except Exception as e:
+            print(f"SQL Search Error: {e}")
             return []

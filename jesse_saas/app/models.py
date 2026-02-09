@@ -197,6 +197,9 @@ class MenuItem(db.Model):
     spiciness_level = db.Column(db.Integer, default=0) # 0-3
     prep_time = db.Column(db.String(50), nullable=True) # e.g. "15 mins"
     portion_size = db.Column(db.String(100), nullable=True) # New: e.g. "2 Pax" or "Large"
+    
+    # Sync Status
+    embedding_synced = db.Column(db.Boolean, default=False) 
 
     def to_dict(self):
         return {
@@ -212,7 +215,8 @@ class MenuItem(db.Model):
             'is_available': self.is_available,
             'spiciness_level': self.spiciness_level,
             'prep_time': self.prep_time,
-            'portion_size': self.portion_size
+            'portion_size': self.portion_size,
+            'embedding_synced': self.embedding_synced
         }
 
     def __repr__(self):

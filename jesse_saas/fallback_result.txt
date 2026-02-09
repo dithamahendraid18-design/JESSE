@@ -1,0 +1,11 @@
+Response 1: ⚠️ **Connection Issue**
+I'm having trouble connecting to my brain, but **Test Resto is OPEN**.
+
+Please use these quick links:
+[BUTTON:View Full Menu|open_menu] [BUTTON:WhatsApp|link:https://wa.me/123] [BUTTON:Book Table|link:https://book.com]
+SUCCESS: Offline Mode Triggered Correctly.
+Response 2: ⚠️ **Connection Issue**
+I'm having trouble connecting to my brain, but **Test Resto is OPEN**.
+
+Please use these quick links:
+[BUTTON:View Full Menu|open_menu] [BUTTON:WhatsApp|link:https://wa.me/123] [BUTTON:Book Table|link:https://book.com]

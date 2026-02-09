@@ -19,139 +19,17 @@ def create_app(config_class=Config):
         db.create_all()
         
         # ---------------------------------------------------------
-        # HOTFIX: Auto-Migrate columns if missing
+        # NOTE: Startup Hotfixes removed in favor of Alembic Migrations
         # ---------------------------------------------------------
-        try:
-            from sqlalchemy import text, inspect
-            inspector = inspect(db.engine)
-            if 'menu_items' in inspector.get_table_names():
-                cols = [c['name'] for c in inspector.get_columns('menu_items')]
-                
-                # Migrate allergy_info
-                if 'allergy_info' not in cols:
-                    print("⚠️ Migration: Adding missing 'allergy_info' column...")
-                    with db.engine.connect() as conn:
-                        conn.execute(text("ALTER TABLE menu_items ADD COLUMN allergy_info VARCHAR(255)"))
-                        conn.commit()
-                    print("✅ Migration: 'allergy_info' added.")
 
-                # Migrate original_price
-                if 'original_price' not in cols:
-                    print("⚠️ Migration: Adding missing 'original_price' column...")
-                    with db.engine.connect() as conn:
-                        conn.execute(text("ALTER TABLE menu_items ADD COLUMN original_price FLOAT"))
-                        conn.commit()
-                    print("✅ Migration: 'original_price' added.")
-
-                # Migrate labels
-                if 'labels' not in cols:
-                    print("⚠️ Migration: Adding missing 'labels' column...")
-                    with db.engine.connect() as conn:
-                        conn.execute(text("ALTER TABLE menu_items ADD COLUMN labels VARCHAR(255)"))
-                        conn.commit()
-                    print("✅ Migration: 'labels' added.")
-                    
-        except Exception as e:
-            print(f"❌ Migration Error: {e}")
-
-        # ---------------------------------------------------------
-        # HOTFIX Part 2: Client Table Migrations (Facilities, Branding, etc.)
-        # ---------------------------------------------------------
-        try:
-            from sqlalchemy import text, inspect
-            inspector = inspect(db.engine)
-            if 'clients' in inspector.get_table_names():
-                cols = [c['name'] for c in inspector.get_columns('clients')]
-                
-                # List of new columns to ensure exist
-                new_cols = [
-                    ('parking_info', 'TEXT'),
-                    ('direction_note', 'TEXT'),
-                    ('whatsapp_url', 'VARCHAR(255)'),
-                    ('tiktok_url', 'VARCHAR(255)'),
-                    ('youtube_url', 'VARCHAR(255)'),
-                    ('font_style', "VARCHAR(50) DEFAULT 'Modern Sans'"),
-                    ('operating_hours', 'TEXT'),
-                    ('total_seating', 'INTEGER'),
-                    ('max_group_size', 'INTEGER'),
-                    ('seating_configuration', 'TEXT'),
-                    ('private_room_capacity', 'INTEGER'),
-                    ('has_private_room', 'BOOLEAN DEFAULT 0'),
-                    ('facilities_list', 'TEXT'),
-                    ('family_facilities_list', 'TEXT'),
-                    ('deposit_policy', 'TEXT'),
-                    ('late_arrival_policy', 'TEXT'),
-                    ('tos_url', 'VARCHAR(255)'),
-                    ('show_ai_disclaimer', 'BOOLEAN DEFAULT 1')
-                ]
-
-                with db.engine.connect() as conn:
-                    for col_name, col_type in new_cols:
-                        if col_name not in cols:
-                            print(f"⚠️ Migration: Adding missing '{col_name}' to clients...")
-                            try:
-                                conn.execute(text(f"ALTER TABLE clients ADD COLUMN {col_name} {col_type}"))
-                                conn.commit()
-                            except Exception as ex:
-                                print(f"Failed to add {col_name}: {ex}")
-
-        except Exception as e:
-            print(f"❌ Client Migration Error: {e}")
-
-        # ---------------------------------------------------------
-        # HOTFIX Part 3: KnowledgeBase Table Migrations
-        # ---------------------------------------------------------
-        try:
-            from sqlalchemy import text, inspect
-            inspector = inspect(db.engine)
-            if 'knowledge_base' in inspector.get_table_names():
-                cols = [c['name'] for c in inspector.get_columns('knowledge_base')]
-                
-                # List of new columns to ensure exist
-                new_cols = [
-                    ('tax_info', 'TEXT'),
-                    ('handoff_notifications', 'TEXT'),
-                    ('handoff_reply', 'TEXT'),
-                    ('holiday_dates', 'TEXT'),
-                    ('use_last_order_buffer', 'BOOLEAN DEFAULT 0'),
-                    ('last_order_buffer', 'INTEGER DEFAULT 0'),
-                    ('payment_methods', 'TEXT'),
-                    ('parking_info', 'TEXT'),
-                    ('dietary_info', 'TEXT'),
-                    ('policy_info', 'TEXT'),
-                    ('system_prompt', 'TEXT'),
-                    ('ai_provider', "VARCHAR(50) DEFAULT 'groq'"),
-                    ('ai_model', "VARCHAR(100) DEFAULT 'llama3-70b-8192'"),
-                    ('ai_api_key', 'VARCHAR(255)'),
-                    ('temperature', 'FLOAT DEFAULT 0.7'),
-                    ('max_tokens', 'INTEGER DEFAULT 1024'),
-                    ('personality_tone', "VARCHAR(50) DEFAULT 'friendly'"),
-                    ('personality_emoji', "VARCHAR(50) DEFAULT 'minimal'"),
-                    ('personality_length', "VARCHAR(50) DEFAULT 'concise'"),
-                    ('label_colors', 'TEXT')
-                ]
-
-                with db.engine.connect() as conn:
-                    for col_name, col_type in new_cols:
-                        if col_name not in cols:
-                            print(f"⚠️ Migration: Adding missing '{col_name}' to knowledge_base...")
-                            try:
-                                conn.execute(text(f"ALTER TABLE knowledge_base ADD COLUMN {col_name} {col_type}"))
-                                conn.commit()
-                            except Exception as ex:
-                                print(f"Failed to add {col_name}: {ex}")
-
-        except Exception as e:
-            print(f"❌ KB Migration Error: {e}")
-        # ---------------------------------------------------------
 
     # Register Blueprints
     from .api.routes import bp as api_bp
     app.register_blueprint(api_bp)
 
-    from .admin.routes import bp as admin_bp
+    from .admin import bp as admin_bp
 
-    app.register_blueprint(admin_bp)
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 
     @app.route('/db-debug')
     def db_debug():

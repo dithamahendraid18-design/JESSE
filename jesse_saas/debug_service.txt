@@ -1,0 +1,10 @@
+DEBUG: Providers to try: ['openai']
+DEBUG: Checking provider openai, Key present: True
+Provider 'openai' failed: name 'temp' is not defined
+All AI Providers failed. Last error: name 'temp' is not defined
+DEBUG: Providers to try: ['openai', 'groq']
+DEBUG: Checking provider openai, Key present: True
+Provider 'openai' failed: name 'temp' is not defined
+DEBUG: Checking provider groq, Key present: True
+Provider 'groq' failed: name 'temp' is not defined
+All AI Providers failed. Last error: name 'temp' is not defined
