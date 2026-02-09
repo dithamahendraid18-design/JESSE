@@ -1,108 +1,160 @@
 {% extends "admin/client_studio_layout.html" %}
 
 {% block studio_content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-end mb-8 border-b pb-4">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Compliance & Operations</h1>
-            <p class="text-gray-500 mt-1 text-sm italic">Set operational boundaries and safety limits for your AI
-                Concierge.</p>
+<div class="max-w-7xl mx-auto pb-24">
+    <!-- Premium Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div class="space-y-1">
+            <div class="flex items-center gap-3 mb-2">
+                <span
+                    class="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[10px] font-black text-indigo-600 uppercase tracking-widest">Global
+                    Governance</span>
+            </div>
+            <h1 class="text-5xl font-black text-gray-900 tracking-tighter italic">
+                COMPLIANCE <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">&
+                    OPERATIONS</span>
+            </h1>
+            <p class="text-sm text-gray-400 font-medium tracking-tight">Setting operational boundaries and legal safety
+                protocols for your AI Concierge.</p>
         </div>
         <button type="submit" form="compliance-form"
-            class="bg-blue-600 text-white px-8 py-2.5 rounded-lg hover:bg-blue-700 font-semibold shadow-md transition-all active:scale-95">
-            Save All Settings
+            class="group relative bg-black text-white px-10 py-4 rounded-2xl overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-black/10">
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity">
+            </div>
+            <span class="relative z-10 font-black uppercase tracking-widest text-xs">Authorize Settings</span>
         </button>
     </div>
 
-    <form id="compliance-form" method="POST" class="space-y-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <form id="compliance-form" method="POST" class="space-y-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <!-- BLOCK 1: OPERATIONAL SCHEDULE -->
-            <div class="space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
-                    <div class="flex items-center gap-2 mb-6 text-blue-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <div class="space-y-8">
+                <div class="glass-card p-10 rounded-[3rem] border-none shadow-2xl relative overflow-hidden group">
+                    <!-- Background Accent -->
+                    <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <svg class="w-24 h-24 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <h3 class="text-xl font-bold text-gray-800 uppercase tracking-wide">Operational Schedule</h3>
                     </div>
 
-                    <!-- Timezone -->
-                    <div class="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Restaurant Timezone</label>
-                        <select name="timezone"
-                            class="w-full border-gray-200 rounded-lg px-4 py-2.5 bg-white focus:ring-2 focus:ring-blue-500 text-sm">
-                            <option value="UTC" {% if client.timezone=='UTC' %}selected{% endif %}>UTC (Universal)
-                            </option>
-                            <option value="America/New_York" {% if client.timezone=='America/New_York' %}selected{%
-                                endif %}>America/New_York (EST)</option>
-                            <option value="America/Los_Angeles" {% if client.timezone=='America/Los_Angeles'
-                                %}selected{% endif %}>America/Los_Angeles (PST)</option>
-                            <option value="Europe/London" {% if client.timezone=='Europe/London' %}selected{% endif %}>
-                                Europe/London (GMT)</option>
-                            <option value="Asia/Singapore" {% if client.timezone=='Asia/Singapore' %}selected{% endif
-                                %}>Asia/Singapore</option>
-                            <option value="Asia/Jakarta" {% if client.timezone=='Asia/Jakarta' %}selected{% endif %}>
-                                Asia/Jakarta (WIB)</option>
-                            <option value="Asia/Makassar" {% if client.timezone=='Asia/Makassar' %}selected{% endif %}>
-                                Asia/Makassar (WITA)</option>
-                            <option value="Asia/Jayapura" {% if client.timezone=='Asia/Jayapura' %}selected{% endif %}>
-                                Asia/Jayapura (WIT)</option>
-                        </select>
-                        <p class="text-[10px] text-blue-500 mt-2">Penting: Pastikan zona waktu sesuai agar JESSE tidak
-                            salah menjawab status buka/tutup.</p>
-                    </div>
+                    <div class="relative z-10">
+                        <h3
+                            class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-10 flex items-center gap-3">
+                            <span class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
+                            Temporal Architecture
+                        </h3>
 
-                    <!-- Weekly Hours with Split Shifts -->
-                    <div class="space-y-4">
-                        <label class="block text-sm font-bold text-gray-700">Weekly Hours</label>
-                        <div id="schedule-rows" class="space-y-3">
-                            <!-- Days injected by JS -->
-                        </div>
-                        <input type="hidden" name="operating_hours" id="operating-hours-input"
-                            value='{{ client.operating_hours or "{}" }}'>
-                    </div>
-
-                    <hr class="my-8 border-gray-100">
-
-                    <!-- Special Holiday Dates -->
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <label class="block text-sm font-bold text-gray-700">Special Holiday Dates</label>
-                            <button type="button" onclick="addHolidayRow()"
-                                class="text-xs text-blue-600 font-bold hover:underline">+ Add Holiday</button>
-                        </div>
-                        <div id="holidays-container" class="space-y-2">
-                            <!-- Injected by JS -->
-                        </div>
-                        <input type="hidden" name="holiday_dates" id="holiday-dates-input"
-                            value='{{ kb.holiday_dates or "[]" }}'>
-                    </div>
-
-                    <div class="mt-8 p-4 bg-red-50 rounded-xl border border-red-100">
-                        <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <h4 class="text-sm font-bold text-red-700">Last Order Buffer</h4>
-                                <p class="text-[10px] text-red-500">Aktifkan batas waktu pemesanan terakhir.</p>
+                        <!-- Timezone -->
+                        <div
+                            class="mb-10 p-6 bg-white/50 backdrop-blur-sm rounded-3xl border border-gray-100 shadow-sm">
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Local
+                                Resonance Zone</label>
+                            <select name="timezone"
+                                class="w-full bg-white border border-gray-100 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:outline-none transition-all font-bold text-gray-900 shadow-sm appearance-none cursor-pointer">
+                                <option value="UTC" {% if client.timezone=='UTC' %}selected{% endif %}>UTC (Universal)
+                                </option>
+                                <option value="America/New_York" {% if client.timezone=='America/New_York' %}selected{%
+                                    endif %}>America/New_York (EST)</option>
+                                <option value="America/Los_Angeles" {% if client.timezone=='America/Los_Angeles'
+                                    %}selected{% endif %}>America/Los_Angeles (PST)</option>
+                                <option value="Europe/London" {% if client.timezone=='Europe/London' %}selected{% endif
+                                    %}>Europe/London (GMT)</option>
+                                <option value="Asia/Singapore" {% if client.timezone=='Asia/Singapore' %}selected{%
+                                    endif %}>Asia/Singapore</option>
+                                <option value="Asia/Jakarta" {% if client.timezone=='Asia/Jakarta' %}selected{% endif
+                                    %}>Asia/Jakarta (WIB)</option>
+                                <option value="Asia/Makassar" {% if client.timezone=='Asia/Makassar' %}selected{% endif
+                                    %}>Asia/Makassar (WITA)</option>
+                                <option value="Asia/Jayapura" {% if client.timezone=='Asia/Jayapura' %}selected{% endif
+                                    %}>Asia/Jayapura (WIT)</option>
+                            </select>
+                            <div class="mt-4 flex items-center gap-2 px-2">
+                                <div class="w-2 h-2 bg-indigo-400 rounded-full"></div>
+                                <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tight">Crucial: Syncing
+                                    your AI pulse with local operations.</p>
                             </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="use_last_order_buffer" id="buffer-toggle" value="true"
-                                    class="sr-only peer" {% if kb.use_last_order_buffer %}checked{% endif %}>
-                                <div
-                                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600">
-                                </div>
-                            </label>
                         </div>
 
-                        <div id="buffer-input-container"
-                            class="{% if not kb.use_last_order_buffer %}hidden{% endif %} animate-fade-in">
-                            <label class="block text-xs font-bold text-red-600 mb-1">Buffer Time (Minutes before
-                                closing)</label>
-                            <div class="flex items-center gap-2">
-                                <input type="number" name="last_order_buffer" value="{{ kb.last_order_buffer or 30 }}"
-                                    class="flex-1 border-red-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500"
-                                    placeholder="e.g. 30">
-                                <span class="text-xs font-medium text-red-700">Mins</span>
+                        <!-- Weekly Hours -->
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between px-2 mb-2">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Weekly
+                                    Availability Matrix</label>
+                                <span
+                                    class="text-[9px] text-indigo-500 font-black uppercase bg-indigo-50 px-3 py-1 rounded-full">Support
+                                    for split shifts</span>
+                            </div>
+                            <div id="schedule-rows" class="space-y-4">
+                                <!-- Days injected by JS -->
+                            </div>
+                            <input type="hidden" name="operating_hours" id="operating-hours-input"
+                                value='{{ client.operating_hours or "{}" }}'>
+                        </div>
+
+                        <hr class="my-10 border-gray-100/50">
+
+                        <!-- Holidays -->
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-center px-2">
+                                <label
+                                    class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Exceptional
+                                    State Disruptions</label>
+                                <button type="button" onclick="addHolidayRow()"
+                                    class="group flex items-center gap-2 text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-800 transition-colors">
+                                    <span
+                                        class="w-5 h-5 flex items-center justify-center bg-indigo-50 rounded-lg group-hover:bg-indigo-100 transition-colors">+</span>
+                                    Add Holiday
+                                </button>
+                            </div>
+                            <div id="holidays-container" class="space-y-3">
+                                <!-- Injected by JS -->
+                            </div>
+                            <input type="hidden" name="holiday_dates" id="holiday-dates-input"
+                                value='{{ kb.holiday_dates or "[]" }}'>
+                        </div>
+
+                        <!-- Buffer -->
+                        <div
+                            class="mt-10 p-6 bg-red-50/50 backdrop-blur-sm rounded-3xl border border-red-100 group/buffer">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center text-red-600 shadow-sm">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-black text-gray-900 uppercase">Operational Buffer</h4>
+                                        <p class="text-[9px] text-red-500 font-bold uppercase tracking-tight">Last order
+                                            proximity protection.</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="use_last_order_buffer" id="buffer-toggle" value="true"
+                                        class="sr-only peer" {% if kb.use_last_order_buffer %}checked{% endif %}>
+                                    <div
+                                        class="w-12 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500 shadow-inner">
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div id="buffer-input-container"
+                                class="{% if not kb.use_last_order_buffer %}hidden{% endif %} animate-fade-in pl-16">
+                                <label
+                                    class="block text-[10px] font-black text-red-700 uppercase tracking-widest mb-3">Buffer
+                                    Interval</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="number" name="last_order_buffer"
+                                        value="{{ kb.last_order_buffer or 30 }}"
+                                        class="w-32 bg-white border border-red-100 rounded-xl px-4 py-3 text-sm font-bold text-red-900 focus:ring-4 focus:ring-red-500/10 focus:border-red-500 focus:outline-none transition-all shadow-sm"
+                                        placeholder="30">
+                                    <span class="text-[10px] font-black text-red-400 uppercase tracking-widest">Minutes
+                                        prior</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -110,121 +162,184 @@
             </div>
 
             <!-- BLOCK 2: SAFETY & HANDOFF -->
-            <div class="space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-2 mb-6 text-red-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                            </path>
+            <div class="space-y-8">
+                <div class="glass-card p-10 rounded-[3rem] border-none shadow-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <svg class="w-24 h-24 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        <h3 class="text-xl font-bold text-gray-800 uppercase tracking-wide">Manager Contact & Handoff
+                    </div>
+
+                    <div class="relative z-10">
+                        <h3
+                            class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-10 flex items-center gap-3">
+                            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                            Crisis Mitigation Matrix
                         </h3>
-                    </div>
 
-                    <!-- Manager Contact Information -->
-
-                    <!-- Manager Contact Information -->
-                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-6">
-                        <label class="block text-sm font-bold text-gray-700 mb-4">Manager Contact (For
-                            Safety/Complaints)</label>
-                        <div id="notifications-config" class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600">Manager Email</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="notify-email-toggle" class="sr-only peer">
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
-                                    </div>
-                                </label>
-                            </div>
-                            <div id="email-address-container" class="hidden animate-fade-in">
-                                <input type="email" id="notify-email-address" placeholder="manager@example.com"
-                                    class="w-full border-gray-200 rounded-lg text-sm px-4 py-2">
-                                <p class="text-[10px] text-gray-400 mt-1">AI akan merujuk email ini untuk komplain
-                                    serius.</p>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600">Manager WhatsApp</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="notify-wa-toggle" class="sr-only peer">
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600">
-                                    </div>
-                                </label>
-                            </div>
-                            <div id="wa-number-container" class="hidden animate-fade-in">
-                                <input type="text" id="notify-wa-number" placeholder="628123456789"
-                                    class="w-full border-gray-200 rounded-lg text-sm px-4 py-2">
-                                <p class="text-[10px] text-gray-400 mt-1">Gunakan format kode negara (62). AI akan
-                                    merujuk nomor ini untuk keadaan darurat.</p>
-                            </div>
-                        </div>
-                        <input type="hidden" name="handoff_notifications" id="handoff-notifications-input"
-                            value='{{ kb.handoff_notifications or "{}" }}'>
-                    </div>
-
-                    <!-- Handoff Auto-Reply -->
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Handoff Auto-Reply Message</label>
-                        <textarea name="handoff_reply" rows="3"
-                            class="w-full border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-green-500 text-sm"
-                            placeholder="I'll connect you to my manager... Please wait.">{{ kb.handoff_reply or '' }}</textarea>
-                        <p class="text-[10px] text-gray-400 mt-2 italic">Pesan ini akan dikirim setelah bot menyadari
-                            ada keyword emergency.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- BLOCK 3: LEGAL & POLICY -->
-        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-            <div class="flex items-center gap-2 mb-8 text-indigo-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                    </path>
-                </svg>
-                <h3 class="text-xl font-bold text-gray-800 uppercase tracking-wide">Legal & Policy Transparency</h3>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Tax & Gratuity Information</label>
-                        <textarea name="tax_info" rows="2" placeholder="e.g. 10% VAT and 5% Service Charge included."
-                            class="w-full border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 text-sm">{{ kb.tax_info or '' }}</textarea>
-                        <p class="text-[10px] text-gray-400 mt-1 uppercase">Sebutkan jika harga sudah termasuk pajak
-                            atau ada biaya tambahan.</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Privacy Policy URL</label>
-                        <input type="url" name="privacy_policy_url" value="{{ client.privacy_policy_url or '' }}"
-                            placeholder="https://example.com/privacy"
-                            class="w-full border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Terms of Service URL</label>
-                        <input type="url" name="tos_url" value="{{ client.tos_url or '' }}"
-                            placeholder="https://example.com/tos"
-                            class="w-full border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 text-sm">
-                    </div>
-                </div>
-
-                <div
-                    class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 flex items-start justify-between gap-4">
-                    <div>
-                        <h4 class="font-bold text-indigo-900 mb-1">AI Identity Disclaimer</h4>
-                        <p class="text-sm text-indigo-700">Tampilkan pesan otomatis di awal chat bahwa user sedang
-                            berbicara dengan AI agar transparan secara hukum.</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer mt-1">
-                        <input type="checkbox" name="show_ai_disclaimer" value="true" class="sr-only peer" {% if
-                            client.show_ai_disclaimer %}checked{% endif %}>
+                        <!-- Handoff Config -->
                         <div
-                            class="w-12 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600">
+                            class="bg-gray-50/50 backdrop-blur-sm p-8 rounded-[2rem] border border-gray-100 mb-8 space-y-8">
+                            <div class="flex items-center gap-4 mb-2">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-gray-900 shadow-sm border border-gray-100">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-black text-gray-900 uppercase">Executive Escalation</h4>
+                                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tight">Direct
+                                        routing protocols for human intervention.</p>
+                                </div>
+                            </div>
+
+                            <div id="notifications-config" class="space-y-6">
+                                <!-- Email Protocol -->
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between group/toggle">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-1.5 h-1.5 bg-blue-400 rounded-full opacity-0 group-hover/toggle:opacity-100 transition-opacity">
+                                            </div>
+                                            <span
+                                                class="text-[10px] font-black text-gray-700 uppercase tracking-widest">Email
+                                                Alert System</span>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer scale-75">
+                                            <input type="checkbox" id="notify-email-toggle" class="sr-only peer">
+                                            <div
+                                                class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500 shadow-inner">
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div id="email-address-container" class="hidden animate-fade-in pl-4">
+                                        <input type="email" id="notify-email-address" placeholder="executive@jesse.ai"
+                                            class="w-full bg-white border border-gray-100 rounded-xl px-5 py-3 text-sm font-bold text-gray-900 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all shadow-sm">
+                                        <p class="text-[9px] text-blue-400 font-bold uppercase mt-2 tracking-tight">AI
+                                            will refer to this for formal escalations.</p>
+                                    </div>
+                                </div>
+
+                                <!-- WhatsApp Protocol -->
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between group/toggle">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-1.5 h-1.5 bg-green-400 rounded-full opacity-0 group-hover/toggle:opacity-100 transition-opacity">
+                                            </div>
+                                            <span
+                                                class="text-[10px] font-black text-gray-700 uppercase tracking-widest">WhatsApp
+                                                Pulse Line</span>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer scale-75">
+                                            <input type="checkbox" id="notify-wa-toggle" class="sr-only peer">
+                                            <div
+                                                class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 shadow-inner">
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div id="wa-number-container" class="hidden animate-fade-in pl-4">
+                                        <input type="text" id="notify-wa-number" placeholder="628123456789"
+                                            class="w-full bg-white border border-gray-100 rounded-xl px-5 py-3 text-sm font-bold text-gray-900 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:outline-none transition-all shadow-sm">
+                                        <p class="text-[9px] text-green-500 font-bold uppercase mt-2 tracking-tight">Use
+                                            country code (e.g., 62). Critical for emergency handoff.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="handoff_notifications" id="handoff-notifications-input"
+                                value='{{ kb.handoff_notifications or "{}" }}'>
                         </div>
-                    </label>
+
+                        <!-- Handoff Reply -->
+                        <div class="space-y-4">
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Transition
+                                Synchronization Msg</label>
+                            <textarea name="handoff_reply" rows="4"
+                                class="w-full bg-white/50 border border-gray-100 rounded-[2rem] p-6 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:outline-none transition-all font-medium text-gray-900 text-sm leading-relaxed shadow-sm"
+                                placeholder="Connecting you to human intelligence... Please hold synchronization.">{{ kb.handoff_reply or '' }}</textarea>
+                            <div class="flex items-center gap-2 px-2">
+                                <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                                <p
+                                    class="text-[9px] text-gray-400 font-bold uppercase tracking-tight italic text-pretty">
+                                    Deployed upon detection of emergency-tier linguistics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOCK 3: LEGAL & POLICY -->
+                <div class="glass-card p-10 rounded-[3rem] border-none shadow-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <svg class="w-24 h-24 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+
+                    <div class="relative z-10">
+                        <h3
+                            class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-10 flex items-center gap-3">
+                            <span class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
+                            Transparency Framework
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                            <div class="space-y-6">
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Financial
+                                        Compliance (Tax Info)</label>
+                                    <textarea name="tax_info" rows="3"
+                                        placeholder="e.g. 10% VAT & 5% Service Charge integrated."
+                                        class="w-full bg-white/50 border border-gray-100 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 focus:outline-none transition-all font-bold text-gray-900 shadow-sm text-sm">{{ kb.tax_info or '' }}</textarea>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Governance:
+                                        Privacy URL</label>
+                                    <input type="url" name="privacy_policy_url"
+                                        value="{{ client.privacy_policy_url or '' }}"
+                                        placeholder="https://jesse.ai/privacy"
+                                        class="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 focus:outline-none transition-all shadow-sm">
+                                </div>
+                            </div>
+                            <div class="space-y-6">
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Governance:
+                                        Terms URL</label>
+                                    <input type="url" name="tos_url" value="{{ client.tos_url or '' }}"
+                                        placeholder="https://jesse.ai/tos"
+                                        class="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 focus:outline-none transition-all shadow-sm">
+                                </div>
+                                <div
+                                    class="bg-purple-50/50 backdrop-blur-sm p-6 rounded-[2rem] border border-purple-100 flex items-start justify-between gap-6 hover:bg-purple-50 transition-colors duration-500 group/disc">
+                                    <div class="space-y-3">
+                                        <h4 class="text-[10px] font-black text-purple-900 uppercase tracking-widest">AI
+                                            Existence Disclosure</h4>
+                                        <p
+                                            class="text-[9px] text-purple-700 font-bold uppercase leading-relaxed tracking-tight">
+                                            Mandatory visual transparency tag ensuring guest awareness of synthetic
+                                            intelligence interaction.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer mt-1">
+                                        <input type="checkbox" name="show_ai_disclaimer" value="true"
+                                            class="sr-only peer" {% if client.show_ai_disclaimer %}checked{% endif %}>
+                                        <div
+                                            class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600 shadow-inner">
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -239,14 +354,12 @@
     const hiddenHolidays = document.getElementById('holiday-dates-input');
     const hiddenNotifs = document.getElementById('handoff-notifications-input');
 
-    // 1. SCHEDULE LOGIC (Multiple Shifts)
+    // 1. SCHEDULE LOGIC
     let hoursData = {};
     try {
         hoursData = JSON.parse(hiddenHours.value || '{}');
-        // If parsing succeeds but object is empty, force defaults
         if (Object.keys(hoursData).length === 0) throw new Error("Empty hours");
     } catch (e) {
-        // Default Fallback
         days.forEach(d => {
             hoursData[d] = { is_closed: false, shifts: [{ start: '09:00', end: '21:00' }] };
         });
@@ -256,41 +369,36 @@
     function renderSchedule() {
         scheduleRows.innerHTML = '';
         days.forEach(day => {
-            // Ensure data exists in hoursData object (fix for save issue)
-            if (!hoursData[day]) {
-                hoursData[day] = { is_closed: false, shifts: [{ start: '09:00', end: '21:00' }] };
-            }
+            if (!hoursData[day]) hoursData[day] = { is_closed: false, shifts: [{ start: '09:00', end: '21:00' }] };
             const data = hoursData[day];
-
-            if (!data.shifts) data.shifts = [{ start: '09:00', end: '21:00' }];
-
             const row = document.createElement('div');
-            row.className = "p-4 bg-white border border-gray-100 rounded-xl hover:border-blue-200 transition-colors";
+            row.className = "p-5 bg-white/70 border border-gray-100 rounded-[1.5rem] hover:border-indigo-200 transition-all shadow-sm hover:shadow-md group/row";
             row.innerHTML = `
-                <div class="flex items-center justify-between mb-3">
-                    <span class="capitalize font-bold text-gray-700 flex items-center gap-2">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="capitalize font-black text-xs text-gray-700 flex items-center gap-3">
+                        <span class="w-1 h-3 bg-indigo-500 rounded-full opacity-0 group-hover/row:opacity-100 transition-opacity"></span>
                         ${day}
-                        <span class="text-[10px] py-0.5 px-2 rounded-full ${data.is_closed ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">
-                            ${data.is_closed ? 'Closed' : 'Open'}
+                        <span class="text-[9px] py-1 px-3 rounded-full font-black uppercase tracking-tighter ${data.is_closed ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-emerald-50 text-emerald-500 border border-emerald-100'}">
+                            ${data.is_closed ? 'Stasis' : 'Active'}
                         </span>
                     </span>
-                    <div class="flex items-center gap-4">
-                        <label class="relative inline-flex items-center cursor-pointer scale-75">
-                            <input type="checkbox" class="sr-only peer toggle-day" data-day="${day}" ${!data.is_closed ? 'checked' : ''}>
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                        </label>
-                        <button type="button" onclick="addShift('${day}')" class="text-blue-600 hover:text-blue-800 ${data.is_closed ? 'hidden' : ''}">
+                    <div class="flex items-center gap-6">
+                        <button type="button" onclick="addShift('${day}')" class="text-indigo-400 hover:text-indigo-600 transition-colors ${data.is_closed ? 'hidden' : ''}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         </button>
+                        <label class="relative inline-flex items-center cursor-pointer scale-90">
+                            <input type="checkbox" class="sr-only peer toggle-day" data-day="${day}" ${!data.is_closed ? 'checked' : ''}>
+                            <div class="w-12 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
+                        </label>
                     </div>
                 </div>
-                <div id="shifts-${day}" class="space-y-2 ${data.is_closed ? 'hidden' : ''}">
+                <div id="shifts-${day}" class="grid grid-cols-1 sm:grid-cols-2 gap-3 ${data.is_closed ? 'hidden' : ''}">
                     ${data.shifts.map((s, idx) => `
-                        <div class="flex items-center gap-2 group">
-                            <input type="time" class="time-input border-gray-200 rounded px-2 py-1 text-sm focus:ring-blue-500" data-day="${day}" data-idx="${idx}" data-field="start" value="${s.start}">
-                            <span class="text-gray-300">-</span>
-                            <input type="time" class="time-input border-gray-200 rounded px-2 py-1 text-sm focus:ring-blue-500" data-day="${day}" data-idx="${idx}" data-field="end" value="${s.end}">
-                            ${idx > 0 ? `<button type="button" onclick="removeShift('${day}', ${idx})" class="text-red-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
+                        <div class="flex items-center gap-2 group/shift bg-gray-50/50 p-2 rounded-xl border border-gray-100 hover:bg-white hover:border-indigo-100 transition-all">
+                            <input type="time" class="time-input bg-transparent border-none focus:ring-0 font-bold text-xs text-indigo-900" data-day="${day}" data-idx="${idx}" data-field="start" value="${s.start}">
+                            <span class="text-gray-300 font-bold">»</span>
+                            <input type="time" class="time-input bg-transparent border-none focus:ring-0 font-bold text-xs text-indigo-900" data-day="${day}" data-idx="${idx}" data-field="end" value="${s.end}">
+                            ${idx > 0 ? `<button type="button" onclick="removeShift('${day}', ${idx})" class="ml-auto text-red-300 hover:text-red-500 transition-colors p-1">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>` : ''}
                         </div>
@@ -305,7 +413,6 @@
         hoursData[day].shifts.push({ start: '14:00', end: '22:00' });
         syncAndRender();
     }
-
     function removeShift(day, idx) {
         hoursData[day].shifts.splice(idx, 1);
         syncAndRender();
@@ -314,7 +421,6 @@
     scheduleRows.addEventListener('change', (e) => {
         if (e.target.classList.contains('toggle-day')) {
             const day = e.target.dataset.day;
-            hoursData[day] = hoursData[day] || { shifts: [] };
             hoursData[day].is_closed = !e.target.checked;
             syncAndRender();
         }
@@ -336,11 +442,14 @@
         holidaysContainer.innerHTML = '';
         holidayData.forEach((h, idx) => {
             const di = document.createElement('div');
-            di.className = "flex gap-2 animate-fade-in";
+            di.className = "flex gap-3 animate-fade-in group/holiday";
             di.innerHTML = `
-                <input type="date" value="${h.date}" onchange="updateHoliday(${idx}, 'date', this.value)" class="border-gray-200 rounded px-2 py-1 text-sm">
-                <input type="text" value="${h.name}" onchange="updateHoliday(${idx}, 'name', this.value)" placeholder="Nama Libur (e.g. Natal)" class="flex-1 border-gray-200 rounded px-2 py-1 text-sm">
-                <button type="button" onclick="removeHoliday(${idx})" class="text-red-400 hover:text-red-600">
+                <input type="date" value="${h.date}" onchange="updateHoliday(${idx}, 'date', this.value)" 
+                    class="bg-white border border-gray-100 rounded-xl px-4 py-2.5 text-xs font-bold text-indigo-900 focus:ring-4 focus:ring-indigo-500/10 focus:outline-none shadow-sm">
+                <input type="text" value="${h.name}" onchange="updateHoliday(${idx}, 'name', this.value)" 
+                    placeholder="Event Protocol (e.g. Christmas)" 
+                    class="flex-1 bg-white border border-gray-100 rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 focus:ring-4 focus:ring-indigo-500/10 focus:outline-none shadow-sm">
+                <button type="button" onclick="removeHoliday(${idx})" class="w-10 h-10 flex items-center justify-center bg-red-50 text-red-400 rounded-xl hover:bg-red-100 hover:text-red-500 transition-all shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
             `;
@@ -393,10 +502,8 @@
             notifData.email_address = emailAddress.value;
             notifData.wa = waToggle.checked;
             notifData.wa_number = waNumber.value;
-
             emailContainer.classList.toggle('hidden', !emailToggle.checked);
             waContainer.classList.toggle('hidden', !waToggle.checked);
-
             hiddenNotifs.value = JSON.stringify(notifData);
         });
     });
@@ -405,7 +512,6 @@
         bufferContainer.classList.toggle('hidden', !bufferToggle.checked);
     });
 
-    // START
     renderSchedule();
     renderHolidays();
     initNotifs();
@@ -426,6 +532,17 @@
 
     .animate-fade-in {
         animation: fade-in 0.3s ease-out forwards;
+    }
+
+    input[type="time"]::-webkit-calendar-picker-indicator {
+        background: transparent;
+        bottom: 0;
+        cursor: pointer;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: auto;
     }
 </style>
 {% endblock %}
