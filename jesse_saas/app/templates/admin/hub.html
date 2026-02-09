@@ -1,683 +1,735 @@
 {% extends "admin/client_studio_layout.html" %}
 
 {% block studio_content %}
-<div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-end mb-8">
+<style>
+    .tab-btn.active {
+        background: white;
+        box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
+        color: #2563eb;
+    }
+</style>
+
+<div class="max-w-6xl mx-auto pb-20">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
         <div>
-            <h1 class="text-4xl font-black text-gray-900 tracking-tight leading-none">Client Hub</h1>
-            <p class="text-gray-500 font-medium mt-2">Manage identity, branding, and core configurations.</p>
+            <h1 class="text-5xl font-black text-gray-900 tracking-tighter leading-none mb-3">Client Hub</h1>
+            <p class="text-gray-500 font-bold flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                Master Control & Identity Station
+            </p>
         </div>
         <button type="submit" form="hub-form"
-            class="bg-blue-600 text-white px-8 py-3 rounded-xl hover:bg-blue-700 font-black text-sm shadow-lg shadow-blue-200 transition-all hover:-translate-y-0.5 active:scale-95">
-            Save Changes
+            class="w-full md:w-auto bg-blue-600 text-white px-10 py-4 rounded-2xl hover:bg-blue-700 font-black text-sm shadow-xl shadow-blue-200 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+            Save Configuration
         </button>
     </div>
 
-    <form id="hub-form" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Left Column: Configuration -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Identity Card -->
-            <div class="glass-card p-8 rounded-2xl border border-white shadow-sm hover:shadow-md transition-shadow">
-                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Identity & Context</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant Name</label>
-                        <input type="text" name="restaurant_name" value="{{ client.restaurant_name }}" required
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Slug (URL ID)</label>
-                        <div class="flex rounded-md shadow-sm">
-                            <span
-                                class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                                jesse.chat/
-                            </span>
-                            <input type="text" name="slug" value="{{ client.slug or '' }}" placeholder="ocean-bite"
-                                class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border focus:ring-blue-500 focus:border-blue-500 sm:text-sm border-gray-300">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <select name="status"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="active" {% if client.status=='active' %}selected{% endif %}>Active</option>
-                            <option value="inactive" {% if client.status=='inactive' %}selected{% endif %}>Inactive
-                            </option>
-                        </select>
-                    </div>
-                    <!-- New Identity Fields -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Primary Language</label>
-                        <select name="language"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="English (US)" {% if client.language=='English (US)' %}selected{% endif %}>
-                                English (US)</option>
-                            <option value="English (UK)" {% if client.language=='English (UK)' %}selected{% endif %}>
-                                English (UK)</option>
-                            <option value="Spanish" {% if client.language=='Spanish' %}selected{% endif %}>Spanish
-                            </option>
-                            <option value="French" {% if client.language=='French' %}selected{% endif %}>French</option>
-                            <option value="German" {% if client.language=='German' %}selected{% endif %}>German</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-                        <select name="currency_code"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="USD" {% if client.currency_code=='USD' %}selected{% endif %}>USD ($)</option>
-                            <option value="EUR" {% if client.currency_code=='EUR' %}selected{% endif %}>EUR (€)</option>
-                            <option value="GBP" {% if client.currency_code=='GBP' %}selected{% endif %}>GBP (£)</option>
-                            <option value="AUD" {% if client.currency_code=='AUD' %}selected{% endif %}>AUD ($)</option>
-                            <option value="IDR" {% if client.currency_code=='IDR' %}selected{% endif %}>IDR (Rp)
-                            </option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Owner Contact (Internal)</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" name="owner_phone" value="{{ client.owner_phone or '' }}"
-                                placeholder="Phone..."
-                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-gray-50 border-gray-200 text-gray-500">
-                            <input type="email" name="owner_email" value="{{ client.owner_email or '' }}"
-                                placeholder="owner@gmail.com"
-                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-gray-50 border-gray-200 text-gray-500">
-                        </div>
-                        <p class="text-xs text-gray-400 mt-1">Used for sending invoices/admin notices. Not visible to
-                            public.</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Tabbed Navigation Header -->
+    <div class="mb-10 overflow-x-auto pb-2">
+        <nav class="flex space-x-2 bg-gray-100/80 p-1.5 rounded-2xl w-fit border border-gray-200/50 backdrop-blur-xl"
+            aria-label="Tabs">
+            <button type="button" onclick="switchTab('general')" id="tab-btn-general"
+                class="tab-btn px-6 py-3 rounded-xl text-sm font-black transition-all duration-300 flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                General
+            </button>
+            <button type="button" onclick="switchTab('aesthetics')" id="tab-btn-aesthetics"
+                class="tab-btn px-6 py-3 rounded-xl text-sm font-black text-gray-500 hover:text-gray-900 transition-all duration-300 flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-3" />
+                </svg>
+                Aesthetics
+            </button>
+            <button type="button" onclick="switchTab('operations')" id="tab-btn-operations"
+                class="tab-btn px-6 py-3 rounded-xl text-sm font-black text-gray-500 hover:text-gray-900 transition-all duration-300 flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Operations
+            </button>
+            <button type="button" onclick="switchTab('launchpad')" id="tab-btn-launchpad"
+                class="tab-btn px-6 py-3 rounded-xl text-sm font-black text-gray-500 hover:text-gray-900 transition-all duration-300 flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Launchpad
+            </button>
+        </nav>
+    </div>
 
-            <!-- Branding Card -->
-            <div class="glass-card p-8 rounded-2xl border border-white shadow-sm mt-8">
-                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Brand Aesthetic</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Theme Color</label>
-                        <div class="flex items-center gap-2">
-                            <input type="color" name="theme_color" value="{{ client.theme_color }}"
-                                class="h-10 w-20 p-0 border rounded overflow-hidden cursor-pointer">
-                            <input type="text" value="{{ client.theme_color }}"
-                                class="w-24 border rounded-lg px-3 py-2 text-sm uppercase" readonly>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Typography / Font Style</label>
-                        <select name="font_style"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="Modern Sans" {% if client.font_style=='Modern Sans' %}selected{% endif %}>
-                                Modern Sans (Inter)</option>
-                            <option value="Classic Serif" {% if client.font_style=='Classic Serif' %}selected{% endif
-                                %}>
-                                Classic Serif (Merriweather)</option>
-                            <option value="Playful" {% if client.font_style=='Playful' %}selected{% endif %}>Playful
-                                (Comic Neue)</option>
-                            <option value="Monospace" {% if client.font_style=='Monospace' %}selected{% endif %}>
-                                Monospace (Roboto Mono)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Widget Position</label>
-                        <select name="widget_position"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="right" {% if client.widget_position=='right' %}selected{% endif %}>Bottom
-                                Right (Default)</option>
-                            <option value="left" {% if client.widget_position=='left' %}selected{% endif %}>Bottom Left
-                            </option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
-                        <div class="flex items-center gap-4">
-                            {% if client.knowledge_base and client.knowledge_base.avatar_image %}
-                            <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
-                                class="h-12 w-12 rounded-full object-cover border">
-                            {% else %}
-                            <div
-                                class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
-                                <span class="text-xs">No Img</span>
-                            </div>
-                            {% endif %}
-                            <input type="file" name="avatar"
-                                class="text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                        </div>
-                    </div>
-                    <div class="flex items-center mt-6">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="is_white_labeled"
-                                class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" {% if client.is_white_labeled
-                                %}checked{% endif %}>
-                            <div class="ml-2">
-                                <span class="block text-sm font-medium text-gray-700">Hide 'Powered by Jesse'</span>
-                                <span class="block text-xs text-gray-400">Pro Feature</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Billing Card -->
-            <div class="glass-card p-8 rounded-2xl border border-white shadow-sm mt-8">
-                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Billing & Infrastructure
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Plan Type</label>
-                        <select name="plan_type"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="basic" {% if client.plan_type=='basic' %}selected{% endif %}>Basic</option>
-                            <option value="pro" {% if client.plan_type=='pro' %}selected{% endif %}>Pro</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Started</label>
-                        <input type="date" name="subscription_start" value="{{ client.subscription_start }}"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Subscription Ends / Renewal
-                            Due</label>
-                        <input type="date" name="subscription_end" value="{{ client.subscription_end }}"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-
-                    <!-- New Billing Fields -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Payment Method</label>
-                        <select name="payment_method"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="">Select...</option>
-                            <option value="Stripe" {% if client.payment_method=='Stripe' %}selected{% endif %}>Stripe
-                            </option>
-                            <option value="PayPal" {% if client.payment_method=='PayPal' %}selected{% endif %}>PayPal
-                            </option>
-                            <option value="Wise" {% if client.payment_method=='Wise' %}selected{% endif %}>Wise</option>
-                            <option value="Bank Transfer" {% if client.payment_method=='Bank Transfer' %}selected{%
-                                endif %}>Bank Transfer</option>
-                            <option value="Cash" {% if client.payment_method=='Cash' %}selected{% endif %}>Cash</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center mt-6">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="price_includes_tax"
-                                class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" {% if
-                                client.price_includes_tax %}checked{% endif %}>
-                            <div class="ml-2">
-                                <span class="block text-sm font-medium text-gray-700">Prices include Tax?</span>
-                                <span class="block text-xs text-gray-400">Default: True for EU/Asia</span>
-                            </div>
-                        </label>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Internal Admin Notes</label>
-                        <textarea name="billing_note" rows="3"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">{{ client.billing_note or '' }}</textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Regional & Socials Card (NEW) -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Regional & Contact Details</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Row 2: Address -->
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Address</label>
-                        <textarea name="address" rows="2"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.address or '' }}</textarea>
-                    </div>
-
-                    <!-- New: Parking & Directions -->
-                    <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Parking Information</label>
-                            <textarea name="parking_info" rows="2" placeholder="e.g. Free valet parking available..."
-                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.parking_info or '' }}</textarea>
+    <form id="hub-form" method="POST" enctype="multipart/form-data">
+        <!-- Tab Content: General -->
+        <div id="tab-general" class="tab-content grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Identity Card -->
+                <div
+                    class="glass-card p-10 rounded-3xl border border-white shadow-sm hover:shadow-md transition-shadow">
+                    <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Identity & Context</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="col-span-2">
+                            <label class="block text-sm font-black text-gray-700 mb-2">Restaurant Name</label>
+                            <input type="text" name="restaurant_name" value="{{ client.restaurant_name }}" required
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all font-medium">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Landmark / Direction
-                                Note</label>
-                            <textarea name="direction_note" rows="2" placeholder="e.g. Near the big red postbox..."
-                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.direction_note or '' }}</textarea>
-                        </div>
-                    </div>
-
-                    <!-- Row 3: Maps & Official Site -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps URL</label>
-                        <input type="url" name="maps_url" value="{{ client.maps_url or '' }}"
-                            placeholder="https://maps.app.goo.gl/..."
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Official Website</label>
-                        <input type="url" name="website_url" value="{{ client.website_url or '' }}"
-                            placeholder="https://lunaresto.com"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-
-                    <!-- Row 4: Instagram & Delivery Section -->
-                    <!-- Social Media Links -->
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-800 mb-2">Social Media & Contacts</label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs uppercase text-gray-500 font-semibold mb-1">Instagram
-                                    URL</label>
-                                <input type="url" name="instagram_url" value="{{ client.instagram_url or '' }}"
-                                    placeholder="https://instagram.com/..."
-                                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            <label class="block text-sm font-black text-gray-700 mb-2">Slug (URL ID)</label>
+                            <div class="flex rounded-2xl shadow-sm overflow-hidden border border-gray-200">
+                                <span
+                                    class="inline-flex items-center px-5 bg-gray-50 text-gray-500 text-xs font-black uppercase tracking-widest border-r border-gray-200">
+                                    jesse.chat/
+                                </span>
+                                <input type="text" name="slug" value="{{ client.slug or '' }}" placeholder="ocean-bite"
+                                    class="flex-1 min-w-0 block w-full px-5 py-4 focus:outline-none text-sm font-medium bg-white/50">
                             </div>
-                            <div>
-                                <label class="block text-xs uppercase text-gray-500 font-semibold mb-1">WhatsApp
-                                    URL</label>
-                                <input type="url" name="whatsapp_url" value="{{ client.whatsapp_url or '' }}"
-                                    placeholder="https://wa.me/..."
-                                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs uppercase text-gray-500 font-semibold mb-1">TikTok
-                                    URL</label>
-                                <input type="url" name="tiktok_url" value="{{ client.tiktok_url or '' }}"
-                                    placeholder="https://tiktok.com/@..."
-                                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs uppercase text-gray-500 font-semibold mb-1">YouTube
-                                    URL</label>
-                                <input type="url" name="youtube_url" value="{{ client.youtube_url or '' }}"
-                                    placeholder="https://youtube.com/..."
-                                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Delivery Partners List -->
-                    <div class="col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <label class="block text-sm font-medium text-gray-800 mb-2">Food Delivery Links</label>
-                        <input type="hidden" name="delivery_partners" id="delivery-partners-input"
-                            value='{{ client.delivery_partners or "[]" }}'>
-
-                        <div id="delivery-list" class="space-y-3 mb-3">
-                            <!-- JS will populate this -->
-                        </div>
-
-                        <button type="button" onclick="addDeliveryPartner()"
-                            class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Add Partner
-                        </button>
-                    </div>
-
-                    <!-- Row 5: Contact -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Public Phone</label>
-                        <input type="text" name="public_phone" value="{{ client.public_phone or '' }}"
-                            placeholder="+1 555-0199"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Public Enquiry Email</label>
-                        <input type="email" name="public_email" value="{{ client.public_email or '' }}"
-                            placeholder="hello@restaurant.com"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Scripts for Dynamic List & Subscription Handling -->
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    renderDeliveryList();
-
-                    // Hook into form submit
-                    document.getElementById('hub-form').addEventListener('submit', function () {
-                        const list = getDeliveryListFromDOM();
-                        document.getElementById('delivery-partners-input').value = JSON.stringify(list);
-                    });
-
-                    // Subscription Auto-Date Logic
-                    const startInput = document.querySelector('input[name="subscription_start"]');
-                    const endInput = document.querySelector('input[name="subscription_end"]');
-
-                    if (startInput && endInput) {
-                        startInput.addEventListener('change', function () {
-                            if (this.value && !endInput.value) {
-                                const startDate = new Date(this.value);
-                                const endDate = new Date(startDate);
-                                endDate.setDate(startDate.getDate() + 30); // Add 30 days
-                                endInput.value = endDate.toISOString().split('T')[0];
-                            }
-                        });
-                    }
-                });
-
-                function renderDeliveryList() {
-                    const raw = document.getElementById('delivery-partners-input').value;
-                    let partners = [];
-                    try { partners = JSON.parse(raw); } catch (e) { partners = []; }
-
-                    const container = document.getElementById('delivery-list');
-                    container.innerHTML = '';
-
-                    partners.forEach((p, index) => {
-                        container.appendChild(createRow(p.platform, p.url, index));
-                    });
-                }
-
-                function createRow(platform, url, index) {
-                    const div = document.createElement('div');
-                    div.className = "flex gap-2 items-center";
-                    div.innerHTML = `
-                        <input type="text" placeholder="Platform (e.g. UberEats)" class="w-1/3 border rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500" value="${platform || ''}">
-                        <input type="url" placeholder="https://..." class="flex-1 border rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500" value="${url || ''}">
-                        <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    `;
-                    return div;
-                }
-
-                function addDeliveryPartner() {
-                    const container = document.getElementById('delivery-list');
-                    container.appendChild(createRow('', '', -1));
-                }
-
-                function getDeliveryListFromDOM() {
-                    const container = document.getElementById('delivery-list');
-                    const rows = container.children;
-                    const list = [];
-                    for (let row of rows) {
-                        const inputs = row.querySelectorAll('input');
-                        const platform = inputs[0].value.trim();
-                        const url = inputs[1].value.trim();
-                        if (platform && url) {
-                            list.push({ platform, url });
-                        }
-                    }
-                    return list;
-                }
-            </script>
-
-            <!-- Guest Experience (New Card) -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Guest Experience (In-Store)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- WiFi -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Network (SSID)</label>
-                        <input type="text" name="wifi_ssid" value="{{ client.wifi_ssid or '' }}"
-                            placeholder="Restaurant_Guest"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">WiFi Password</label>
-                        <input type="text" name="wifi_password" value="{{ client.wifi_password or '' }}"
-                            placeholder="SecretPass123"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-
-                    <!-- Accepted Payment Methods -->
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Accepted Payment Methods</label>
-                        <input type="text" name="accepted_payment_methods"
-                            value="{{ client.knowledge_base.payment_methods or '' }}"
-                            placeholder="Visa, Mastercard, Cash, Apple Pay..."
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">Comma separated list of payment options.</p>
-                    </div>
-
-                    <!-- URLs -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Review URL
-                            (TripAdvisor/Google)</label>
-                        <input type="url" name="review_url" value="{{ client.review_url or '' }}"
-                            placeholder="https://..."
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">Bot sends this link when guests ask to leave a review.</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Table Booking URL</label>
-                        <input type="url" name="booking_url" value="{{ client.booking_url or '' }}"
-                            placeholder="https://opentable.com/..."
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">If empty, Bot handles reservations manually.</p>
-                    </div>
-
-                    <!-- Deposit & Late Arrival (New) -->
-                    <div class="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Deposit Requirement</label>
-                            <textarea name="deposit_policy" rows="2" placeholder="e.g. $20 deposit for groups > 6..."
-                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.deposit_policy or '' }}</textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Late Arrival Policy</label>
-                            <textarea name="late_arrival_policy" rows="2"
-                                placeholder="e.g. Table held for 15 mins max..."
-                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.late_arrival_policy or '' }}</textarea>
+                            <label class="block text-sm font-black text-gray-700 mb-2">System Status</label>
+                            <select name="status"
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none appearance-none transition-all font-medium">
+                                <option value="active" {% if client.status=='active' %}selected{% endif %}>Active
+                                </option>
+                                <option value="inactive" {% if client.status=='inactive' %}selected{% endif %}>Inactive
+                                </option>
+                            </select>
                         </div>
-                    </div>
-
-                    <!-- House Rules & AI Context -->
-                    <div class="col-span-2 mt-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">House Rules & AI Context</label>
-                        <textarea name="house_rules" rows="4"
-                            placeholder="No smoking indoors. Last order at 9:30 PM. We are a pet-friendly cafe..."
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.knowledge_base.policy_info or '' }}</textarea>
-                        <p class="text-xs text-gray-500 mt-1">These details help the AI answer policy-related
-                            questions.</p>
+                        <div>
+                            <label class="block text-sm font-black text-gray-700 mb-2">Primary Language</label>
+                            <select name="language"
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all font-medium">
+                                <option value="English (US)" {% if client.language=='English (US)' %}selected{% endif
+                                    %}>English (US)</option>
+                                <option value="English (UK)" {% if client.language=='English (UK)' %}selected{% endif
+                                    %}>English (UK)</option>
+                                <option value="Spanish" {% if client.language=='Spanish' %}selected{% endif %}>Spanish
+                                </option>
+                                <option value="French" {% if client.language=='French' %}selected{% endif %}>French
+                                </option>
+                                <option value="German" {% if client.language=='German' %}selected{% endif %}>German
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-gray-700 mb-2">Local Currency</label>
+                            <select name="currency_code"
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all font-medium">
+                                <option value="USD" {% if client.currency_code=='USD' %}selected{% endif %}>USD ($)
+                                </option>
+                                <option value="EUR" {% if client.currency_code=='EUR' %}selected{% endif %}>EUR (€)
+                                </option>
+                                <option value="GBP" {% if client.currency_code=='GBP' %}selected{% endif %}>GBP (£)
+                                </option>
+                                <option value="AUD" {% if client.currency_code=='AUD' %}selected{% endif %}>AUD ($)
+                                </option>
+                                <option value="IDR" {% if client.currency_code=='IDR' %}selected{% endif %}>IDR (Rp)
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Facilities & Capacity (New Card) -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Facilities & Capacity</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Seating & Room -->
-                    <div>
-                        <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Seating &
-                            Privacy</h4>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-xs text-gray-500 mb-1">Total Seating</label>
-                                <input type="number" name="total_seating" value="{{ client.total_seating or '' }}"
-                                    placeholder="e.g. 50"
-                                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-500 mb-1">Max Group Size</label>
-                                <input type="number" name="max_group_size" value="{{ client.max_group_size or '' }}"
-                                    placeholder="e.g. 20"
-                                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                            </div>
-
-                            <!-- Seating Configuration -->
-                            <div class="col-span-2">
-                                <label class="block text-xs text-gray-500 mb-1">Seating Configuration / Table
-                                    Types</label>
-                                <textarea name="seating_configuration" rows="2"
-                                    placeholder="e.g. Round tables (4pax), Long table (12pax), Booths..."
-                                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ client.seating_configuration or '' }}</textarea>
-                            </div>
-                        </div>
-
-                        <!-- Private Room Toggle -->
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-medium text-gray-700">Has Private Room?</label>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="has_private_room" id="toggle-private-room"
-                                        class="sr-only peer" {% if client.has_private_room %}checked{% endif %}>
+                <!-- Billing Card -->
+                <div
+                    class="glass-card p-10 rounded-3xl border border-white shadow-sm hover:shadow-md transition-shadow">
+                    <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Infrastructure & Billing
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="col-span-2">
+                            <label class="block text-sm font-black text-gray-700 mb-4">Subscription Tier</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label
+                                    class="relative flex flex-col p-6 cursor-pointer rounded-3xl border-2 border-gray-100 hover:bg-gray-50 transition-all peer-checked:border-blue-600">
+                                    <input type="radio" name="plan_type" value="basic"
+                                        class="peer absolute opacity-0 w-0 h-0" {% if client.plan_type=='basic'
+                                        %}checked{% endif %}>
                                     <div
-                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                                        class="peer-checked:border-blue-600 border-2 border-transparent rounded-3xl absolute inset-0 -m-[2px] pointer-events-none">
                                     </div>
+                                    <span class="text-lg font-black text-gray-900 mb-1">Jesse Basic</span>
+                                    <span class="text-xs text-gray-500 leading-relaxed font-medium">Core AI features for
+                                        small restaurants.</span>
+                                </label>
+                                <label
+                                    class="relative flex flex-col p-6 cursor-pointer rounded-3xl border-2 border-gray-100 hover:bg-gray-50 transition-all peer-checked:border-blue-600">
+                                    <input type="radio" name="plan_type" value="pro"
+                                        class="peer absolute opacity-0 w-0 h-0" {% if client.plan_type=='pro'
+                                        %}checked{% endif %}>
+                                    <div
+                                        class="peer-checked:border-blue-600 border-2 border-transparent rounded-3xl absolute inset-0 -m-[2px] pointer-events-none">
+                                    </div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-lg font-black text-gray-900">Jesse Pro</span>
+                                        <span
+                                            class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black uppercase">Popular</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500 leading-relaxed font-medium">White-labeling,
+                                        priority sync & custom memory.</span>
                                 </label>
                             </div>
-
-                            <!-- Hidden Capacity Field -->
-                            <div id="private-room-capacity-container" class="mt-3 hidden transition-all">
-                                <label class="block text-xs text-gray-500 mb-1">Room Capacity</label>
-                                <input type="number" name="private_room_capacity" id="private-room-capacity"
-                                    value="{{ client.private_room_capacity or '' }}" placeholder="Max pax..."
-                                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
-                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-gray-700 mb-2">Renewal Date</label>
+                            <input type="date" name="subscription_end" value="{{ client.subscription_end }}"
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-medium transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-gray-700 mb-2">Payment Method</label>
+                            <select name="payment_method"
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-medium transition-all">
+                                <option value="">Select Method...</option>
+                                <option value="Stripe" {% if client.payment_method=='Stripe' %}selected{% endif %}>
+                                    Stripe Credit Card</option>
+                                <option value="PayPal" {% if client.payment_method=='PayPal' %}selected{% endif %}>
+                                    PayPal Wallet</option>
+                                <option value="Bank Transfer" {% if client.payment_method=='Bank Transfer' %}selected{%
+                                    endif %}>Direct Bank Transfer</option>
+                            </select>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Amenities Checkboxes -->
-                    <div>
-                        <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Physical Amenities
-                        </h4>
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            {% for amenity in ['Outdoor', 'AC', 'Toilet', 'Prayer Room', 'Wheelchair', 'Power Outlets',
-                            'Live Music', 'Pet Friendly'] %}
-                            <label
-                                class="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                <input type="checkbox"
-                                    class="facility-checkbox rounded text-blue-600 focus:ring-blue-500"
-                                    value="{{ amenity }}" {% if amenity in (client.facilities_list or '' ) %}checked{%
-                                    endif %}>
-                                <span class="text-sm text-gray-700">{{ amenity }}</span>
-                            </label>
-                            {% endfor %}
-                            <!-- Hidden input store CSV -->
-                            <input type="hidden" name="facilities_list" id="facilities-list-input"
-                                value="{{ client.facilities_list or '' }}">
+            <div class="lg:col-span-1">
+                <div class="glass-card p-8 rounded-3xl border border-white sticky top-10 shadow-xl shadow-blue-900/5">
+                    <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Client Snapshot</h4>
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center group">
+                            <span
+                                class="text-sm font-bold text-gray-500 group-hover:text-gray-700 transition-colors">Client
+                                ID</span>
+                            <span class="font-black text-gray-900 text-sm">#{{ client.id }}</span>
                         </div>
-
-                        <h4 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Family & Kids</h4>
-                        <div class="flex gap-3">
-                            {% for family in ['Baby Chair', 'Kids Menu'] %}
-                            <label
-                                class="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                <input type="checkbox"
-                                    class="family-checkbox rounded text-green-600 focus:ring-green-500"
-                                    value="{{ family }}" {% if family in (client.family_facilities_list or '' )
-                                    %}checked{% endif %}>
-                                <span class="text-sm text-gray-700">{{ family }}</span>
-                            </label>
-                            {% endfor %}
+                        <div class="flex justify-between items-center group">
+                            <span
+                                class="text-sm font-bold text-gray-500 group-hover:text-gray-700 transition-colors">Public
+                                Status</span>
+                            <span
+                                class="px-3 py-1 rounded-xl bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-wider ring-1 ring-green-100 italic">Global
+                                Live</span>
                         </div>
-                        <input type="hidden" name="family_facilities_list" id="family-list-input"
-                            value="{{ client.family_facilities_list or '' }}">
+                        <div class="pt-6 border-t border-gray-100">
+                            <p class="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-4">Internal
+                                Admin Note</p>
+                            <textarea name="billing_note" rows="4"
+                                class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 text-xs font-medium text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 italic"
+                                placeholder="Add private notes about this client here...">{{ client.billing_note or '' }}</textarea>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right Column: Deployment Station -->
-        <div class="lg:col-span-1 space-y-8">
-            {% if client.status == 'active' and client.slug %}
-            <div
-                class="bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900 rounded-2xl shadow-2xl p-8 text-white text-center relative overflow-hidden group">
-                <div class="relative z-10 transition-transform group-hover:scale-[1.02] duration-500">
-                    <h3 class="text-2xl font-black mb-1 tracking-tight italic">Deployment Ready</h3>
-                    <p class="text-blue-200/50 text-[10px] font-bold uppercase tracking-widest mb-8">Asset generation
-                        station</p>
+        <!-- Tab Content: Aesthetics -->
+        <div id="tab-aesthetics" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Branding Card -->
+                <div
+                    class="glass-card p-10 rounded-3xl border border-white shadow-sm hover:shadow-md transition-shadow">
+                    <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Brand Aesthetic</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div>
+                            <label class="block text-sm font-black text-gray-700 mb-4">Core Theme Color</label>
+                            <div
+                                class="flex items-center gap-6 p-6 bg-white/50 rounded-3xl border border-gray-100 shadow-inner">
+                                <input type="color" name="theme_color" id="theme-color-picker"
+                                    value="{{ client.theme_color }}"
+                                    class="h-14 w-14 p-1 border-0 rounded-2xl cursor-pointer bg-transparent shadow-lg transform hover:scale-105 transition-transform">
+                                <div>
+                                    <input type="text" id="theme-color-text" value="{{ client.theme_color }}" readonly
+                                        class="block w-28 text-lg font-black text-gray-900 bg-transparent border-0 p-0 focus:ring-0 uppercase tracking-tight">
+                                    <span class="text-[10px] text-gray-400 uppercase font-black tracking-widest">Hex
+                                        Formula</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-gray-700 mb-4">Typography Personality</label>
+                            <select name="font_style"
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold transition-all">
+                                <option value="Modern Sans" {% if client.font_style=='Modern Sans' %}selected{% endif
+                                    %}>Modern Sans (Dynamic Inter)</option>
+                                <option value="Classic Serif" {% if client.font_style=='Classic Serif' %}selected{%
+                                    endif %}>Classic Serif (Elegant Merriweather)</option>
+                                <option value="Playful" {% if client.font_style=='Playful' %}selected{% endif %}>Playful
+                                    (Comforting Comic)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-gray-700 mb-4">Identity Avatar</label>
+                            <div class="flex items-center gap-8">
+                                <div class="relative group">
+                                    {% if client.knowledge_base and client.knowledge_base.avatar_image %}
+                                    <img src="{{ resolve_file(client.knowledge_base.avatar_image, 'avatars') }}"
+                                        class="h-24 w-24 rounded-3xl object-cover border-4 border-white shadow-2xl ring-1 ring-gray-100 transform group-hover:rotate-3 transition-all duration-500">
+                                    {% else %}
+                                    <div
+                                        class="h-24 w-24 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-2xl">
+                                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    {% endif %}
+                                    <div
+                                        class="absolute -bottom-2 -right-2 bg-gray-900 text-white p-2 rounded-xl shadow-2xl transform group-hover:scale-110 transition-transform">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="file" name="avatar"
+                                        class="block w-full text-xs text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-[10px] file:font-black file:bg-gray-900 file:text-white hover:file:bg-gray-800 cursor-pointer shadow-sm transition-all transition-duration-300">
+                                    <p
+                                        class="text-[10px] text-gray-400 mt-3 font-bold uppercase tracking-tighter italic">
+                                        High Definition Recommended (Minimal 512px)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <label class="block text-sm font-black text-gray-700">Display Logic</label>
+                            <label
+                                class="group flex items-start gap-4 p-6 bg-white/50 border border-gray-100 rounded-3xl hover:border-blue-500 hover:shadow-xl hover:shadow-blue-900/5 cursor-pointer transition-all duration-300">
+                                <div class="flex items-center h-5">
+                                    <input type="checkbox" name="is_white_labeled"
+                                        class="w-6 h-6 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer transition-transform group-hover:scale-110"
+                                        {% if client.is_white_labeled %}checked{% endif %}>
+                                </div>
+                                <div>
+                                    <span class="block text-base font-black text-gray-900 mb-1">Jesse Pro
+                                        White-label</span>
+                                    <span class="block text-xs text-gray-500 leading-relaxed font-medium">Remove all
+                                        'Powered by Jesse' badges and links from the guest widget for a native
+                                        white-labeled experience.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="lg:col-span-1">
+                <div class="glass-card p-8 rounded-3xl border border-white shadow-xl shadow-blue-900/5">
+                    <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 italic">Creative Preview
+                    </h4>
+                    <div
+                        class="h-80 rounded-3xl bg-gray-50 flex flex-col items-center justify-center border border-gray-100 relative overflow-hidden">
+                        <!-- Simulated Widget Bubble -->
+                        <div id="preview-bubble"
+                            class="absolute bottom-6 right-6 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transform hover:scale-110 transition-all cursor-pointer"
+                            style="background: {{ client.theme_color }}">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <div id="preview-chip"
+                                class="w-20 h-20 rounded-3xl shadow-2xl mx-auto mb-6 transform rotate-3"
+                                style="background-color: {{ client.theme_color }}"></div>
+                            <p class="text-xs font-black text-gray-900 uppercase tracking-widest">Color Profile Sync</p>
+                            <p class="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-tighter">Real-time
+                                Interface Rendering</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- QR Code Fallback/Generator -->
-                    <!-- QR Code Display & Download -->
-                    <div class="bg-white p-4 rounded-xl inline-block mb-4 shadow-inner">
-                        <!-- Backend SVG QR -->
-                        <img src="{{ url_for('admin.client_qr', client_id=client.id) }}" class="w-32 h-32 mx-auto"
-                            alt="QR Code">
+        <!-- Tab Content: Operations -->
+        <div id="tab-operations" class="tab-content hidden space-y-10 pb-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Regional Details -->
+                <div class="glass-card p-10 rounded-3xl border border-white shadow-sm">
+                    <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Regional & Logistics
+                    </h3>
+                    <div class="space-y-8">
+                        <div>
+                            <label class="block text-sm font-black text-gray-700 mb-2">Primary Business Address</label>
+                            <textarea name="address" rows="3"
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none text-sm font-medium leading-relaxed">{{ client.address or '' }}</textarea>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-black text-gray-700 mb-2">Public Phone</label>
+                                <input type="text" name="public_phone" value="{{ client.public_phone or '' }}"
+                                    class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 text-sm font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-black text-gray-700 mb-2">Official Email</label>
+                                <input type="email" name="public_email" value="{{ client.public_email or '' }}"
+                                    class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 text-sm font-bold">
+                            </div>
+                        </div>
+                        <div class="pt-4">
+                            <label class="block text-sm font-black text-gray-700 mb-2">Google Maps Embed URL</label>
+                            <input type="url" name="maps_url" value="{{ client.maps_url or '' }}"
+                                placeholder="https://maps.app.goo.gl/..."
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 text-xs font-medium text-blue-600 italic">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social & Delivery -->
+                <div class="glass-card p-10 rounded-3xl border border-white shadow-sm">
+                    <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Guest Amenities &
+                        Delivery</h3>
+                    <div class="space-y-8">
+                        <div
+                            class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-blue-50/50 rounded-3xl border border-blue-100/50">
+                            <div>
+                                <label
+                                    class="block text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">WiFi
+                                    SSID</label>
+                                <input type="text" name="wifi_ssid" value="{{ client.wifi_ssid or '' }}"
+                                    class="w-full bg-white border border-blue-100 rounded-xl px-4 py-3 text-sm font-black text-gray-900"
+                                    placeholder="Restaurant_Guest">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">WiFi
+                                    Key</label>
+                                <input type="text" name="wifi_password" value="{{ client.wifi_password or '' }}"
+                                    class="w-full bg-white border border-blue-100 rounded-xl px-4 py-3 text-sm font-black text-gray-900"
+                                    placeholder="Password123">
+                            </div>
+                        </div>
+
+                        <!-- Delivery Partners List -->
+                        <div class="space-y-4">
+                            <label class="block text-sm font-black text-gray-700">Food Delivery Partners</label>
+                            <div id="delivery-list" class="space-y-3">
+                                <!-- JS will populate -->
+                            </div>
+                            <button type="button" onclick="addDeliveryPartner()"
+                                class="flex items-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-700 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Add Partner Link
+                            </button>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-sm font-black text-gray-700">Policy & Procedural Info</label>
+                                <span
+                                    class="text-[10px] font-black text-gray-400 uppercase bg-gray-100 px-2 py-0.5 rounded-lg">AI
+                                    Brain Context</span>
+                            </div>
+                            <textarea name="house_rules" rows="6"
+                                class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 text-sm font-medium leading-relaxed italic"
+                                placeholder="Last orders at 9:30 PM...">{{ client.knowledge_base.policy_info or '' }}</textarea>
+                            <p
+                                class="text-[10px] text-gray-400 mt-3 font-bold uppercase tracking-tighter leading-relaxed">
+                                This information is directly injected into the AI's core logic to answer guest inquiries
+                                accurately.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matrix Matrix -->
+            <div class="glass-card p-10 rounded-3xl border border-white shadow-sm">
+                <div class="flex items-center justify-between mb-10">
+                    <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest">Physical Facilities Matrix
+                    </h3>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50"></span>
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Multi-Select
+                            Enabled</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {% for amenity in ['Outdoor', 'AC', 'Toilet', 'Prayer Room', 'Wheelchair', 'Power Outlets', 'Live
+                    Music', 'Pet Friendly'] %}
+                    <label
+                        class="group flex items-center justify-between p-5 border border-gray-100 rounded-2xl hover:border-blue-300 hover:bg-blue-50 hover:shadow-lg hover:shadow-blue-900/5 transition-all cursor-pointer">
+                        <span class="text-sm font-black text-gray-700 group-hover:text-blue-700">{{ amenity }}</span>
+                        <div class="relative flex items-center">
+                            <input type="checkbox"
+                                class="facility-checkbox w-6 h-6 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500 transition-transform group-hover:scale-110"
+                                value="{{ amenity }}" {% if amenity in (client.facilities_list or '' ) %}checked{% endif
+                                %}>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+                <!-- Hidden inputs -->
+                <input type="hidden" name="facilities_list" id="facilities-list-input"
+                    value="{{ client.facilities_list or '' }}">
+                <input type="hidden" name="family_facilities_list" id="family-list-input"
+                    value="{{ client.family_facilities_list or '' }}">
+                <input type="hidden" name="delivery_partners" id="delivery-partners-input"
+                    value='{{ client.delivery_partners or "[]" }}'>
+            </div>
+        </div>
+
+        <!-- Tab Content: Launchpad -->
+        <div id="tab-launchpad" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div class="lg:col-span-1">
+                <div
+                    class="bg-gradient-to-br from-gray-900 via-blue-950 to-black rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group">
+                    <!-- Tech Background -->
+                    <div class="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
+                        <div class="absolute -top-10 -right-10 w-64 h-64 bg-blue-500 rounded-full blur-[100px]"></div>
+                        <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-500 rounded-full blur-[100px]">
+                        </div>
                     </div>
 
-                    <div class="mb-6 flex flex-wrap justify-center gap-2">
-                        <a href="{{ url_for('admin.client_qr', client_id=client.id) }}"
-                            download="qr-{{ client.slug }}.svg"
-                            class="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-2 px-3 rounded-full transition-colors">
-                            SVG
-                        </a>
-                        <a href="{{ url_for('admin.client_qr', client_id=client.id, format='png') }}"
-                            download="qr-{{ client.slug }}.png"
-                            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded-full transition-colors">
-                            PNG
-                        </a>
-                        <a href="{{ url_for('admin.client_qr', client_id=client.id, format='jpeg') }}"
-                            download="qr-{{ client.slug }}.jpg"
-                            class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white text-xs font-bold py-2 px-3 rounded-full transition-colors">
-                            JPG
-                        </a>
-                    </div>
+                    <div class="relative z-10 text-center">
+                        <h3 class="text-4xl font-black mb-1 tracking-tighter italic">Live Tower</h3>
+                        <p class="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-12 opacity-80">
+                            Asset Generation Station</p>
 
-                    <div class="space-y-3">
-                        <div class="bg-gray-800 rounded p-3 text-left">
-                            <label class="text-xs text-gray-500 uppercase tracking-wider block mb-1">Direct
-                                Link</label>
-                            <div class="flex items-center justify-between gap-2 overflow-hidden">
-                                <code
-                                    class="text-blue-400 text-sm truncate select-all">{{ request.host_url }}chat/{{ client.slug }}</code>
+                        <div
+                            class="bg-white p-8 rounded-[2rem] inline-block mb-12 shadow-2xl transform hover:scale-105 hover:-rotate-2 transition-all duration-700 ring-4 ring-white/10">
+                            <img src="{{ url_for('admin.client_qr', client_id=client.id) }}" class="w-48 h-48 mx-auto"
+                                alt="QR Code">
+                        </div>
+
+                        <div class="space-y-6">
+                            <p class="text-[10px] text-blue-200/50 font-black uppercase tracking-widest italic">
+                                Encrypted Assets</p>
+                            <div class="grid grid-cols-3 gap-3">
+                                <a href="{{ url_for('admin.client_qr', client_id=client.id) }}"
+                                    download="qr-{{ client.slug }}.svg"
+                                    class="bg-white/5 hover:bg-white/10 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest border border-white/5">SVG</a>
+                                <a href="{{ url_for('admin.client_qr', client_id=client.id, format='png') }}"
+                                    download="qr-{{ client.slug }}.png"
+                                    class="bg-blue-600/20 hover:bg-blue-600/40 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest border border-blue-500/20 text-blue-400">PNG</a>
+                                <a href="{{ url_for('admin.client_qr', client_id=client.id, format='jpeg') }}"
+                                    download="qr-{{ client.slug }}.jpg"
+                                    class="bg-indigo-600/20 hover:bg-indigo-600/40 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest border border-indigo-500/20 text-indigo-400">JPG</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 space-y-10">
+                <!-- Direct Integration -->
+                <div class="glass-card p-10 rounded-[2.5rem] border border-white shadow-sm">
+                    <h4
+                        class="text-xs font-black text-blue-600 uppercase tracking-widest mb-10 flex items-center gap-2">
+                        <span class="w-5 h-[2px] bg-blue-600"></span>
+                        Integration Pipeline
+                    </h4>
+
+                    <div class="space-y-10">
+                        <div class="group">
+                            <div class="flex items-center justify-between mb-4">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Direct
+                                    Link (Standalone Mode)</label>
+                                <span
+                                    class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">Optimal
+                                    for Instagram Bio</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="flex-1 bg-gray-50 border border-gray-100 rounded-3xl px-6 py-5 flex items-center gap-3 shadow-inner">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.826a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                    <code
+                                        class="text-blue-600 font-black text-sm truncate select-all">{{ request.host_url }}chat/{{ client.slug }}</code>
+                                </div>
                                 <button type="button"
                                     onclick="navigator.clipboard.writeText('{{ request.host_url }}chat/{{ client.slug }}')"
-                                    class="p-1 hover:text-white text-gray-400">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
-                                        </path>
+                                    class="p-5 bg-white border border-gray-100 rounded-3xl hover:bg-blue-600 hover:text-white transition-all shadow-lg hover:-translate-y-1 active:scale-95 text-gray-400">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                                <a href="{{ url_for('standalone_chat', public_id=client.slug) }}" target="_blank"
+                                    class="p-5 bg-gray-900 text-white rounded-3xl hover:bg-black transition-all shadow-2xl hover:-translate-y-1 active:scale-95">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div
+                            class="p-10 bg-gray-950 rounded-[2.5rem] border border-white/5 relative overflow-hidden group">
+                            <div
+                                class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
+                                <svg class="w-32 h-32 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <label class="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] block mb-6">JS
+                                Widget Embed Bundle</label>
+                            <div class="relative">
+                                <div class="bg-black/60 backdrop-blur-md rounded-2xl p-6 border border-white/10">
+                                    <code
+                                        class="block text-green-400 text-xs font-mono break-all leading-relaxed whitespace-pre-wrap">&lt;script src="{{ request.host_url }}static/widget.js" 
+        data-id="{{ client.public_id }}"&gt;
+&lt;/script&gt;</code>
+                                </div>
+                                <button type="button"
+                                    onclick="navigator.clipboard.writeText('<script src=\'{{ request.host_url }}static/widget.js\' data-id=\'{{ client.public_id }}\'></script>')"
+                                    class="absolute top-4 right-4 text-blue-400 hover:text-white transition-colors bg-white/5 p-2 rounded-xl">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
                                 </button>
                             </div>
+                            <div class="mt-8 flex items-start gap-3">
+                                <div
+                                    class="w-5 h-5 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center text-[10px] font-black">
+                                    i</div>
+                                <p
+                                    class="text-[10px] text-gray-500 font-bold leading-relaxed uppercase tracking-tighter italic">
+                                    Paste this snippet before the closing &lt;/body&gt; tag of your website. The widget
+                                    will automatically spawn in the bottom-right corner.</p>
+                            </div>
                         </div>
-                        <a href="{{ url_for('standalone_chat', public_id=client.slug) }}" target="_blank"
-                            class="block w-full text-center bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition-colors">
-                            Launch Live Preview
-                        </a>
                     </div>
                 </div>
-
-                <!-- Embed Info -->
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <h3 class="text-sm font-semibold text-gray-800 mb-2">Embed Script</h3>
-                    <p class="text-xs text-gray-500 mb-3">Place this on the client's website.</p>
-                    <div class="bg-gray-900 rounded p-3 relative group">
-                        <code class="text-green-400 text-xs break-all font-mono block">
-                        &lt;script src="{{ request.host_url }}static/widget.js" data-id="{{ client.public_id }}"&gt;&lt;/script&gt;
-                    </code>
-                    </div>
-                </div>
-                {% else %}
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center text-yellow-800">
-                    <svg class="w-12 h-12 mx-auto mb-2 text-yellow-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                        </path>
-                    </svg>
-                    <h3 class="font-bold">Not Deployed</h3>
-                    <p class="text-sm mt-1">Set status to Active and ensure a Slug is defined to see deployment
-                        assets.</p>
-                </div>
-                {% endif %}
             </div>
+        </div>
     </form>
 </div>
 
-<!-- Simple QR Code Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // --- Facilities & Capacity Logic ---
-        const privateToggle = document.getElementById('toggle-private-room');
-        const privateContainer = document.getElementById('private-room-capacity-container');
+    function switchTab(tabId) {
+        // Hide all content
+        document.querySelectorAll('.tab-content').forEach(el => {
+            el.classList.add('hidden');
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(10px)';
+        });
 
-        if (privateToggle && privateContainer) {
-            function togglePrivateRoom() {
-                if (privateToggle.checked) {
-                    privateContainer.classList.remove('hidden');
-                } else {
-                    privateContainer.classList.add('hidden');
+        // Remove active class from buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-white', 'shadow-md', 'text-blue-600');
+            btn.classList.add('text-gray-500');
+        });
+
+        // Show selected content with animation
+        const activeTab = document.getElementById('tab-' + tabId);
+        activeTab.classList.remove('hidden');
+
+        // Triple-frame timeout for smooth CSS transitions
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                activeTab.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                activeTab.style.opacity = '1';
+                activeTab.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Set active button
+        const activeBtn = document.getElementById('tab-btn-' + tabId);
+        activeBtn.classList.add('active', 'bg-white', 'shadow-md', 'text-blue-600');
+        activeBtn.classList.remove('text-gray-500');
+
+        // Store active tab
+        localStorage.setItem('activeHubTab', tabId);
+    }
+
+    // Delivery Partner Logic
+    function renderDeliveryList() {
+        const raw = document.getElementById('delivery-partners-input').value;
+        let partners = [];
+        try { partners = JSON.parse(raw); } catch (e) { partners = []; }
+
+        const container = document.getElementById('delivery-list');
+        if (container) {
+            container.innerHTML = '';
+            partners.forEach((p, index) => {
+                container.appendChild(createRow(p.platform, p.url, index));
+            });
+        }
+    }
+
+    function createRow(platform, url, index) {
+        const div = document.createElement('div');
+        div.className = "flex gap-3 items-center group/row";
+        div.innerHTML = `
+            <div class="flex-1 bg-white border border-gray-100 rounded-xl px-4 py-3 flex items-center gap-3 shadow-inner">
+                <input type="text" placeholder="Platform (e.g. UberEats)" class="w-1/3 bg-transparent border-0 focus:ring-0 text-sm font-bold text-gray-900" value="${platform || ''}">
+                <div class="w-[1px] h-4 bg-gray-100"></div>
+                <input type="url" placeholder="https://..." class="flex-1 bg-transparent border-0 focus:ring-0 text-xs font-medium text-blue-600 italic" value="${url || ''}">
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="p-3 text-red-400 hover:text-red-600 transition-colors opacity-0 group-hover/row:opacity-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+        `;
+        return div;
+    }
+
+    window.addDeliveryPartner = function () {
+        const container = document.getElementById('delivery-list');
+        if (container) {
+            container.appendChild(createRow('', '', -1));
+        }
+    }
+
+    function getDeliveryListFromDOM() {
+        const container = document.getElementById('delivery-list');
+        if (!container) return [];
+        const rows = container.children;
+        const list = [];
+        for (let row of rows) {
+            const inputs = row.querySelectorAll('input');
+            const platform = inputs[0].value.trim();
+            const url = inputs[1].value.trim();
+            if (platform && url) {
+                list.push({ platform, url });
+            }
+        }
+        return list;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Restore last tab
+        const lastTab = localStorage.getItem('activeHubTab') || 'general';
+        switchTab(lastTab);
+        renderDeliveryList();
+
+        // Theme Color Interaction
+        const colorPicker = document.getElementById('theme-color-picker');
+        const colorText = document.getElementById('theme-color-text');
+        const previewChip = document.getElementById('preview-chip');
+        const previewBubble = document.getElementById('preview-bubble');
+
+        if (colorPicker) {
+            function syncColor(hex) {
+                colorText.value = hex;
+                if (previewChip) {
+                    previewChip.style.backgroundColor = hex;
+                    previewChip.style.boxShadow = `0 20px 40px -10px ${hex}60`;
+                    previewChip.style.borderColor = `${hex}40`;
+                }
+                if (previewBubble) {
+                    previewBubble.style.background = hex;
+                    previewBubble.style.boxShadow = `0 10px 30px -5px ${hex}80`;
                 }
             }
-            privateToggle.addEventListener('change', togglePrivateRoom);
-            togglePrivateRoom(); // Run on init
+
+            colorPicker.addEventListener('input', (e) => syncColor(e.target.value));
+            syncColor(colorPicker.value); // Init
         }
 
+        // Facilities Logic (CSV Sync)
         function updateCSV(className, hiddenInputId) {
             const checkboxes = document.querySelectorAll('.' + className + ':checked');
             const values = Array.from(checkboxes).map(cb => cb.value);
@@ -687,29 +739,6 @@
         document.querySelectorAll('.facility-checkbox').forEach(cb => {
             cb.addEventListener('change', () => updateCSV('facility-checkbox', 'facilities-list-input'));
         });
-
-        document.querySelectorAll('.family-checkbox').forEach(cb => {
-            cb.addEventListener('change', () => updateCSV('family-checkbox', 'family-list-input'));
-        });
-        // --- End Facilities Logic ---
-        const slug = "{{ client.slug or '' }}";
-        const hostUrl = "{{ request.host_url }}";
-
-        if (slug) {
-            const url = hostUrl + "chat/" + slug;
-            const container = document.getElementById("qrcode");
-            if (container) {
-                container.innerHTML = "";
-                new QRCode(container, {
-                    text: url,
-                    width: 128,
-                    height: 128,
-                    colorDark: "#000000",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            }
-        }
     });
 </script>
 {% endblock %}
