@@ -1,179 +1,271 @@
 {% extends "admin/client_studio_layout.html" %}
 
 {% block studio_content %}
-<div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">AI Brain Settings</h1>
+<div class="max-w-6xl mx-auto pb-24">
+    <!-- Premium Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div class="space-y-1">
+            <div class="flex items-center gap-3 mb-2">
+                <span
+                    class="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-black text-blue-600 uppercase tracking-widest">Cognitive
+                    Matrix</span>
+            </div>
+            <h1 class="text-5xl font-black text-gray-900 tracking-tighter italic">
+                AI BRAIN <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">SETTINGS</span>
+            </h1>
+            <p class="text-sm text-gray-400 font-medium tracking-tight">Governing the neural architecture and behavioral
+                logic of your AI Concierge.</p>
+        </div>
         <button type="submit" form="ai-form"
-            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">
-            Save Configuration
+            class="group relative bg-black text-white px-10 py-4 rounded-2xl overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-black/10">
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">
+            </div>
+            <span class="relative z-10 font-black uppercase tracking-widest text-xs">Save Configuration</span>
         </button>
     </div>
 
-    <form id="ai-form" method="POST" class="max-w-2xl mx-auto space-y-8">
+    <form id="ai-form" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <!-- Left Column: Brain Configuration -->
-        <div class="space-y-6">
+        <div class="space-y-10">
             <!-- Card 1: Provider & Credentials -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Provider & Model</h3>
-                <div class="space-y-4">
-                    <!-- Provider -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">AI Provider</label>
-                        <select name="ai_provider" id="provider-select"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                            <option value="groq" {% if kb.ai_provider=='groq' %}selected{% endif %}>Groq (Recommended)
-                            </option>
-                            <option value="openai" {% if kb.ai_provider=='openai' %}selected{% endif %}>OpenAI</option>
-                            <option value="anthropic" {% if kb.ai_provider=='anthropic' %}selected{% endif %}>Anthropic
-                            </option>
-                        </select>
-                    </div>
+            <div class="glass-card p-10 rounded-[3rem] relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <svg class="w-24 h-24 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
+                    </svg>
+                </div>
 
-                    <!-- Model (Dynamic) -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                        <select name="ai_model" id="model-select"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                            <!-- Populated by JS -->
-                        </select>
-                        <input type="hidden" id="current-model" value="{{ kb.ai_model }}">
-                    </div>
+                <div class="relative z-10">
+                    <h3
+                        class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        Neural Provider & Engine
+                    </h3>
 
-                    <!-- API Key -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                        <div class="relative">
-                            <input type="password" name="ai_api_key" id="api-key-input" placeholder="sk-..."
-                                class="w-full border rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm"
-                                autocomplete="off">
-                            <button type="button" onclick="toggleSecret()"
-                                class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-gray-600">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                    </path>
-                                </svg>
-                            </button>
+                    <div class="space-y-8">
+                        <!-- Provider -->
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">AI
+                                Intelligence Source</label>
+                            <select name="ai_provider" id="provider-select"
+                                class="w-full bg-white/50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all font-bold text-gray-900 appearance-none cursor-pointer">
+                                <option value="groq" {% if kb.ai_provider=='groq' %}selected{% endif %}>Groq
+                                    (Ultra-Fast)</option>
+                                <option value="openai" {% if kb.ai_provider=='openai' %}selected{% endif %}>OpenAI
+                                    (Industry Standard)</option>
+                                <option value="anthropic" {% if kb.ai_provider=='anthropic' %}selected{% endif %}>
+                                    Anthropic (Advanced Logic)</option>
+                            </select>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1" id="api-hint">
-                            {% if kb.ai_api_key %}
-                            Current key is set. Leave blank to keep it.
-                            {% else %}
-                            No key set. Please enter one.
-                            {% endif %}
-                        </p>
+
+                        <!-- Model (Dynamic) -->
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Specific
+                                Neural Model</label>
+                            <select name="ai_model" id="model-select"
+                                class="w-full bg-white/50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all font-bold text-gray-900 appearance-none cursor-pointer">
+                                <!-- Populated by JS -->
+                            </select>
+                            <input type="hidden" id="current-model" value="{{ kb.ai_model }}">
+                        </div>
+
+                        <!-- API Key -->
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Encrypted
+                                API Key</label>
+                            <div class="relative group/key">
+                                <input type="password" name="ai_api_key" id="api-key-input" placeholder="sk-..."
+                                    class="w-full bg-white/50 border border-gray-100 rounded-2xl px-6 py-4 pr-14 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all font-mono text-sm text-gray-900 placeholder:text-gray-300"
+                                    autocomplete="off">
+                                <button type="button" onclick="toggleSecret()"
+                                    class="absolute inset-y-0 right-0 px-5 flex items-center text-gray-300 hover:text-blue-500 transition-colors">
+                                    <svg id="eye-icon" class="h-5 w-5" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-2 mt-3">
+                                <div class="w-1 h-1 bg-blue-400 rounded-full"></div>
+                                <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tight" id="api-hint">
+                                    {% if kb.ai_api_key %}
+                                    Validation Active • Key currently stored
+                                    {% else %}
+                                    Action Required • Enter valid key to proceed
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 2: Parameters -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Parameters</h3>
-                <div class="space-y-6">
-                    <!-- Temperature -->
-                    <div>
-                        <div class="flex justify-between mb-1">
-                            <label class="text-sm font-medium text-gray-700">Creativity (Temperature)</label>
-                            <span class="text-sm font-bold text-blue-600" id="temp-display">{{ kb.temperature or 0.7
-                                }}</span>
-                        </div>
-                        <input type="range" name="temperature" min="0" max="1" step="0.1"
-                            value="{{ kb.temperature or 0.7 }}"
-                            oninput="document.getElementById('temp-display').innerText = this.value"
-                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
-                        <div class="flex justify-between text-xs text-gray-400 mt-1">
-                            <span>Precise (0.0)</span>
-                            <span>Balanced (0.5)</span>
-                            <span>Creative (1.0)</span>
-                        </div>
-                    </div>
-
-                    <!-- Max Tokens -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Max Tokens</label>
-                        <input type="number" name="max_tokens" value="{{ kb.max_tokens or 1024 }}" max="4096"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <p class="text-xs text-gray-500 mt-1">Limit response length to control costs.</p>
-                    </div>
+            <!-- Card 2: Strategic Parameters -->
+            <div class="glass-card p-10 rounded-[3rem] relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <svg class="w-24 h-24 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z" />
+                    </svg>
                 </div>
-            </div>
 
-            <!-- Card 3: Bot Personality -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Bot Personality</h3>
-                <div class="space-y-6">
-                    <!-- Tone of Voice -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tone of Voice (Gaya Bicara)</label>
-                        <select name="personality_tone"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                            <option value="professional" {% if kb.personality_tone=='professional' %}selected{% endif
-                                %}>Professional & Formal (Fine Dining/Hotel)</option>
-                            <option value="friendly" {% if kb.personality_tone=='friendly' or not kb.personality_tone
-                                %}selected{% endif %}>Friendly & Casual (Cafe/Family Resto)</option>
-                            <option value="energetic" {% if kb.personality_tone=='energetic' %}selected{% endif %}>
-                                Enthusiastic & Energetic (Fast Food/Bar)</option>
-                            <option value="luxury" {% if kb.personality_tone=='luxury' %}selected{% endif %}>Luxury &
-                                Elegant (Sopan, Minim Emoji)</option>
-                            <option value="funny" {% if kb.personality_tone=='funny' %}selected{% endif %}>Funny & Witty
-                                (Santai/Lucu)</option>
-                        </select>
-                    </div>
+                <div class="relative z-10">
+                    <h3
+                        class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-indigo-500 rounded-full"></span>
+                        Strategic Parameters
+                    </h3>
 
-                    <!-- Emoji Usage -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Emoji Usage</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <label
-                                class="relative flex items-center justify-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                <input type="radio" name="personality_emoji" value="none" class="sr-only peer" {% if
-                                    kb.personality_emoji=='none' %}checked{% endif %}>
-                                <div
-                                    class="peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-700 absolute inset-0 border rounded-lg transition-all">
+                    <div class="space-y-10">
+                        <!-- Temperature -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-end">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cognitive
+                                    Creativity</label>
+                                <div class="px-3 py-1 bg-indigo-50 rounded-full">
+                                    <span class="text-xs font-black text-indigo-600" id="temp-display">{{ kb.temperature
+                                        or 0.7 }}</span>
                                 </div>
-                                <span class="relative text-sm font-medium peer-checked:text-blue-700">None 😶</span>
-                            </label>
-                            <label
-                                class="relative flex items-center justify-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                <input type="radio" name="personality_emoji" value="minimal" class="sr-only peer" {% if
-                                    kb.personality_emoji=='minimal' or not kb.personality_emoji %}checked{% endif %}>
+                            </div>
+                            <div class="relative py-2">
+                                <input type="range" name="temperature" min="0" max="1" step="0.1"
+                                    value="{{ kb.temperature or 0.7 }}"
+                                    oninput="document.getElementById('temp-display').innerText = this.value"
+                                    class="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-indigo-600 transition-all">
                                 <div
-                                    class="peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-700 absolute inset-0 border rounded-lg transition-all">
+                                    class="flex justify-between text-[9px] text-gray-300 font-bold uppercase mt-3 tracking-tighter">
+                                    <span>Precise Logic</span>
+                                    <span>Balanced</span>
+                                    <span>Creative Soul</span>
                                 </div>
-                                <span class="relative text-sm font-medium peer-checked:text-blue-700">Minimal ✨</span>
-                            </label>
-                            <label
-                                class="relative flex items-center justify-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                <input type="radio" name="personality_emoji" value="expressive" class="sr-only peer" {%
-                                    if kb.personality_emoji=='expressive' %}checked{% endif %}>
-                                <div
-                                    class="peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-700 absolute inset-0 border rounded-lg transition-all">
-                                </div>
-                                <span class="relative text-sm font-medium peer-checked:text-blue-700">Expressive
-                                    😍</span>
-                            </label>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Response Length -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Response Length</label>
-                        <select name="personality_length"
-                            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                            <option value="concise" {% if kb.personality_length=='concise' or not kb.personality_length
-                                %}selected{% endif %}>Concise & Brief (Hemat Waktu)</option>
-                            <option value="detailed" {% if kb.personality_length=='detailed' %}selected{% endif %}>
-                                Detailed & Storytelling (Deskriptif)</option>
-                        </select>
+                        <!-- Max Tokens -->
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Response
+                                Velocity (Max Tokens)</label>
+                            <div class="relative">
+                                <input type="number" name="max_tokens" value="{{ kb.max_tokens or 1024 }}" max="4096"
+                                    class="w-full bg-white/50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:outline-none transition-all font-black text-gray-900">
+                                <div
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-300 uppercase">
+                                    Tokens</div>
+                            </div>
+                            <p class="text-[9px] text-gray-400 font-bold mt-2 uppercase tracking-tight">Regulates the
+                                maximum length of neural output.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-</div>
-</form>
+
+        <!-- Right Column: Behavioral Persona -->
+        <div class="space-y-10">
+            <!-- Card 3: Bot personality -->
+            <div class="glass-card p-10 rounded-[3rem] relative overflow-hidden group h-full">
+                <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <svg class="w-24 h-24 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z" />
+                    </svg>
+                </div>
+
+                <div class="relative z-10 h-full flex flex-col">
+                    <h3
+                        class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                        Behavioral Persona
+                    </h3>
+
+                    <div class="space-y-8 flex-1">
+                        <!-- Tone of Voice -->
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Vocal
+                                Resonance (Tone)</label>
+                            <select name="personality_tone"
+                                class="w-full bg-white/50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 focus:outline-none transition-all font-bold text-gray-900 appearance-none cursor-pointer">
+                                <option value="professional" {% if kb.personality_tone=='professional' %}selected{%
+                                    endif %}>Professional & Formal</option>
+                                <option value="friendly" {% if kb.personality_tone=='friendly' or not
+                                    kb.personality_tone %}selected{% endif %}>Friendly & Casual</option>
+                                <option value="energetic" {% if kb.personality_tone=='energetic' %}selected{% endif %}>
+                                    Enthusiastic & Vibrant</option>
+                                <option value="luxury" {% if kb.personality_tone=='luxury' %}selected{% endif %}>
+                                    Sophisticated & Elegant</option>
+                                <option value="funny" {% if kb.personality_tone=='funny' %}selected{% endif %}>Witty &
+                                    Humorous</option>
+                            </select>
+                        </div>
+
+                        <!-- Emoji Usage -->
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Visual
+                                Emotive (Emoji Usage)</label>
+                            <div class="grid grid-cols-1 gap-3">
+                                {% set emoji_opts = [
+                                ('none', 'Zero Emotive', '😶', 'Strictly textual responses.'),
+                                ('minimal', 'Subtle Accents', '✨', 'Occasional markers only.'),
+                                ('expressive', 'High Resonance', '😍', 'Rich visual engagement.')
+                                ] %}
+                                {% for val, label, icon, desc in emoji_opts %}
+                                <label class="relative group/opt cursor-pointer">
+                                    <input type="radio" name="personality_emoji" value="{{ val }}" class="sr-only peer"
+                                        {% if kb.personality_emoji==val or (val=='minimal' and not kb.personality_emoji)
+                                        %}checked{% endif %}>
+                                    <div
+                                        class="absolute inset-0 bg-white/50 border border-gray-100 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-50/50 transition-all group-hover/opt:scale-[1.01]">
+                                    </div>
+                                    <div class="relative px-6 py-4 flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-xl shadow-sm peer-checked:border-purple-200">
+                                            {{ icon }}
+                                        </div>
+                                        <div>
+                                            <div class="text-[11px] font-black text-gray-900 uppercase tracking-wide">{{
+                                                label }}</div>
+                                            <div class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">
+                                                {{ desc }}</div>
+                                        </div>
+                                        <div class="ml-auto opacity-0 peer-checked:opacity-100 transition-opacity">
+                                            <div class="w-2 h-2 bg-purple-500 rounded-full shadow-[0_0_10px_purple]">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Response Length -->
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Syntactic
+                                Density (Length)</label>
+                            <select name="personality_length"
+                                class="w-full bg-white/50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 focus:outline-none transition-all font-bold text-gray-900 appearance-none cursor-pointer">
+                                <option value="concise" {% if kb.personality_length=='concise' or not
+                                    kb.personality_length %}selected{% endif %}>Concise & Efficient</option>
+                                <option value="detailed" {% if kb.personality_length=='detailed' %}selected{% endif %}>
+                                    Explanatory & Narrative</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script>
@@ -218,9 +310,10 @@
 
     providerSelect.addEventListener('change', () => {
         populateModels();
-        // Clear API key visual warning if provider changes (optional)
-        document.getElementById('api-hint').innerText = "Provider changed. Please update API Key if needed.";
+        const hint = document.getElementById('api-hint');
+        hint.innerText = "Architecture Transition • Review API Key for " + providerSelect.options[providerSelect.selectedIndex].text;
         apiKeyInput.value = "";
+        apiKeyInput.placeholder = "Enter new " + providerSelect.value.toUpperCase() + " key";
     });
 
     function toggleSecret() {
