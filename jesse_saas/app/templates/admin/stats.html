@@ -105,27 +105,65 @@
             </table>
         </div>
     </div>
+    <!-- Hidden data source for Chart.js to avoid JS lint errors with Jinja tags -->
+    <div id="engagment-data" class="hidden" data-labels='{{ chart_labels | tojson }}'
+        data-values='{{ chart_data | tojson }}'>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('interactionChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: {{ chart_labels | tojson }},
-        datasets: [{
-            data: {{ chart_data | tojson }},
-        backgroundColor: ['#16a34a', '#9333ea'], // Green, Purple
-        hoverOffset: 4
-            }]
-        },
-        options: {
-        responsive: true,
-        plugins: {
-            legend: { position: 'bottom' }
-        }
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const dataSource = document.getElementById('engagment-data');
+        if (!dataSource) return;
+
+        const ctx = document.getElementById('interactionChart').getContext('2d');
+        const labels = JSON.parse(dataSource.getAttribute('data-labels'));
+        const values = JSON.parse(dataSource.getAttribute('data-values'));
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: ['#16a34a', '#9333ea'],
+                    hoverOffset: 15,
+                    borderWidth: 0,
+                    spacing: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 24,
+                            font: {
+                                size: 11,
+                                weight: '600',
+                                family: "'Inter', sans-serif"
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#cbd5e1',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: true,
+                        boxPadding: 8,
+                        cornerRadius: 8
+                    }
+                }
+            }
+        });
     });
 </script>
 {% endblock %}
