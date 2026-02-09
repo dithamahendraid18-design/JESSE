@@ -95,5 +95,5 @@ class AIService:
                 db.session.rollback()
 
 # Compatibility helper
-def generate_smart_reply(user_message, client_model, kb, history=None):
-    return AIService.generate_smart_reply(user_message, client_model, kb, history)
+def generate_smart_reply(user_message, client_model, kb, history=None, session_id=None):
+    return AIService.generate_smart_reply(user_message, client_model, kb, history, session_id=session_id)
