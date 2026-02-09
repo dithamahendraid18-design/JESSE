@@ -1,39 +1,80 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex items-center mb-6">
-    <a href="{{ url_for('admin.dashboard') }}" class="text-gray-500 hover:text-gray-700 mr-4">&larr; Back</a>
-    <h1 class="text-2xl font-bold text-gray-800">Analytics: {{ client.restaurant_name }}</h1>
+<div class="flex items-end mb-8">
+    <a href="{{ url_for('admin.dashboard') }}"
+        class="group mr-6 flex items-center justify-center w-12 h-12 glass-card rounded-xl hover:bg-white transition-all">
+        <span class="text-blue-600 font-bold group-hover:-translate-x-1 transition-transform">&larr;</span>
+    </a>
+    <div>
+        <h1 class="text-4xl font-black text-gray-900 tracking-tight leading-none">Analytics Studio</h1>
+        <p class="text-gray-500 font-medium mt-2">Historical engagement data for <span class="text-blue-600">{{
+                client.restaurant_name }}</span></p>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <!-- Scorecard 1 -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Total Interactions</h3>
-        <p class="text-3xl font-bold text-gray-800">{{ total }}</p>
+    <div
+        class="glass-card p-8 rounded-2xl border border-white hover:border-blue-100 transition-all group hover:-translate-y-1">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Interactions</h3>
+            <span class="p-2 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-110 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122">
+                    </path>
+                </svg>
+            </span>
+        </div>
+        <p class="text-5xl font-black text-gray-900 tracking-tighter">{{ total }}</p>
+        <p class="text-xs text-gray-400 font-medium mt-2">Total system engagement</p>
     </div>
     <!-- Scorecard 2 -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Button Clicks</h3>
-        <p class="text-3xl font-bold text-green-600">{{ btn_count }}</p>
+    <div
+        class="glass-card p-8 rounded-2xl border border-white hover:border-green-100 transition-all group hover:-translate-y-1">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Button Clicks</h3>
+            <span class="p-2 bg-green-50 text-green-600 rounded-xl group-hover:scale-110 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </span>
+        </div>
+        <p class="text-5xl font-black text-green-600 tracking-tighter">{{ btn_count }}</p>
+        <p class="text-xs text-gray-400 font-medium mt-2">Interaction with smart widgets</p>
     </div>
     <!-- Scorecard 3 -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">AI Conversations</h3>
-        <p class="text-3xl font-bold text-purple-600">{{ ai_count }}</p>
+    <div
+        class="glass-card p-8 rounded-2xl border border-white hover:border-purple-100 transition-all group hover:-translate-y-1">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">AI Dialogues</h3>
+            <span class="p-2 bg-purple-50 text-purple-600 rounded-xl group-hover:scale-110 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                    </path>
+                </svg>
+            </span>
+        </div>
+        <p class="text-5xl font-black text-purple-600 tracking-tighter">{{ ai_count }}</p>
+        <p class="text-xs text-gray-400 font-medium mt-2">Natural language conversations</p>
     </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- Chart -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 class="text-lg font-bold mb-4 text-gray-800">Engagement Breakdown</h3>
-        <canvas id="interactionChart"></canvas>
+    <div class="glass-card p-8 rounded-2xl border border-white shadow-sm">
+        <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Engagement Breakdown</h3>
+        <div class="relative h-64">
+            <canvas id="interactionChart"></canvas>
+        </div>
     </div>
 
     <!-- Recent Logs -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <h3 class="text-lg font-bold mb-4 text-gray-800">Recent Activity</h3>
+    <div class="glass-card p-8 rounded-2xl border border-white shadow-sm overflow-hidden">
+        <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Recent Activity Stream</h3>
         <div class="overflow-y-auto max-h-64">
             <table class="min-w-full text-sm">
                 <thead class="bg-gray-50">
