@@ -40,16 +40,18 @@ def fix_db_schema():
         
     try:
         results = []
+        
+        # 1. Attempt Alembic Migration (Recommended)
+        from flask_migrate import upgrade
+        try:
+            upgrade()
+            results.append("🚀 Alembic Upgrade: Success")
+        except Exception as mig_err:
+            results.append(f"ℹ️ Alembic Skip/Fail: {str(mig_err)}")
+
+        # 2. Manual SQL Fallback (Safety Layer)
         with db.engine.connect() as conn:
-            # List of columns to check and add (This list could be long, just keeping essential structure)
-            # Actually, since we moved to migrations, this route is less critical but maybe still useful as a diagnostic?
-            # I'll keep a simplified version or the full list if user wants it "just in case".
-            # For brevity in refactor, I will just return a message saying use migrations by default, 
-            # unless I copy the huge list again.
-            # Let's keep it functional as a "Repair" button? 
-            # It was 60 lines of code. I'll include it for safety.
-            
-            migrations = [
+            # ... existing manual migrations ...
                 ('clients', 'parking_info', 'TEXT', None),
                 ('clients', 'direction_note', 'TEXT', None),
                 ('clients', 'whatsapp_url', 'VARCHAR(255)', None),
