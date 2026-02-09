@@ -38,8 +38,17 @@ def build_system_prompt(client_model, kb, menu_items):
                             formatted_shifts = []
                             for s in shifts:
                                 start, end = s['start'], s['end']
-                                if end == "00:00": end = "24:00 (Midnight)"
-                                formatted_shifts.append(f"{start}-{end}")
+                                # Helper to convert 24h to 12h for AI clarity
+                                def to_12h(t_str):
+                                    try:
+                                        h, m = map(int, t_str.split(':'))
+                                        suffix = "AM" if h < 12 else "PM"
+                                        h_12 = h % 12
+                                        if h_12 == 0: h_12 = 12
+                                        return f"{h_12:02d}:{m:02d} {suffix}"
+                                    except: return t_str
+                                
+                                formatted_shifts.append(f"{to_12h(start)} - {to_12h(end)}")
                             h_lines.append(f"- {day.capitalize()}: {', '.join(formatted_shifts)}")
             operating_hours_text = "\n".join(h_lines)
         else:
