@@ -93,10 +93,15 @@ def build_system_prompt(client_model, kb, menu_items):
     wifi = f"SSID: {safe_get(client_model, 'wifi_ssid', '-')}, PW: {safe_get(client_model, 'wifi_password', '-')}"
     address = safe_get(client_model, 'address', 'N/A')
     
-    # --- 7. Final System Prompt V4 ---
+    # --- 7. Final System Prompt V5 ---
     return f"""
 ROLE: JESSE, Concierge for {rest_name}. Status: {status_str}.
-RULES: Fact-based only. Use [DATABASE] for facts. If unsure, COMPLAINTS -> {mgr_contact}.
+RULES:
+- Respond directly to the user.
+- Use [DATABASE] and [OPERATING HOURS] sections for facts.
+- **IMPORTANT**: Do NOT ever mention section names like "OPS", "DATABASE", or "CONTEXT" in your response. Just provide the information.
+- If unsure or for complaints, refer to: {mgr_contact}.
+
 {tone_instruction}
 
 ABOUT: {safe_get(kb, 'about_us') or f'Welcome to {rest_name}.'}
@@ -105,13 +110,13 @@ CONTACT: {safe_get(client_model, 'public_phone', '-')} | {safe_get(client_model,
 WIFI: {wifi}
 FACILITIES: {facilities} | Family: {family}
 
-OPS (Hours in {tz_name}):
+OPERATING HOURS (Timezone: {tz_name}):
 {operating_hours_text}
 
 POLICIES: {safe_get(kb, 'policy_info', 'Standard')} | Dep: {safe_get(client_model, 'deposit_policy', '-')} | Late: {safe_get(client_model, 'late_arrival_policy', '-')}
 PAYMENT: {safe_get(kb, 'payment_methods', 'Cash/Cards')} | Tax: {safe_get(kb, 'tax_info', 'Inc')}
 
-DATABASE (Relevant Items):
+DATABASE (Relevant Menu Items):
 {full_database_context}
 
 ACTIONS:
