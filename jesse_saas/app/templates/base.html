@@ -7,8 +7,33 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            --premium-blue: #2563eb;
+            --premium-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .premium-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        }
+
+        .sidebar-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
     {% if client and client.knowledge_base and client.knowledge_base.avatar_image %}
@@ -24,8 +49,7 @@
     <nav class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-20">
         <div class="flex items-center gap-3">
             <!-- Mobile Menu Button -->
-            <button onclick="document.getElementById('mobile-sidebar').classList.toggle('-translate-x-full')"
-                class="md:hidden text-gray-500 hover:text-gray-700">
+            <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-gray-700">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
                     </path>
@@ -38,13 +62,13 @@
     </nav>
 
     <div class="flex flex-1 overflow-hidden relative">
-        <!-- Mobile Sidebar Overlay (Same Content as Sidebar) -->
-        <aside id="mobile-sidebar"
-            class="absolute inset-y-0 left-0 w-64 bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 md:hidden z-30 overflow-y-auto">
+        <!-- Responsive Sidebar -->
+        <aside id="sidebar"
+            class="fixed inset-y-0 left-0 w-64 bg-white/80 backdrop-blur-md border-r border-gray-200 transform -translate-x-full md:translate-x-0 md:static md:inset-auto sidebar-transition z-30 overflow-y-auto">
             <div class="py-6 px-4 space-y-8">
-                <!-- Close Button -->
-                <div class="flex justify-end mb-2">
-                    <button onclick="document.getElementById('mobile-sidebar').classList.add('-translate-x-full')"
+                <!-- Mobile Only Close Button -->
+                <div class="flex justify-end mb-2 md:hidden">
+                    <button onclick="document.getElementById('sidebar').classList.add('-translate-x-full')"
                         class="text-gray-400 hover:text-gray-600">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -52,20 +76,17 @@
                         </svg>
                     </button>
                 </div>
-                <!-- Duplicate Content of Sidebar -->
-                {% include 'admin/partials/sidebar_content.html' ignore missing %}
-                <!-- Since we can't easily extract the sidebar content to a partial without modifying all files, 
-                     I will duplicate the sidebar logic here for now OR use JS to clone it. 
-                     Better approach: Let's just make the existing Sidebar responsive instead of duplicating. -->
-            </div>
-        </aside>
-
-        <!-- Sidebar (Desktop) -->
-        <aside class="w-64 bg-white border-r border-gray-200 overflow-y-auto hidden md:block">
-            <div class="py-6 px-4 space-y-8">
                 {% include 'admin/partials/sidebar_content.html' %}
             </div>
         </aside>
+
+        <!-- Sidebar Toggle Helper for JS -->
+        <script>
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('-translate-x-full');
+            }
+        </script>
 
         <!-- Main Content (Scrollable) -->
         <main class="flex-1 overflow-y-auto bg-gray-50 p-6 md:p-8">

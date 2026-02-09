@@ -4,9 +4,9 @@
 <div class="h-full bg-gray-50 p-6 md:p-8 overflow-y-auto">
     <!-- Header -->
     <div class="flex justify-between items-end mb-8">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-800 tracking-tight">SaaS Control Tower</h1>
-            <p class="text-gray-500 mt-1">Real-time overview of business performance and system health.</p>
+        <div class="space-y-2">
+            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight leading-none">Control Tower</h1>
+            <p class="text-gray-500 font-medium text-lg">Real-time business intelligence and system health.</p>
         </div>
         <div class="flex gap-3">
             <button onclick="openAddClientModal()"
@@ -26,21 +26,26 @@
 
     <!-- Alerts -->
     {% if unsynced_count and unsynced_count > 0 %}
-    <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r shadow-sm flex justify-between items-center">
+    <div
+        class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r shadow-sm flex justify-between items-center">
         <div class="flex">
             <div class="flex-shrink-0">
                 <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
                 </svg>
             </div>
             <div class="ml-3">
                 <p class="text-sm text-yellow-700">
-                    <span class="font-bold">Attention Needed:</span> {{ unsynced_count }} menu items are not synced with AI Brain.
+                    <span class="font-bold">Attention Needed:</span> {{ unsynced_count }} menu items are not synced with
+                    AI Brain.
                 </p>
             </div>
         </div>
         <div>
-            <a href="{{ url_for('admin.sync_menu_embeddings') }}" class="text-sm font-bold text-yellow-700 hover:text-yellow-600 bg-yellow-200 px-3 py-1 rounded hover:bg-yellow-300 transition-colors">
+            <a href="{{ url_for('admin.sync_menu_embeddings') }}"
+                class="text-sm font-bold text-yellow-700 hover:text-yellow-600 bg-yellow-200 px-3 py-1 rounded hover:bg-yellow-300 transition-colors">
                 Fix Now &rarr;
             </a>
         </div>
@@ -50,10 +55,11 @@
     <!-- 1. KPI Cards (Existing Features Preserved) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- MRR Card -->
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+        <div
+            class="glass-card rounded-2xl p-6 border border-white hover:border-blue-200 transition-all duration-300 group hover:-translate-y-1">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Estimated MRR</h3>
-                <span class="p-2 bg-green-50 text-green-600 rounded-lg">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Estimated MRR</h3>
+                <span class="p-2 bg-green-50 text-green-600 rounded-xl group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
@@ -62,17 +68,18 @@
                 </span>
             </div>
             <div class="flex items-baseline mb-2">
-                <span class="text-3xl font-bold text-gray-900">${{ stats.mrr }}</span>
-                <span class="ml-2 text-xs text-green-500 font-bold bg-green-100 px-2 py-0.5 rounded-full">+12%</span>
+                <span class="text-4xl font-black text-gray-900 tracking-tighter">${{ stats.mrr }}</span>
+                <span class="ml-2 text-xs text-green-600 font-bold bg-green-100/50 px-2 py-0.5 rounded-lg">+12%</span>
             </div>
-            <p class="text-xs text-gray-400">Recurring revenue from Pro plans</p>
+            <p class="text-xs text-gray-400 font-medium">Monthly Recurring Revenue</p>
         </div>
 
         <!-- System Load -->
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+        <div
+            class="glass-card rounded-2xl p-6 border border-white hover:border-indigo-200 transition-all duration-300 group hover:-translate-y-1">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">System Load</h3>
-                <span class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">System Pulse</h3>
+                <span class="p-2 bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -80,10 +87,10 @@
                 </span>
             </div>
             <div class="flex items-baseline mb-2">
-                <span class="text-3xl font-bold text-gray-900">{{ stats.total_interactions }}</span>
-                <span class="ml-2 text-xs text-gray-500 font-medium">hits</span>
+                <span class="text-4xl font-black text-gray-900 tracking-tighter">{{ stats.total_interactions }}</span>
+                <span class="ml-2 text-xs text-indigo-600 font-bold bg-indigo-100/50 px-2 py-0.5 rounded-lg">hits</span>
             </div>
-            <p class="text-xs text-gray-400">Total API calls processed</p>
+            <p class="text-xs text-gray-400 font-medium">Total interactions processed</p>
         </div>
 
         <!-- Token Cost -->
@@ -135,13 +142,16 @@
         <!-- LEFT: Global Live Feed -->
         <div class="lg:col-span-2">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                    <h3 class="font-bold text-gray-800">Global Pulse</h3>
-                    <span class="flex h-2 w-2">
-                        <span
-                            class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                    </span>
+                <div class="px-6 py-4 border-b border-gray-100 glass-bg flex justify-between items-center">
+                    <h3 class="font-bold text-gray-900 uppercase tracking-tight text-sm">Global Traffic Pulse</h3>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold text-green-600 uppercase">Live</span>
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                    </div>
                 </div>
                 <div class="divide-y divide-gray-100 max-h-[500px] overflow-y-auto">
                     {% for log in recent_logs %}
@@ -206,21 +216,25 @@
                 </div>
             </div>
 
-            <!-- Promotion / Upsell Placeholder -->
+            <!-- Scale Business Card -->
             <div
-                class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
-                <div class="relative z-10">
-                    <h3 class="font-bold text-lg mb-1">Scale Your Business</h3>
-                    <p class="text-gray-400 text-sm mb-4">3 clients are approaching their Basic plan limits.</p>
+                class="bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-700 rounded-2xl shadow-xl shadow-blue-200/50 p-6 text-white relative overflow-hidden group">
+                <div class="relative z-10 transition-transform group-hover:scale-[1.02] duration-500">
+                    <h3 class="font-black text-2xl mb-2 tracking-tight">Scale Your Business</h3>
+                    <p class="text-indigo-100/90 text-sm mb-6 leading-relaxed">3 clients are approaching their plan
+                        limits. Upgrade them to unlock more revenue.</p>
                     <button
-                        class="bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        Review Limits
+                        class="bg-white text-indigo-600 text-xs font-black px-6 py-3 rounded-xl hover:bg-gray-50 transition-all shadow-lg hover:shadow-white/25">
+                        Review Limits &rarr;
                     </button>
                 </div>
-                <!-- Decorative elements -->
-                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-500 rounded-full opacity-20 blur-xl">
+                <!-- Premium decorative elements -->
+                <div
+                    class="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-white rounded-full opacity-10 blur-2xl group-hover:opacity-20 transition-opacity">
                 </div>
-                <div class="absolute bottom-0 right-10 w-16 h-16 bg-purple-500 rounded-full opacity-20 blur-xl"></div>
+                <div
+                    class="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-400 rounded-full opacity-10 blur-3xl group-hover:opacity-20 transition-opacity">
+                </div>
             </div>
         </div>
     </div>
