@@ -159,7 +159,7 @@ class VectorService:
                     # L2 distance search
                     results = db.session.query(MenuEmbedding, MenuItem).\
                         join(MenuItem).\
-                        filter(MenuItem.client_id == client_id).\
+                        filter(MenuItem.client_id == client_id, MenuItem.is_available == True).\
                         order_by(MenuEmbedding.embedding.l2_distance(query_vector)).\
                         limit(limit).\
                         all()
@@ -180,7 +180,7 @@ class VectorService:
             if not keywords: return [] # Query too short/generic
 
             # Build OR query for each keyword against Name or Description
-            sql_query = MenuItem.query.filter(MenuItem.client_id == client_id)
+            sql_query = MenuItem.query.filter(MenuItem.client_id == client_id, MenuItem.is_available == True)
             
             conditions = []
             for kw in keywords:

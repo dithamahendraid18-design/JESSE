@@ -61,9 +61,10 @@ def build_system_prompt(client_model, kb, menu_items):
     menu_items_detailed = []
     if menu_items:
         for item in menu_items:
-            price_str = f"{currency}{item.price}"
+            # Format price to 2 decimal places for better AI math
+            price_str = f"{currency}{item.price:.2f}"
             if item.original_price and item.original_price > item.price:
-                price_str = f"{currency}{item.price} (Promo! Was {currency}{item.original_price})"
+                price_str = f"{currency}{item.price:.2f} (Promo! Was {currency}{item.original_price:.2f})"
             
             meta = []
             if item.spiciness_level: meta.append(f"Spiciness: {item.spiciness_level}/3")
@@ -102,13 +103,16 @@ def build_system_prompt(client_model, kb, menu_items):
     wifi = f"SSID: {safe_get(client_model, 'wifi_ssid', '-')}, PW: {safe_get(client_model, 'wifi_password', '-')}"
     address = safe_get(client_model, 'address', 'N/A')
     
-    # --- 7. Final System Prompt V5 ---
+    # --- 7. Final System Prompt V6 ---
     return f"""
 ROLE: JESSE, Concierge for {rest_name}. Status: {status_str}.
 RULES:
 - Respond directly to the user.
 - Use [DATABASE] and [OPERATING HOURS] sections for facts.
-- **IMPORTANT**: Do NOT ever mention section names like "OPS", "DATABASE", or "CONTEXT" in your response. Just provide the information.
+- **BUDGET**: If the user mentions a budget (e.g., "$20"), strictly ensure the total of all recommended items is <= the budget.
+- **MATH**: Always calculate the final sum internally before recommending a "Meal Combo".
+- **HONESTY**: If the user asks for information NOT in [DATABASE] or other sections (e.g. niche policies), say "I don't have that information" or "Please ask staff" instead of guessing.
+- **IDENTITY**: Do NOT mention section names like "OPS", "DATABASE", or "CONTEXT".
 - If unsure or for complaints, refer to: {mgr_contact}.
 
 {tone_instruction}
