@@ -198,8 +198,8 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-1">
-                <div class="glass-card p-8 rounded-3xl border border-white sticky top-10 shadow-xl shadow-blue-900/5">
+            <div class="lg:col-span-1 space-y-8">
+                <div class="glass-card p-8 rounded-3xl border border-white sticky top-0 shadow-xl shadow-blue-900/5">
                     <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Client Snapshot</h4>
                     <div class="space-y-6">
                         <div class="flex justify-between items-center group">
@@ -222,6 +222,36 @@
                             <textarea name="billing_note" rows="4"
                                 class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 text-xs font-medium text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 italic"
                                 placeholder="Add private notes about this client here...">{{ client.billing_note or '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Internal Administration (Restored) -->
+                <div class="glass-card p-8 rounded-3xl border border-gray-100 shadow-sm bg-gray-50/50">
+                    <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
+                        </svg>
+                        Internal Admin Contact
+                    </h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Owner
+                                Email (Private)</label>
+                            <input type="email" name="owner_email" value="{{ client.owner_email or '' }}"
+                                placeholder="admin@restaurant.com"
+                                class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-xs font-bold text-gray-900 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-all">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Owner
+                                Phone (Private)</label>
+                            <input type="tel" name="owner_phone" value="{{ client.owner_phone or '' }}"
+                                placeholder="+1234567890"
+                                class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-xs font-bold text-gray-900 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-all">
                         </div>
                     </div>
                 </div>
@@ -369,16 +399,90 @@
                             </div>
                         </div>
                         <div class="pt-4">
-                            <label class="block text-sm font-black text-gray-700 mb-2">Google Maps Embed URL</label>
+                            <label class="block text-sm font-black text-gray-700 mb-2">Google Maps Link</label>
                             <input type="url" name="maps_url" value="{{ client.maps_url or '' }}"
                                 placeholder="https://maps.app.goo.gl/..."
                                 class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 text-xs font-medium text-blue-600 italic">
+                            <p class="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-wide">Used for "Get
+                                Directions" button in AI chat</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                            <div>
+                                <label class="block text-sm font-black text-gray-700 mb-2">Landmark / Direction
+                                    Note</label>
+                                <textarea name="direction_note" rows="3"
+                                    placeholder="Near the big oak tree, opposite the bank..."
+                                    class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none text-xs font-medium leading-relaxed">{{ client.direction_note or '' }}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-black text-gray-700 mb-2">Parking Information</label>
+                                <textarea name="parking_info" rows="3"
+                                    placeholder="Valet available. Street parking free after 6 PM."
+                                    class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none text-xs font-medium leading-relaxed">{{ client.parking_info or '' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Digital Presence (Restored) -->
+                <div class="glass-card p-10 rounded-3xl border border-white shadow-sm">
+                    <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Digital Ecosystem</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-black text-gray-700 mb-2">Official Website</label>
+                            <div class="flex rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                                <span
+                                    class="bg-gray-50 px-4 py-3 border-r border-gray-200 text-gray-400 text-xs font-black flex items-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9">
+                                        </path>
+                                    </svg>
+                                </span>
+                                <input type="url" name="website_url" value="{{ client.website_url or '' }}"
+                                    placeholder="https://www.restaurant.com"
+                                    class="flex-1 bg-white/50 px-4 py-3 text-sm font-bold text-blue-600 focus:outline-none">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label
+                                    class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Instagram
+                                    URL</label>
+                                <input type="url" name="instagram_url" value="{{ client.instagram_url or '' }}"
+                                    placeholder="https://instagram.com/..."
+                                    class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-bold text-gray-800 focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">TikTok
+                                    URL</label>
+                                <input type="url" name="tiktok_url" value="{{ client.tiktok_url or '' }}"
+                                    placeholder="https://tiktok.com/@..."
+                                    class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-bold text-gray-800 focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">YouTube
+                                    URL</label>
+                                <input type="url" name="youtube_url" value="{{ client.youtube_url or '' }}"
+                                    placeholder="https://youtube.com/..."
+                                    class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">WhatsApp
+                                    Business URL</label>
+                                <input type="url" name="whatsapp_url" value="{{ client.whatsapp_url or '' }}"
+                                    placeholder="https://wa.me/..."
+                                    class="w-full bg-white/50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-bold text-gray-800 focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Social & Delivery -->
-                <div class="glass-card p-10 rounded-3xl border border-white shadow-sm">
+                <div class="glass-card p-10 rounded-3xl border border-white shadow-sm md:col-span-2">
                     <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Guest Amenities &
                         Delivery</h3>
                     <div class="space-y-8">
@@ -437,6 +541,108 @@
                 </div>
             </div>
 
+            <!-- Seating & Capacity (New) -->
+            <div class="glass-card p-10 rounded-3xl border border-white shadow-sm">
+                <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Seating & Capacity</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="block text-sm font-black text-gray-700 mb-2">Total Seating Capacity</label>
+                        <input type="number" name="total_seating" value="{{ client.total_seating or '' }}"
+                            placeholder="e.g. 120"
+                            class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 font-bold transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-black text-gray-700 mb-2">Max Group Size</label>
+                        <input type="number" name="max_group_size" value="{{ client.max_group_size or '' }}"
+                            placeholder="e.g. 20"
+                            class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 font-bold transition-all">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-black text-gray-700 mb-2">Table Configuration Notes</label>
+                        <textarea name="seating_configuration" rows="2"
+                            placeholder="Main hall has 4-tops, Patio has 2-tops..."
+                            class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 text-xs font-medium leading-relaxed">{{ client.seating_configuration or '' }}</textarea>
+                    </div>
+                    <div class="md:col-span-2 p-6 bg-indigo-50/50 rounded-3xl border border-indigo-100/50">
+                        <div class="flex items-start gap-4">
+                            <div class="flex items-center h-5 mt-1">
+                                <input type="checkbox" name="has_private_room" id="has_private_room"
+                                    class="w-5 h-5 rounded-lg border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                    {% if client.has_private_room %}checked{% endif %}
+                                    onchange="document.getElementById('private-room-capacity').classList.toggle('hidden', !this.checked)">
+                            </div>
+                            <div class="flex-1">
+                                <label for="has_private_room"
+                                    class="block text-sm font-black text-indigo-900 cursor-pointer select-none">Private
+                                    Dining Room Available</label>
+                                <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-wide mt-1">Enable if
+                                    you have a separate VIP area</p>
+
+                                <div id="private-room-capacity"
+                                    class="mt-4 {% if not client.has_private_room %}hidden{% endif %}">
+                                    <label
+                                        class="block text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">Private
+                                        Room Capacity</label>
+                                    <input type="number" name="private_room_capacity"
+                                        value="{{ client.private_room_capacity or '' }}" placeholder="e.g. 15"
+                                        class="w-full bg-white border border-indigo-200 rounded-xl px-4 py-3 text-sm font-bold text-indigo-900 focus:ring-2 focus:ring-indigo-500/20">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Guest Policies & Booking (New) -->
+            <div class="glass-card p-10 rounded-3xl border border-white shadow-sm">
+                <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-8">Guest Policies & Booking
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-black text-gray-700 mb-2">Reservation / Booking Link</label>
+                        <div class="flex rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                            <span
+                                class="bg-gray-50 px-4 py-3 border-r border-gray-200 text-gray-400 text-xs font-black flex items-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                            </span>
+                            <input type="url" name="booking_url" value="{{ client.booking_url or '' }}"
+                                placeholder="https://sevenrooms.com/reservations/..."
+                                class="flex-1 bg-white/50 px-4 py-3 text-sm font-bold text-blue-600 focus:outline-none">
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-wide">Direct link for the
+                            "Book Table" smart button</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-black text-gray-700 mb-2">Late Arrival Policy</label>
+                        <textarea name="late_arrival_policy" rows="3"
+                            placeholder="Tables held for 15 mins. Please call if running late."
+                            class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 text-xs font-medium leading-relaxed">{{ client.late_arrival_policy or '' }}</textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-black text-gray-700 mb-2">Accepted Payment Methods</label>
+                        <textarea name="accepted_payment_methods" rows="3"
+                            placeholder="Visa, Mastercard, Amex, Cash, Apple Pay..."
+                            class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 text-xs font-medium leading-relaxed">{{ client.knowledge_base.payment_methods or '' }}</textarea>
+                        <p class="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-wide">Comma separated list
+                        </p>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-black text-gray-700 mb-2">Deposit / Cancellation Policy</label>
+                        <textarea name="deposit_policy" rows="2"
+                            placeholder="Credit card required for parties of 6+. 24hr cancellation notice."
+                            class="w-full bg-white/50 border border-gray-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 text-xs font-medium leading-relaxed">{{ client.deposit_policy or '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
             <!-- Matrix Matrix -->
             <div class="glass-card p-10 rounded-3xl border border-white shadow-sm">
                 <div class="flex items-center justify-between mb-10">
@@ -448,7 +654,10 @@
                             Enabled</span>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+
+                <!-- General Amenities -->
+                <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">General Amenities</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
                     {% for amenity in ['Outdoor', 'AC', 'Toilet', 'Prayer Room', 'Wheelchair', 'Power Outlets', 'Live
                     Music', 'Pet Friendly'] %}
                     <label
@@ -463,147 +672,159 @@
                     </label>
                     {% endfor %}
                 </div>
+
+                <!-- Family & Kids -->
+                <h4 class="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-4">Family & Kids</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {% for amenity in ['High Chair', 'Kids Menu'] %}
+                    <label
+                        class="group flex items-center justify-between p-5 border border-gray-100 rounded-2xl hover:border-purple-300 hover:bg-purple-50 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer">
+                        <span class="text-sm font-black text-gray-700 group-hover:text-purple-700">{{ amenity }}</span>
+                        <div class="relative flex items-center">
+                            <input type="checkbox"
+                                class="family-checkbox w-6 h-6 rounded-lg border-gray-300 text-purple-600 focus:ring-purple-500 transition-transform group-hover:scale-110"
+                                value="{{ amenity }}" {% if amenity in (client.family_facilities_list or '' )
+                                %}checked{% endif %}>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+
                 <!-- Hidden inputs -->
-                <input type="hidden" name="facilities_list" id="facilities-list-input"
-                    value="{{ client.facilities_list or '' }}">
-                <input type="hidden" name="family_facilities_list" id="family-list-input"
-                    value="{{ client.family_facilities_list or '' }}">
                 <input type="hidden" name="delivery_partners" id="delivery-partners-input"
                     value='{{ client.delivery_partners or "[]" }}'>
             </div>
-        </div>
+        </div> <!-- End Grid -->
+</div> <!-- End Tab Content -->
 
-        <!-- Tab Content: Launchpad -->
-        <div id="tab-launchpad" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div class="lg:col-span-1">
-                <div
-                    class="bg-gradient-to-br from-gray-900 via-blue-950 to-black rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group">
-                    <!-- Tech Background -->
-                    <div class="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
-                        <div class="absolute -top-10 -right-10 w-64 h-64 bg-blue-500 rounded-full blur-[100px]"></div>
-                        <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-500 rounded-full blur-[100px]">
-                        </div>
-                    </div>
-
-                    <div class="relative z-10 text-center">
-                        <h3 class="text-4xl font-black mb-1 tracking-tighter italic">Live Tower</h3>
-                        <p class="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-12 opacity-80">
-                            Asset Generation Station</p>
-
-                        <div
-                            class="bg-white p-8 rounded-[2rem] inline-block mb-12 shadow-2xl transform hover:scale-105 hover:-rotate-2 transition-all duration-700 ring-4 ring-white/10">
-                            <img src="{{ url_for('admin.client_qr', client_id=client.id) }}" class="w-48 h-48 mx-auto"
-                                alt="QR Code">
-                        </div>
-
-                        <div class="space-y-6">
-                            <p class="text-[10px] text-blue-200/50 font-black uppercase tracking-widest italic">
-                                Encrypted Assets</p>
-                            <div class="grid grid-cols-3 gap-3">
-                                <a href="{{ url_for('admin.client_qr', client_id=client.id) }}"
-                                    download="qr-{{ client.slug }}.svg"
-                                    class="bg-white/5 hover:bg-white/10 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest border border-white/5">SVG</a>
-                                <a href="{{ url_for('admin.client_qr', client_id=client.id, format='png') }}"
-                                    download="qr-{{ client.slug }}.png"
-                                    class="bg-blue-600/20 hover:bg-blue-600/40 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest border border-blue-500/20 text-blue-400">PNG</a>
-                                <a href="{{ url_for('admin.client_qr', client_id=client.id, format='jpeg') }}"
-                                    download="qr-{{ client.slug }}.jpg"
-                                    class="bg-indigo-600/20 hover:bg-indigo-600/40 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest border border-indigo-500/20 text-indigo-400">JPG</a>
-                            </div>
-                        </div>
-                    </div>
+<!-- Tab Content: Launchpad -->
+<div id="tab-launchpad" class="tab-content hidden grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <div class="lg:col-span-1">
+        <div
+            class="bg-gradient-to-br from-gray-900 via-blue-950 to-black rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group">
+            <!-- Tech Background -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-64 h-64 bg-blue-500 rounded-full blur-[100px]"></div>
+                <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-500 rounded-full blur-[100px]">
                 </div>
             </div>
 
-            <div class="lg:col-span-2 space-y-10">
-                <!-- Direct Integration -->
-                <div class="glass-card p-10 rounded-[2.5rem] border border-white shadow-sm">
-                    <h4
-                        class="text-xs font-black text-blue-600 uppercase tracking-widest mb-10 flex items-center gap-2">
-                        <span class="w-5 h-[2px] bg-blue-600"></span>
-                        Integration Pipeline
-                    </h4>
+            <div class="relative z-10 text-center">
+                <h3 class="text-4xl font-black mb-1 tracking-tighter italic">Live Tower</h3>
+                <p class="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-12 opacity-80">
+                    Asset Generation Station</p>
 
-                    <div class="space-y-10">
-                        <div class="group">
-                            <div class="flex items-center justify-between mb-4">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Direct
-                                    Link (Standalone Mode)</label>
-                                <span
-                                    class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">Optimal
-                                    for Instagram Bio</span>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="flex-1 bg-gray-50 border border-gray-100 rounded-3xl px-6 py-5 flex items-center gap-3 shadow-inner">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.826a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                                    </svg>
-                                    <code
-                                        class="text-blue-600 font-black text-sm truncate select-all">{{ request.host_url }}chat/{{ client.slug }}</code>
-                                </div>
-                                <button type="button"
-                                    onclick="navigator.clipboard.writeText('{{ request.host_url }}chat/{{ client.slug }}')"
-                                    class="p-5 bg-white border border-gray-100 rounded-3xl hover:bg-blue-600 hover:text-white transition-all shadow-lg hover:-translate-y-1 active:scale-95 text-gray-400">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                    </svg>
-                                </button>
-                                <a href="{{ url_for('standalone_chat', public_id=client.slug) }}" target="_blank"
-                                    class="p-5 bg-gray-900 text-white rounded-3xl hover:bg-black transition-all shadow-2xl hover:-translate-y-1 active:scale-95">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
+                <div
+                    class="bg-white p-8 rounded-[2rem] inline-block mb-12 shadow-2xl transform hover:scale-105 hover:-rotate-2 transition-all duration-700 ring-4 ring-white/10">
+                    <img src="{{ url_for('admin.client_qr', client_id=client.id) }}" class="w-48 h-48 mx-auto"
+                        alt="QR Code">
+                </div>
 
+                <div class="space-y-6">
+                    <p class="text-[10px] text-blue-200/50 font-black uppercase tracking-widest italic">
+                        Encrypted Assets</p>
+                    <div class="grid grid-cols-3 gap-3">
+                        <a href="{{ url_for('admin.client_qr', client_id=client.id) }}"
+                            download="qr-{{ client.slug }}.svg"
+                            class="bg-white/5 hover:bg-white/10 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest border border-white/5">SVG</a>
+                        <a href="{{ url_for('admin.client_qr', client_id=client.id, format='png') }}"
+                            download="qr-{{ client.slug }}.png"
+                            class="bg-blue-600/20 hover:bg-blue-600/40 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest border border-blue-500/20 text-blue-400">PNG</a>
+                        <a href="{{ url_for('admin.client_qr', client_id=client.id, format='jpeg') }}"
+                            download="qr-{{ client.slug }}.jpg"
+                            class="bg-indigo-600/20 hover:bg-indigo-600/40 py-3 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest border border-indigo-500/20 text-indigo-400">JPG</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lg:col-span-2 space-y-10">
+        <!-- Direct Integration -->
+        <div class="glass-card p-10 rounded-[2.5rem] border border-white shadow-sm">
+            <h4 class="text-xs font-black text-blue-600 uppercase tracking-widest mb-10 flex items-center gap-2">
+                <span class="w-5 h-[2px] bg-blue-600"></span>
+                Integration Pipeline
+            </h4>
+
+            <div class="space-y-10">
+                <div class="group">
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Direct
+                            Link (Standalone Mode)</label>
+                        <span
+                            class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">Optimal
+                            for Instagram Bio</span>
+                    </div>
+                    <div class="flex items-center gap-4">
                         <div
-                            class="p-10 bg-gray-950 rounded-[2.5rem] border border-white/5 relative overflow-hidden group">
-                            <div
-                                class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
-                                <svg class="w-32 h-32 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-                            <label class="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] block mb-6">JS
-                                Widget Embed Bundle</label>
-                            <div class="relative">
-                                <div class="bg-black/60 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-                                    <code
-                                        class="block text-green-400 text-xs font-mono break-all leading-relaxed whitespace-pre-wrap">&lt;script src="{{ request.host_url }}static/widget.js" 
+                            class="flex-1 bg-gray-50 border border-gray-100 rounded-3xl px-6 py-5 flex items-center gap-3 shadow-inner">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.826a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                            <code
+                                class="text-blue-600 font-black text-sm truncate select-all">{{ request.host_url }}chat/{{ client.slug }}</code>
+                        </div>
+                        <button type="button"
+                            onclick="navigator.clipboard.writeText('{{ request.host_url }}chat/{{ client.slug }}')"
+                            class="p-5 bg-white border border-gray-100 rounded-3xl hover:bg-blue-600 hover:text-white transition-all shadow-lg hover:-translate-y-1 active:scale-95 text-gray-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                        <a href="{{ url_for('standalone_chat', public_id=client.slug) }}" target="_blank"
+                            class="p-5 bg-gray-900 text-white rounded-3xl hover:bg-black transition-all shadow-2xl hover:-translate-y-1 active:scale-95">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="p-10 bg-gray-950 rounded-[2.5rem] border border-white/5 relative overflow-hidden group">
+                    <div
+                        class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
+                        <svg class="w-32 h-32 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <label class="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] block mb-6">JS
+                        Widget Embed Bundle</label>
+                    <div class="relative">
+                        <div class="bg-black/60 backdrop-blur-md rounded-2xl p-6 border border-white/10">
+                            <code
+                                class="block text-green-400 text-xs font-mono break-all leading-relaxed whitespace-pre-wrap">&lt;script src="{{ request.host_url }}static/widget.js" 
         data-id="{{ client.public_id }}"&gt;
 &lt;/script&gt;</code>
-                                </div>
-                                <button type="button"
-                                    onclick="navigator.clipboard.writeText('<script src=\'{{ request.host_url }}static/widget.js\' data-id=\'{{ client.public_id }}\'></script>')"
-                                    class="absolute top-4 right-4 text-blue-400 hover:text-white transition-colors bg-white/5 p-2 rounded-xl">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="mt-8 flex items-start gap-3">
-                                <div
-                                    class="w-5 h-5 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center text-[10px] font-black">
-                                    i</div>
-                                <p
-                                    class="text-[10px] text-gray-500 font-bold leading-relaxed uppercase tracking-tighter italic">
-                                    Paste this snippet before the closing &lt;/body&gt; tag of your website. The widget
-                                    will automatically spawn in the bottom-right corner.</p>
-                            </div>
                         </div>
+                        <button type="button"
+                            onclick="navigator.clipboard.writeText('<script src=\'{{ request.host_url }}static/widget.js\' data-id=\'{{ client.public_id }}\'></script>')"
+                            class="absolute top-4 right-4 text-blue-400 hover:text-white transition-colors bg-white/5 p-2 rounded-xl">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mt-8 flex items-start gap-3">
+                        <div
+                            class="w-5 h-5 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center text-[10px] font-black">
+                            i</div>
+                        <p
+                            class="text-[10px] text-gray-500 font-bold leading-relaxed uppercase tracking-tighter italic">
+                            Paste this snippet before the closing &lt;/body&gt; tag of your website. The widget
+                            will automatically spawn in the bottom-right corner.</p>
                     </div>
                 </div>
             </div>
         </div>
-    </form>
+    </div>
+</div>
+</form>
 </div>
 
 <script>
@@ -736,6 +957,10 @@
 
         document.querySelectorAll('.facility-checkbox').forEach(cb => {
             cb.addEventListener('change', () => updateCSV('facility-checkbox', 'facilities-list-input'));
+        });
+
+        document.querySelectorAll('.family-checkbox').forEach(cb => {
+            cb.addEventListener('change', () => updateCSV('family-checkbox', 'family-list-input'));
         });
     });
 </script>
